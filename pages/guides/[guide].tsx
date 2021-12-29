@@ -37,7 +37,7 @@ export default function GuidePage({ guide, location }: Props & { location: strin
 }
 function ExternalImg({ src }: {src: string}) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img className="p-1 relative max-w-2xl max-h-96" decoding="async" alt="Guide Image" src={src} />
+  return <img className="p-1 relative max-w-2xl max-h-96" decoding="async" alt="Guide Image" src={src} width={450} height={300} />
   // return <div className="p-1 relative max-w-2xl">
   //   <Image alt="Guide Image" src={src} width={825} height={963}/>
   // </div>
