@@ -6,7 +6,7 @@ import { getGuides, urlify } from "../../utils/data-cache"
 import { Guide } from "../../utils/types"
 
 interface Props {
-  guides: Guide[]
+  guides: string[]
 }
 
 export default function Guides(props: Props & { location: string }) {
@@ -24,10 +24,10 @@ export default function Guides(props: Props & { location: string }) {
       </h1>
       <ul>
         {props.guides.map(g => (
-          <li key={g.name}>
+          <li key={g}>
             -{" "}
-            <FormattedLink font="semibold" size="xl" location={props.location} href={`/guides/${urlify(g.name)}`} >
-              {g.name}
+            <FormattedLink font="semibold" size="xl" location={props.location} href={`/guides/${urlify(g)}`} >
+              {g}
             </FormattedLink>
           </li>
         ))}
@@ -48,7 +48,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 
   return {
     props: {
-      guides: data
+      guides: data.map(g => g.name)
     },
     revalidate: 60 * 60
   }
