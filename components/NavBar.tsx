@@ -8,7 +8,7 @@ export default function NavBar({ location }: {location: string}) {
   const navLinks = pages.map(page => <FormattedLink key={page} href={`/${page.toLowerCase()}`} location={location}>{page}</FormattedLink>)
 
   return (
-    <div className="bg-gradient-to-r from-blue-200 to-blue-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-between md:justify-start p-4 w-full top-0">
+    <div className="text-xl bg-gradient-to-r from-blue-200 to-blue-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-between md:justify-start p-4 w-full top-0">
       <div className={`flex items-center pr-20 ${menuOpen ? "hidden": ""} sm:block`}>
         <Logo />
         <FormattedLink font="bold" location={location} href="/">Hu Tao</FormattedLink>
