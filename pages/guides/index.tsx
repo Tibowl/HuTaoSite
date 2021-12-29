@@ -3,7 +3,6 @@ import Head from "next/head"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
 import { getGuides, urlify } from "../../utils/data-cache"
-import { Guide } from "../../utils/types"
 
 interface Props {
   guides: string[]

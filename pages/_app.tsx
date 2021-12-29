@@ -6,7 +6,7 @@ import Footer from "../components/Footer"
 import NavBar from "../components/NavBar"
 import * as gtag from "../utils/gtag"
 
-function MyApp({ Component, pageProps, router }: AppProps) {
+export default function MyApp({ Component, pageProps, router }: AppProps) {
   useEffect(() => {
     const handleRouteChange = (url: string) => {
       gtag.pageview(url)
@@ -16,7 +16,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
       router.events.off("routeChangeComplete", handleRouteChange)
     }
   }, [router.events])
-  return <Layout>
+  return <div className="dark:bg-slate-700 min-h-screen flex flex-col items-center justify-between text-slate-900 dark:text-slate-100">
     <Head>
       <title>{router.pathname.substring(1).replace(/^\w/, w => w.toUpperCase())} | Hu Tao</title>
       <link rel="icon" href="/favicon.ico" />
@@ -30,20 +30,5 @@ function MyApp({ Component, pageProps, router }: AppProps) {
       </div>
     </div>
     <Footer />
-  </Layout>
+  </div>
 }
-
-class Layout extends Component {
-  componentDidMount () {
-  }
-
-  render () {
-    return (
-      <div className="dark:bg-slate-700 min-h-screen flex flex-col items-center justify-between text-slate-900 dark:text-slate-100">
-        {this.props.children}
-      </div>
-    )
-  }
-}
-
-export default MyApp
