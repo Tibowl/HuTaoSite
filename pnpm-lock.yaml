@@ -16,7 +16,6 @@ specifiers:
   postcss: ^8.4.5
   react: 17.0.2
   react-dom: 17.0.2
-  react-ga4: ^1.4.1
   react-markdown: ^7.1.1
   sharp: ^0.29.3
   tailwindcss: ^3.0.7
@@ -29,7 +28,6 @@ dependencies:
   node-fetch: 2.6.6
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
-  react-ga4: 1.4.1
   react-markdown: 7.1.1_b08e3c15324cbe90a6ff8fcd416c932c
   sharp: 0.29.3
 
@@ -3257,10 +3255,6 @@ packages:
       object-assign: 4.1.1
       react: 17.0.2
       scheduler: 0.20.2
-    dev: false
-
-  /react-ga4/1.4.1:
-    resolution: {integrity: sha512-ioBMEIxd4ePw4YtaloTUgqhQGqz5ebDdC4slEpLgy2sLx1LuZBC9iYCwDymTXzcntw6K1dHX183ulP32nNdG7w==}
     dev: false
 
   /react-is/16.13.1:

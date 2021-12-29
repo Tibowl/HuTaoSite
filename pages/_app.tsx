@@ -1,11 +1,21 @@
 import type { AppProps } from "next/app"
 import Head from "next/head"
-import { Component } from "react"
+import { Component, useEffect } from "react"
 import "tailwindcss/tailwind.css"
 import Footer from "../components/Footer"
 import NavBar from "../components/NavBar"
+import * as gtag from "../utils/gtag"
 
 function MyApp({ Component, pageProps, router }: AppProps) {
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      gtag.pageview(url)
+    }
+    router.events.on("routeChangeComplete", handleRouteChange)
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange)
+    }
+  }, [router.events])
   return <Layout>
     <Head>
       <title>{router.pathname.substring(1).replace(/^\w/, w => w.toUpperCase())} | Hu Tao</title>
