@@ -17,7 +17,7 @@ const OAUTH_QS = new URLSearchParams({
 
 const OAUTH_URI = `https://discord.com/api/oauth2/authorize?${OAUTH_QS}`
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export default async function api(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") return res.redirect("/")
 
   const { code = null, error = null } = req.query
@@ -53,7 +53,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   if (!("id" in me))
     return res.redirect(OAUTH_URI)
-  
 
   const token = sign(me, config.jwtSecret, { expiresIn: "24h" })
 
