@@ -20,6 +20,9 @@ function MyApp({ Component, pageProps, router }: AppProps) {
     <Head>
       <title>{router.pathname.substring(1).replace(/^\w/, w => w.toUpperCase())} | Hu Tao</title>
       <link rel="icon" href="/favicon.ico" />
+      <meta name="twitter:card" content="summary" />
+      <meta property="og:title" content="Hu Tao" />
+      <meta property="og:description" content="Genshin Impact tools" />
     </Head>
 
     <div className="w-full">

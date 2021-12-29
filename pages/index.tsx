@@ -6,7 +6,10 @@ export default function Home({ location }: { location: string }) {
   return (
     <div>
       <Head>
-        <title>Main page | Hu Tao</title>
+        <title>Hu Tao</title>
+        <meta name="twitter:card" content="summary" />
+        <meta property="og:title" content="Hu Tao" />
+        <meta property="og:description" content="Genshin Impact tools" />
       </Head>
 
       <Main className="flex flex-col items-center justify-center w-full flex-1 text-center" homePage={true}>

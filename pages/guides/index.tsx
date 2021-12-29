@@ -1,4 +1,5 @@
 import { GetStaticPropsContext, GetStaticPropsResult } from "next"
+import Head from "next/head"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
 import { getGuides, urlify } from "../../utils/data-cache"
@@ -11,6 +12,13 @@ interface Props {
 export default function Guides(props: Props & { location: string }) {
   return (
     <Main>
+      <Head>
+        <title>Guides | Hu Tao</title>
+        <meta name="twitter:card" content="summary" />
+        <meta property="og:title" content="Guides | Hu Tao" />
+        <meta property="og:description" content="View currently available guides and routes" />
+      </Head>
+
       <h1 className="text-5xl font-bold">
         Guides
       </h1>

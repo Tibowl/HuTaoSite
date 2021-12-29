@@ -15,6 +15,9 @@ export default function GuidePage({ guide, location }: Props & { location: strin
     <Main>
       <Head>
         <title>{guide.name} | Hu Tao</title>
+        <meta name="twitter:card" content="summary" />
+        <meta property="og:title" content={`${guide.name} | Hu Tao`} />
+        <meta property="og:description" content={`View ${guide.name} routes`} />
       </Head>
       <h1 className="text-3xl font-bold">
         {guide.name}
