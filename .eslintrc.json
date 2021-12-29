@@ -1,0 +1,32 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "prefer-const": "warn",
+    "no-trailing-spaces": "error",
+    "spaced-comment": "warn",
+    "linebreak-style": [
+      "error",
+      "windows"
+    ],
+    "quotes": [
+      "warn",
+      "double"
+    ],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 2,
+        "maxBOF": 0,
+        "maxEOF": 0
+      }
+    ],
+    "semi": ["warn", "never"],
+    "eol-last": "error",
+    "no-useless-escape": "error",
+    "object-curly-spacing": [
+      "warn",
+      "always"
+    ],
+    "comma-spacing": "warn"
+  }
+}
