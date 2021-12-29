@@ -9,7 +9,7 @@ export default function Home({ location }: { location: string }) {
         <title>Main page | Hu Tao</title>
       </Head>
 
-      <Main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center" homePage={true}>
+      <Main className="flex flex-col items-center justify-center w-full flex-1 text-center" homePage={true}>
         <h1 className="text-6xl font-bold">
           Welcome to Hu Tao
         </h1>
