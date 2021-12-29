@@ -4,10 +4,6 @@
     "prefer-const": "warn",
     "no-trailing-spaces": "error",
     "spaced-comment": "warn",
-    "linebreak-style": [
-      "error",
-      "windows"
-    ],
     "quotes": [
       "warn",
       "double"
