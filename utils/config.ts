@@ -26,9 +26,7 @@ export const config = {
   clientId: validateEnv("CLIENT_ID"),
   clientSecret: validateEnv("CLIENT_SECRET"),
   appUri: validateEnv("APP_URI", "http://localhost:3000", true),
-  jwtSecret: validateEnv(
-    "JWT_SECRET",
-    "this is a development value that should be changed in production!!!!!",
-    true
-  ),
+  discordUri: validateEnv("DISCORD_BOT_URI", "http://localhost:3000", true),
+  discordSecret: validateEnv("DISCORD_BOT_SECRET", "CHANGE THIS", true),
+  jwtSecret: validateEnv("JWT_SECRET", "CHANGE THIS", true),
 } as const

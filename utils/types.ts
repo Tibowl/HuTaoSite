@@ -10,6 +10,16 @@ export interface DiscordUser {
   premium_type:  number
 }
 
+// Reminders
+export interface Reminder {
+  id: number
+  subject: string
+  user: string
+  timestamp: number
+  duration: number
+}
+
+
 // Guides
 export interface Guide {
   name:  string
