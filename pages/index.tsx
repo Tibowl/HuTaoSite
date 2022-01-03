@@ -34,18 +34,18 @@ export default function Home({ location }: { location: string }) {
       <h3 className="p-3 mt-10 text-3xl text-left">
         Features:
       </h3>
-      <div className="flex flex-wrap items-center justify-around max-w-4xl mt-1">
-        <div className="md:flex md:flex-row items-center justify-around max-w-4xl">
+      <div className="grid items-center justify-around max-w-4xl mt-1">
+        <div className="md:flex md:flex-row items-center max-w-4xl">
           <Card href="/guides" title="Guides &rarr;" desc="Find where those Specters are hiding" location={location} src={book} alsoSite />
           <Card href="/reminders" title="Reminders &rarr;" desc="Remind yourself of that Parametric Transformer you forgot for the 5th time" location={location} src={alarm} alsoSite="Can be managed on site as well" />
         </div>
 
-        <div className="md:flex md:flex-row items-center justify-around max-w-4xl">
+        <div className="md:flex md:flex-row items-center max-w-4xl">
           <Card title="Character and Weapon Information" desc="Check which books that character needs or how many enhancement ores you need to level that shiny new weapon" location={location} src={person}  />
           <Card title="News and Events" desc="Don't miss out on the latest drip marketing" location={location} src={newspaper}  />
         </div>
 
-        <div className="md:flex md:flex-row items-center justify-around max-w-4xl">
+        <div className="md:flex md:flex-row items-center max-w-4xl">
           <Card title="Gacha calculator" desc="Want to check the odds of getting C1 from the 134 pulls you've got right now?" location={location} src={calc}  />
           <Card title="And more!" desc="Abyss schedule/floors, this month's Paimon's Bargains, ..." location={location}  />
         </div>
@@ -67,12 +67,13 @@ function Button({ href, title, location, colors = "bg-neutral-300 dark:bg-neutra
 }
 
 function Card({ href, src, title, desc, location, colors = "bg-slate-300 dark:bg-slate-800", alsoSite }: { href?: string, src?: string, title: string, desc: string, colors?: string, location: string, alsoSite?: string | boolean }) {
-  const className = `px-6 py-4 m-1.5 h-48 text-left border max-w-full items-start justify-center flex flex-col rounded-2xl ${colors}`
+  const className = `px-6 py-1.5 m-1.5 h-full text-left border max-w-full items-start justify-center flex flex-col rounded-2xl ${colors}`
 
   if (href)
     return <FormattedLink
     href={href}
     className={className}
+    style={{ minHeight: "12rem" }}
     location={location}
   >
       <h3 className="text-3xl font-semibold">{src && <Image src={src} width={24} height={24} alt="Icon"/>} {title}</h3>
@@ -84,7 +85,7 @@ function Card({ href, src, title, desc, location, colors = "bg-slate-300 dark:bg
       </p>
    </FormattedLink>
   else
-    return <div className={className}>
+    return <div className={className} style={{ minHeight: "12rem" }}>
       <h3 className="text-3xl font-semibold">{src && <Image src={src} width={24} height={24} alt="Icon"/>} {title}</h3>
       <p className="mt-2 text-lg">
         {desc}
