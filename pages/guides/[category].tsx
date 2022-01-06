@@ -1,6 +1,5 @@
 import { GetStaticPathsResult, GetStaticPropsContext, GetStaticPropsResult } from "next"
 import Head from "next/head"
-import ReactMarkdown from "react-markdown"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
 import { getGuides, urlify } from "../../utils/data-cache"
@@ -55,7 +54,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 
   return {
     props: {
-      guide: category
+      guide: category // TODO optimize
     },
     revalidate: 60 * 60
   }

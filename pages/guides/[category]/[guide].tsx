@@ -4,8 +4,9 @@ import ReactMarkdown from "react-markdown"
 import FormattedLink from "../../../components/FormattedLink"
 import Main from "../../../components/Main"
 import { getGuides, urlify, yeetBrackets } from "../../../utils/data-cache"
-import { Guide, GuidePage } from "../../../utils/types"
+import { Guide } from "../../../utils/types"
 import YouTube from "react-youtube"
+import styles from "../../style.module.css"
 
 interface Props {
   guide: Guide
@@ -50,21 +51,38 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
         </div>
       </div>
 
-      <ul>
+      <div>
         <ReactMarkdown>{(page.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
         {page.img && <ExternalImg src={page.img} />}
         {page.url && page.url.startsWith("https://youtu.be/") && <div>
-          <h2 className="text-xl font-semibold pt-1">Video:</h2>
-          <YouTube videoId={page.url.replace("https://youtu.be/", "")} containerClassName="w-xl" className="w-xl" />
+          <h2 className="text-xl font-semibold py-1">Video:</h2>
+          <div style={{
+            position: "relative",
+            paddingBottom: "56.25%" /* 16:9 */,
+            paddingTop: 25,
+            height: 0
+          }}>
+            <iframe
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%"
+              }}
+              src={`https://www.youtube.com/embed/${page.url.replace("https://youtu.be/", "")}`}
+              frameBorder="0"
+            />
+          </div>
         </div>
         }
-      </ul>
+      </div>
     </Main>
   )
 }
 function ExternalImg({ src }: { src: string }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <FormattedLink href={src} target="_blank"><img className="p-1 relative max-w-4xl" style={{ maxHeight: "56rem" }} decoding="async" alt="Guide Image" src={src} /></FormattedLink>
+  return <FormattedLink href={src} target="_blank"><img className={`p-1 relative ${styles.autosize}`} decoding="async" alt="Guide Image" src={src} /></FormattedLink>
   // return <div className="p-1 relative max-w-2xl">
   //   <Image alt="Guide Image" src={src} width={825} height={963}/>
   // </div>
@@ -87,7 +105,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 
   return {
     props: {
-      guide,
+      guide, // TODO optimize
       pageNumber
     },
     revalidate: 60 * 60

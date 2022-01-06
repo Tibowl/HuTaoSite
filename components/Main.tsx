@@ -3,7 +3,7 @@ import { Component } from "react"
 export default class Main extends Component<{className?: string, homePage?: true}> {
   render() {
     const classes =
-      (!this.props.homePage ? "max-w-4xl w-full" : "") +
+      (!this.props.homePage ? "max-w-4xl w-full px-1" : "") +
       (this.props.className ?? "")
 
     return (
