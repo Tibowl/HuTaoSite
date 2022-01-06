@@ -19,13 +19,19 @@ export default function CategoryWebpage({ guide, location }: Props & { location:
         <meta property="og:title" content={`${guide.name} | Hu Tao`} />
         <meta property="og:description" content={`View ${guide.name} guides`} />
       </Head>
+      <h2 className="font-semibold">
+        <FormattedLink href="/guides/" location={location} font="semibold" size="lg">
+          Guides
+        </FormattedLink>
+      </h2>
+
       <h1 className="text-3xl font-bold">
         {guide.name}
       </h1>
       <ul>
         {guide.pages.map(p => (<li key={p.name} id={urlify(p.name, false)}>
           <h2 className="text-2xl font-semibold">
-            <FormattedLink href={`${urlify(guide.name, false)}/${urlify(p.name, true)}`} location={location} font="semibold" size="2xl">
+            <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(p.name, true)}`} location={location} font="semibold" size="2xl">
               {p.name}
             </FormattedLink>
           </h2>
