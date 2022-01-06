@@ -25,16 +25,16 @@ export default function CategoryWebpage({ guide, location }: Props & { location:
         </FormattedLink>
       </h2>
 
-      <h1 className="text-3xl font-bold">
+      <h1 className="text-4xl font-bold pb-2">
         {guide.name}
       </h1>
+
       <ul>
-        {guide.pages.map(p => (<li key={p.name} id={urlify(p.name, false)}>
-          <h2 className="text-2xl font-semibold">
-            <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(p.name, true)}`} location={location} font="semibold" size="2xl">
-              {p.name}
-            </FormattedLink>
-          </h2>
+        {guide.pages.map(p => (<li key={p.name}>
+          -{" "}
+          <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(p.name, true)}`} location={location} font="semibold" size="xl">
+            {p.name}
+          </FormattedLink>
         </li>))}
       </ul>
     </Main>

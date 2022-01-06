@@ -18,9 +18,10 @@ export default function Guides(props: Props & { location: string }) {
         <meta property="og:description" content="View currently available guides and routes" />
       </Head>
 
-      <h1 className="text-5xl font-bold">
+      <h1 className="text-5xl font-bold pb-2">
         Guides
       </h1>
+
       <ul>
         {props.guides.map(g => (
           <li key={g}>
