@@ -15,10 +15,14 @@ const cached: Cache = {
         time: 0
     }
 }
-export function urlify(input: string, yeetBrackets?: boolean): string {
-    if (yeetBrackets)
-        input = input.replace(/\(.*\)/g, "")
+export function urlify(input: string, shouldYeetBrackets: boolean): string {
+    if (shouldYeetBrackets)
+        input = yeetBrackets(input)
     return input.toLowerCase().replace(/\(|\)|:/g, "").trim().replace(/ +/g, "-")
+}
+
+export function yeetBrackets(input: string) {
+    return input.replace(/\(.*\)/g, "").replace(/ +:/, ":")
 }
 
 export async function getGuides(): Promise<Guide[] | undefined> {
