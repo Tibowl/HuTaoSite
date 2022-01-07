@@ -136,25 +136,25 @@ export default function Characters(props: Props & { location: string }) {
                         if (char.stars == 4) color = "bg-purple-800"
 
                         return <FormattedLink key={char.name} font="semibold" size="xl" location={props.location} href={`/characters/${urlify(char.name, false)}`} >
-                            <div className="bg-slate-300 dark:bg-slate-800 w-24 m-1 relative text-sm font-bold rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300">
-                                <div className={`${color} rounded-t-xl w-24 h-24`}>
-                                    <Icon char={char} className="rounded-t-xl w-24 m-0 p-0" />
+                            <div className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative text-sm font-bold rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300">
+                                <div className={`${color} rounded-t-xl h-24 sm:h-28 lg:h-32`}>
+                                    <Icon char={char} className="rounded-t-xl m-0 p-0" />
                                     <span className="absolute block p-0.5 top-0 w-full">
                                         <div className="flex flex-col">
-                                            {char.element && char.element.map(e => <div key={e} className="w-6 h-6">
+                                            {char.element && char.element.map(e => <div key={e} className="w-6 md:w-8">
                                                 <Image src={elements[e]} alt={`${e} Element`} />
                                             </div>)}
                                         </div>
                                     </span>
                                     <span className="absolute block p-0.5 top-0 w-full">
                                         <div className="flex flex-col float-right">
-                                            {char.weapon && <div className="w-6 h-6">
+                                            {char.weapon && <div className="w-6 md:w-8">
                                                 <Image src={weapons[char.weapon]} alt={`${char.weapon}`} />
                                             </div>}
                                         </div>
                                     </span>
                                 </div>
-                                <span className="flex justify-center items-center h-10 m-0 p-0 duration-200">
+                                <span className="flex justify-center items-center h-10 md:h-12 m-0 p-0 duration-200 md:text-base">
                                     {char.name}
                                 </span>
                             </div>
