@@ -1,30 +1,39 @@
 import { GetStaticPropsContext, GetStaticPropsResult } from "next"
 import Head from "next/head"
 import Image from "next/image"
+import { Dispatch, SetStateAction, useState } from "react"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
-import { getCharacters, urlify } from "../../utils/data-cache"
-import { Character, CharacterFull } from "../../utils/types"
-
-import Cryo from "../../public/img/element/Cryo.png"
 import Anemo from "../../public/img/element/Anemo.png"
+import Cryo from "../../public/img/element/Cryo.png"
 import Dendro from "../../public/img/element/Dendro.png"
-import Geo from "../../public/img/element/Geo.png"
 import Electro from "../../public/img/element/Electro.png"
+import Geo from "../../public/img/element/Geo.png"
 import Hydro from "../../public/img/element/Hydro.png"
 import Pyro from "../../public/img/element/Pyro.png"
+import Bow from "../../public/img/weapon_types/Bow.png"
+import Catalyst from "../../public/img/weapon_types/Catalyst.png"
+import Claymore from "../../public/img/weapon_types/Claymore.png"
+import Polearm from "../../public/img/weapon_types/Polearm.png"
+import Sword from "../../public/img/weapon_types/Sword.png"
+import { getCharacters, urlify } from "../../utils/data-cache"
+import { Character, CharacterFull, WeaponType } from "../../utils/types"
+
 
 const elements = {
-    Anemo, Cryo, Dendro, Geo, Electro, Hydro, Pyro
+    Pyro, Electro, Cryo, Hydro, Anemo, Geo, Dendro
+}
+const weapons: Record<WeaponType, StaticImageData> = {
+    Polearm, Sword, Claymore, Bow, Catalyst
 }
 
-type Element = "Anemo"
+type ElementType = (keyof (typeof elements))
 
 interface SmallChar {
     name: string
     stars?: number
-    element?: (keyof (typeof elements))[]
-    weapon?: string
+    element?: ElementType[]
+    weapon?: WeaponType
     icon?: string
 }
 
@@ -32,7 +41,16 @@ interface Props {
     characters: SmallChar[]
 }
 
+const defaultElements: ElementType[] = Object.keys(elements) as ElementType[]
+const defaultWeapons: WeaponType[] = Object.keys(weapons) as WeaponType[]
+
 export default function Characters(props: Props & { location: string }) {
+    const [filter, setFilter] = useState(false)
+
+    const [starFilter, setStarFilter] = useState(0)
+    const [elementFilter, setElementFilter] = useState(defaultElements)
+    const [weaponFilter, setWeaponFilter] = useState(defaultWeapons)
+
     return (
         <Main>
             <Head>
@@ -46,21 +64,148 @@ export default function Characters(props: Props & { location: string }) {
                 Characters
             </h1>
 
-            <div className="flex flex-wrap justify-around text-center">
-                {props.characters.map(char => (
-                    <FormattedLink key={char.name} font="semibold" size="xl" location={props.location} href={`/characters/${urlify(char.name, false)}`} >
-                        <div className="bg-slate-600 w-24 h-24 m-2">
-                            <div className="absolute w-6 m-1">
-                                {char.element && char.element.map(e => <Image src={elements[e]} key={e} alt={`${e} Element`}/>)}
-                                <Image alt={char.name} src={char.icon ?? "/img/unknown.png"} className="w-24" width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"}/>
+            {filter ? <div className="bg-slate-100 dark:bg-slate-600 flex flex-col p-2 rounded-2xl font-semibold gap-2">
+                <div className="pb-2">
+                    <div className="flex flex-row font-semibold float-right">
+                        <ExclusiveButton type={filter} value={false} setter={setFilter}>
+                            Hide filters
+                        </ExclusiveButton>
+                    </div>
+                    <div>
+                        Rarity filter
+                    </div>
+                    <div className="flex flex-row gap-2 pt-2">
+                        <ExclusiveButton type={starFilter} value={0} setter={setStarFilter}>
+                            All
+                        </ExclusiveButton>
+                        <ExclusiveButton type={starFilter} value={4} setter={setStarFilter}>
+                            4★ Only
+                        </ExclusiveButton>
+                        <ExclusiveButton type={starFilter} value={5} setter={setStarFilter}>
+                            5★ Only
+                        </ExclusiveButton>
+                    </div>
+                </div>
+
+                <div className="py-1">
+                    <div className="flex flex-row gap-4">
+                        Element filter
+                        <ToggleAllButton type={elementFilter} value={defaultElements} setter={setElementFilter}>
+                            All
+                        </ToggleAllButton>
+                    </div>
+                    <div className="flex flex-row gap-2 pt-2">
+                        {defaultElements.map(e => (
+                            <ToggleButton key={e} type={elementFilter} value={e} setter={setElementFilter}>
+                                {e}
+                            </ToggleButton>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="py-1">
+                    <div className="flex flex-row gap-4 pt-2">
+                        Weapon filter
+                        <ToggleAllButton type={weaponFilter} value={defaultWeapons} setter={setWeaponFilter}>
+                            All
+                        </ToggleAllButton>
+                    </div>
+                    <div className="flex flex-row gap-2 pt-2">
+                        {defaultWeapons.map(e => (
+                            <ToggleButton key={e} type={weaponFilter} value={e} setter={setWeaponFilter}>
+                                {e}
+                            </ToggleButton>
+                        ))}
+                    </div>
+                </div>
+            </div> : <div className="flex flex-row font-semibold justify-end">
+                <ExclusiveButton type={filter} value={true} setter={setFilter}>
+                    Show filters
+                </ExclusiveButton>
+            </div>
+            }
+
+            <div className="flex flex-wrap justify-evenly text-center pt-2">
+                {props.characters
+                    .filter(c => starFilter == 0 || starFilter == c.stars)
+                    .filter(c => elementFilter.some(e => c.element?.includes(e)) || c.element == undefined)
+                    .filter(c => weaponFilter.some(e => c.weapon?.includes(e)) || c.weapon == undefined)
+                    .map(char => {
+                        let color = ""
+                        if (char.stars == 5) color = "bg-amber-700"
+                        if (char.stars == 4) color = "bg-purple-800"
+
+                        return <FormattedLink key={char.name} font="semibold" size="xl" location={props.location} href={`/characters/${urlify(char.name, false)}`} >
+                            <div className="bg-slate-300 dark:bg-slate-800 w-24 m-1 relative text-sm font-bold rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300">
+                                <div className={`${color} rounded-t-xl w-24 h-24`}>
+                                    <Icon char={char} className="rounded-t-xl w-24 m-0 p-0" />
+                                    <span className="absolute block p-0.5 top-0 w-full">
+                                        <div className="flex flex-col">
+                                            {char.element && char.element.map(e => <div key={e} className="w-6 h-6">
+                                                <Image src={elements[e]} alt={`${e} Element`} />
+                                            </div>)}
+                                        </div>
+                                    </span>
+                                    <span className="absolute block p-0.5 top-0 w-full">
+                                        <div className="flex flex-col float-right">
+                                            {char.weapon && <div className="w-6 h-6">
+                                                <Image src={weapons[char.weapon]} alt={`${char.weapon}`} />
+                                            </div>}
+                                        </div>
+                                    </span>
+                                </div>
+                                <span className="flex justify-center items-center h-10 m-0 p-0 duration-200">
+                                    {char.name}
+                                </span>
                             </div>
-                            {char.name}
-                        </div>
-                    </FormattedLink>
-                ))}
+                        </FormattedLink>
+                    })}
             </div>
         </Main>
     )
+}
+
+function ExclusiveButton<T>({ type, value, setter, children }: { type: T, value: T, setter: Dispatch<SetStateAction<T>>, children: any }) {
+    return <div
+        onClick={() => setter(value)}
+        className={`${type == value ? "bg-slate-400 dark:bg-slate-700 outline-slate-400 outline" : "bg-slate-300 dark:bg-slate-800"} px-2 py-0.5 rounded-lg cursor-pointer selection:bg-transparent`}
+    >
+        {children}
+    </div>
+}
+
+function ToggleAllButton<T>({ type, value, setter, children }: { type: T[], value: T[], setter: Dispatch<SetStateAction<T[]>>, children: any }) {
+    const equal = type.length == value.length && type.every(e => value.includes(e))
+
+    return <div
+        onClick={() => equal ? setter([]) : setter(value)}
+        className={`${equal ? "bg-slate-400 dark:bg-slate-700 outline-slate-400 outline" : "bg-slate-300 dark:bg-slate-800"} px-2 py-0.5 rounded-lg cursor-pointer selection:bg-transparent`}
+    >
+        {children}
+    </div>
+}
+
+function ToggleButton<T>({ type, value, setter, children }: { type: T[], value: T, setter: Dispatch<SetStateAction<T[]>>, children: any }) {
+    const has = type.includes(value)
+    return <div
+        onClick={() => {
+            if (has) setter(type.filter(x => x != value))
+            else setter([value, ...type])
+        }}
+        className={`${has ? "bg-slate-400 dark:bg-slate-700 outline-slate-400 outline" : "bg-slate-300 dark:bg-slate-800"
+            } px-2 py-0.5 rounded-lg cursor-pointer selection:bg-transparent`}
+    >
+        {children}
+    </div>
+}
+
+
+function Icon({ char, className }: { char: SmallChar, className?: string }) {
+    let src = char.icon ?? "img/unknown.png"
+
+    if (src.startsWith("img")) src = "/" + src
+
+    return <Image alt={char.name} src={src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} />
 }
 
 function isFullCharacter(char: Character): char is CharacterFull {
@@ -93,7 +238,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
                 .map(c => {
                     const char: SmallChar = { name: c.name }
                     if (c.star) char.stars = c.star
-                    if (c.skills) char.element = c.skills.map(skill => skill.ult?.type).filter(x => x) as Element[]
+                    if (c.skills) char.element = c.skills.map(skill => skill.ult?.type).filter(x => x) as ElementType[]
                     if (c.weaponType) char.weapon = c.weaponType
                     if (c.icon) char.icon = c.icon
                     return char
