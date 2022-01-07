@@ -4,30 +4,10 @@ import Image from "next/image"
 import { Dispatch, SetStateAction, useState } from "react"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
-import Anemo from "../../public/img/element/Anemo.png"
-import Cryo from "../../public/img/element/Cryo.png"
-import Dendro from "../../public/img/element/Dendro.png"
-import Electro from "../../public/img/element/Electro.png"
-import Geo from "../../public/img/element/Geo.png"
-import Hydro from "../../public/img/element/Hydro.png"
-import Pyro from "../../public/img/element/Pyro.png"
-import Bow from "../../public/img/weapon_types/Bow.png"
-import Catalyst from "../../public/img/weapon_types/Catalyst.png"
-import Claymore from "../../public/img/weapon_types/Claymore.png"
-import Polearm from "../../public/img/weapon_types/Polearm.png"
-import Sword from "../../public/img/weapon_types/Sword.png"
 import { getCharacters, urlify } from "../../utils/data-cache"
-import { Character, CharacterFull, WeaponType } from "../../utils/types"
+import { WeaponType } from "../../utils/types"
+import { elements, ElementType, isFullCharacter, weapons } from "../../utils/utils"
 
-
-const elements = {
-    Pyro, Electro, Cryo, Hydro, Anemo, Geo, Dendro
-}
-const weapons: Record<WeaponType, StaticImageData> = {
-    Polearm, Sword, Claymore, Bow, Catalyst
-}
-
-type ElementType = (keyof (typeof elements))
 
 interface SmallChar {
     name: string
@@ -78,11 +58,11 @@ export default function Characters(props: Props & { location: string }) {
                         <ExclusiveButton type={starFilter} value={0} setter={setStarFilter}>
                             All
                         </ExclusiveButton>
-                        <ExclusiveButton type={starFilter} value={4} setter={setStarFilter}>
-                            4★ Only
-                        </ExclusiveButton>
                         <ExclusiveButton type={starFilter} value={5} setter={setStarFilter}>
                             5★ Only
+                        </ExclusiveButton>
+                        <ExclusiveButton type={starFilter} value={4} setter={setStarFilter}>
+                            4★ Only
                         </ExclusiveButton>
                     </div>
                 </div>
@@ -97,6 +77,9 @@ export default function Characters(props: Props & { location: string }) {
                     <div className="flex flex-row flex-wrap gap-2 pt-2">
                         {defaultElements.map(e => (
                             <ToggleButton key={e} type={elementFilter} value={e} setter={setElementFilter}>
+                                <div className="w-4 inline-block pr-1">
+                                    <Image src={elements[e]} alt={`${e} Element`} />
+                                </div>
                                 {e}
                             </ToggleButton>
                         ))}
@@ -113,6 +96,9 @@ export default function Characters(props: Props & { location: string }) {
                     <div className="flex flex-row flex-wrap gap-2 pt-2">
                         {defaultWeapons.map(e => (
                             <ToggleButton key={e} type={weaponFilter} value={e} setter={setWeaponFilter}>
+                                <div className="w-4 inline-block pr-1">
+                                    <Image src={weapons[e]} alt={e} />
+                                </div>
                                 {e}
                             </ToggleButton>
                         ))}
@@ -149,7 +135,7 @@ export default function Characters(props: Props & { location: string }) {
                                     <span className="absolute block p-0.5 top-0 w-full">
                                         <div className="flex flex-col float-right">
                                             {char.weapon && <div className="w-6 md:w-8">
-                                                <Image src={weapons[char.weapon]} alt={`${char.weapon}`} />
+                                                <Image src={weapons[char.weapon]} alt={char.weapon} />
                                             </div>}
                                         </div>
                                     </span>
@@ -206,10 +192,6 @@ function Icon({ char, className }: { char: SmallChar, className?: string }) {
     if (src.startsWith("img")) src = "/" + src
 
     return <Image alt={char.name} src={src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} />
-}
-
-function isFullCharacter(char: Character): char is CharacterFull {
-    return typeof (char as CharacterFull).releasedOn == "string"
 }
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {

@@ -1,13 +1,17 @@
-import { Character, Guide } from "./types"
+import { Character, CurveEnum, Guide } from "./types"
 
 const baseURL = "https://raw.githubusercontent.com/Tibowl/HuTao/master/src/data"
 
 type Guides = Guide[]
 type Characters = Record<string, Character>
+type CharacterCurves = Record<CurveEnum, number[]>
+type CharacterLevels = number[]
 
 type Cache = {
     guides: Cacher<Guides>
-    character: Cacher<Characters>
+    characters: Cacher<Characters>
+    characterCurves: Cacher<CharacterCurves>
+    characterLevels: Cacher<CharacterLevels>
 }
 
 interface Cacher<T> {
@@ -19,9 +23,15 @@ const cached: Cache = {
     guides: {
         time: 0
     },
-     character: {
-         time: 0
-     }
+    characters: {
+        time: 0
+    },
+    characterCurves: {
+        time: 0
+    },
+    characterLevels: {
+        time: 0
+    }
 }
 export function urlify(input: string, shouldYeetBrackets: boolean): string {
     if (shouldYeetBrackets)
@@ -34,7 +44,9 @@ export function yeetBrackets(input: string) {
 }
 
 export const getGuides: (() => Promise<Guides | undefined>) = createGetCacheable("guides")
-export const getCharacters: (() => Promise<Characters | undefined>) = createGetCacheable("character", "gamedata/characters")
+export const getCharacters: (() => Promise<Characters | undefined>) = createGetCacheable("characters", "gamedata/characters")
+export const getCharacterCurves: (() => Promise<CharacterCurves | undefined>) = createGetCacheable("characterCurves", "gamedata/character_curves")
+export const getCharacterLevels: (() => Promise<CharacterLevels | undefined>) = createGetCacheable("characterLevels", "gamedata/character_levels")
 
 
 function createGetCacheable(name: keyof Cache, path: string = name): () => Promise<any> {
