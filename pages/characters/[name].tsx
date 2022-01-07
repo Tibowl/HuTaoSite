@@ -91,20 +91,20 @@ function TalentCosts({ skills }: { skills: Skills[] }) {
 
   const books = talents
     .flatMap(s => [
-      s?.costs?.mapping.Book,
-      s?.costs?.mapping.Book1,
-      s?.costs?.mapping.Book2,
-      s?.costs?.mapping.Book3,
+      s?.costs?.mapping?.Book,
+      s?.costs?.mapping?.Book1,
+      s?.costs?.mapping?.Book2,
+      s?.costs?.mapping?.Book3,
     ])
     .filter((x, i, a) => x && a.indexOf(x) == i)
     .map(x => `Guide to ${x}`)
 
   const mats = talents
-    .map(s => s?.costs?.mapping.BossMat)
+    .map(s => s?.costs?.mapping?.BossMat)
     .filter((x, i, a) => x && a.indexOf(x) == i)
 
   const drops = talents
-    .map(s => s?.costs?.mapping.EnemyDropTier3)
+    .map(s => s?.costs?.mapping?.EnemyDropTier3)
     .filter((x, i, a) => x && a.indexOf(x) == i)
 
   const all = [...books, ...mats, ...drops]
