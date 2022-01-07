@@ -74,7 +74,7 @@ export default function Characters(props: Props & { location: string }) {
                     <div>
                         Rarity filter
                     </div>
-                    <div className="flex flex-row gap-2 pt-2">
+                    <div className="flex flex-row flex-wrap gap-2 pt-2">
                         <ExclusiveButton type={starFilter} value={0} setter={setStarFilter}>
                             All
                         </ExclusiveButton>
@@ -94,7 +94,7 @@ export default function Characters(props: Props & { location: string }) {
                             All
                         </ToggleAllButton>
                     </div>
-                    <div className="flex flex-row gap-2 pt-2">
+                    <div className="flex flex-row flex-wrap gap-2 pt-2">
                         {defaultElements.map(e => (
                             <ToggleButton key={e} type={elementFilter} value={e} setter={setElementFilter}>
                                 {e}
@@ -110,7 +110,7 @@ export default function Characters(props: Props & { location: string }) {
                             All
                         </ToggleAllButton>
                     </div>
-                    <div className="flex flex-row gap-2 pt-2">
+                    <div className="flex flex-row flex-wrap gap-2 pt-2">
                         {defaultWeapons.map(e => (
                             <ToggleButton key={e} type={weaponFilter} value={e} setter={setWeaponFilter}>
                                 {e}
