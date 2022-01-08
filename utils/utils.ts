@@ -10,7 +10,7 @@ import Catalyst from "../public/img/weapon_types/Catalyst.png"
 import Claymore from "../public/img/weapon_types/Claymore.png"
 import Polearm from "../public/img/weapon_types/Polearm.png"
 import Sword from "../public/img/weapon_types/Sword.png"
-import { Character, CharacterFull, CurveEnum, WeaponType } from "./types"
+import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, WeaponType } from "./types"
 
 export const elements = {
     Pyro, Electro, Cryo, Hydro, Anemo, Geo, Dendro
@@ -80,4 +80,20 @@ export function stat(name: string, value: number): string {
             console.error(`Unknown stat '${name}', defaulting to formatting by value`)
             return value < 2 ? ((value * 100).toFixed(1) + "%") : value.toFixed(0)
     }
+}
+
+export function image(type: string, name: string, ext="png"): string {
+    return `/img/${type}/${name.replace(/[:\-,'"]/g, "").replace(/ +/g, "_")}.${ext}`
+}
+
+export function getCostsFromTemplate(costTemplate: CostTemplate, costTemplates: Record<string, Cost[]>): Cost[] {
+    const template = costTemplates[costTemplate.template]
+
+    return template.map(c => ({
+        mora: c.mora,
+        items: c.items.map(i => ({
+            count: i.count,
+            name:  i.name.replace(/<(.*?)>/g, (_, x) => costTemplate.mapping[x])
+        }))
+    }))
 }

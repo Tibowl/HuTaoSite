@@ -17,3 +17,14 @@
     padding-top: 25;
     height: 0;
 }
+
+.table tr:nth-child(odd) {
+    background-color: rgba(71, 85, 105, 0.7);
+}
+.table td {
+    padding-right: 0.5rem;
+    padding-left: 0.25rem;
+}
+.stattable tbody td {
+    text-align: right;
+}

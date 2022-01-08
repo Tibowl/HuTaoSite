@@ -127,14 +127,14 @@ export default function Characters(props: Props & { location: string }) {
                 <span className="absolute block p-0.5 top-0 w-full">
                   <div className="flex flex-col">
                     {char.element && char.element.map(e => <div key={e} className="w-6 md:w-8">
-                      <Image src={elements[e]} alt={`${e} Element`} />
+                      <Image src={elements[e]} alt={`${e} Element`} loading="eager" />
                     </div>)}
                   </div>
                 </span>
                 <span className="absolute block p-0.5 top-0 w-full">
                   <div className="flex flex-col float-right">
                     {char.weapon && <div className="w-6 md:w-8">
-                      <Image src={weapons[char.weapon]} alt={char.weapon} />
+                      <Image src={weapons[char.weapon]} alt={char.weapon} loading="eager" />
                     </div>}
                   </div>
                 </span>
@@ -189,7 +189,7 @@ function Icon({ char, className }: { char: SmallChar, className?: string }) {
 
   if (src.startsWith("img")) src = "/" + src
 
-  return <Image alt={char.name} src={src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} />
+  return <Image alt={char.name} src={src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} loading="eager" />
 }
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
