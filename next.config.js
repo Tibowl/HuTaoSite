@@ -2,6 +2,8 @@
 module.exports = {
   reactStrictMode: true,
   images: {
-    domains: ["cdn.discordapp.com", "discord.com", "i.imgur.com"]
-  }
+    domains: ["cdn.discordapp.com", "discord.com", "i.imgur.com"],
+    minimumCacheTTL: 3600
+  },
+  poweredByHeader: false
 }

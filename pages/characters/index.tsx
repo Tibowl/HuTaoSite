@@ -185,9 +185,11 @@ function ToggleButton<T>({ type, value, setter, children }: { type: T[], value: 
 
 
 function Icon({ char, className }: { char: SmallChar, className?: string }) {
-  let src = char.icon ?? "img/unknown.png"
+  const src = char.icon ?? "img/unknown.png"
 
-  if (src.startsWith("img")) src = "/" + src
+  if (src.startsWith("img"))
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img alt={char.name} src={"/" + src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} loading="eager" />
 
   return <Image alt={char.name} src={src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} loading="eager" />
 }

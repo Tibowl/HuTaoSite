@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { GetStaticPathsResult, GetStaticPropsContext, GetStaticPropsResult } from "next"
 import Head from "next/head"
 import Image from "next/image"
@@ -91,7 +92,7 @@ function AscensionCosts({ costs }: { costs: CostTemplate }) {
   return <div className="flex flex-row items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Ascension materials:</div>
     {ascensionCosts.map(e => <div className="inline-block pr-1 w-6 h-6 md:h-8 md:w-8" key={e}>
-      <Image src={image("material", e)} alt={e} width={256} height={256} />
+      <img src={image("material", e)} alt={e} width={256} height={256} />
     </div>)}
   </div>
 }
@@ -119,7 +120,7 @@ function FullAscensionCosts({ template, costTemplates }: { template: CostTemplat
             <div className="flex flex-row align-middle items-center">
             <div>{count}&times;</div>
             <div className="pr-1 w-6 h-6 md:h-8 md:w-8">
-              <Image src={image("material", name)} alt={name} width={256} height={256} />
+              <img src={image("material", name)} alt={name} width={256} height={256} />
             </div>
             <div>{name}</div></div>}
           </td>)}
@@ -156,7 +157,7 @@ function TalentCosts({ skills }: { skills: Skills[] }) {
   return <div className="flex flex-row items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Talent materials:</div>
     {all.map(e => <div className="inline-block pr-1 w-6 h-6 md:h-8 md:w-8" key={e}>
-      <Image src={image("material", e)} alt={e} width={256} height={256} />
+      <img src={image("material", e)} alt={e} width={256} height={256} />
     </div>)}
   </div>
 }
