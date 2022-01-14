@@ -106,7 +106,7 @@ function FullAscensionCosts({ template, costTemplates }: { template: CostTemplat
 
   return <>
     <h3 className="text-lg font-bold pt-1" id="ascensions">Ascensions:</h3>
-    <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"}`} onClick={() => setExpanded(true)}>
+    <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
       <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
         <td>Asc.</td>
         <td>Mora</td>
