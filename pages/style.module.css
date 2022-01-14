@@ -19,7 +19,12 @@
 }
 
 .table tr:nth-child(odd) {
-    background-color: rgba(71, 85, 105, 0.7);
+    background-color: rgba(193, 209, 233, 0.7);
+}
+@media (prefers-color-scheme: dark) {
+    .table tr:nth-child(odd) {
+        background-color: rgba(71, 85, 105, 0.7);
+    }
 }
 .table td {
     padding-right: 0.5rem;
