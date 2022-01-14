@@ -4,8 +4,9 @@ import ReactMarkdown from "react-markdown"
 import FormattedLink from "../../../components/FormattedLink"
 import Main from "../../../components/Main"
 import YouTube from "../../../components/YouTube"
-import { getGuides, urlify, yeetBrackets } from "../../../utils/data-cache"
+import { getGuides } from "../../../utils/data-cache"
 import { Guide } from "../../../utils/types"
+import { removeBrackets, urlify } from "../../../utils/utils"
 import styles from "../../style.module.css"
 
 interface Props {
@@ -39,14 +40,14 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
       <div className="flex justify-between text-base">
         <div className="px-1">
           {prevPage && <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(prevPage.name, true)}`} location={location} font="bold" size="lg">
-            &larr; {yeetBrackets(prevPage.name)}
+            &larr; {removeBrackets(prevPage.name)}
           </FormattedLink>}
         </div>
 
         <div>
           {nextPage &&
             <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(nextPage.name, true)}`} location={location} font="bold" size="lg">
-              {yeetBrackets(nextPage.name)} &rarr;
+              {removeBrackets(nextPage.name)} &rarr;
             </FormattedLink>}
         </div>
       </div>

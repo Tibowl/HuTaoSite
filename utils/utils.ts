@@ -10,7 +10,8 @@ import Catalyst from "../public/img/weapon_types/Catalyst.png"
 import Claymore from "../public/img/weapon_types/Claymore.png"
 import Polearm from "../public/img/weapon_types/Polearm.png"
 import Sword from "../public/img/weapon_types/Sword.png"
-import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, WeaponType } from "./types"
+import { getGuides } from "./data-cache"
+import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, Guide, GuidePage, WeaponType } from "./types"
 
 export const elements = {
     Pyro, Electro, Cryo, Hydro, Anemo, Geo, Dendro
@@ -96,4 +97,27 @@ export function getCostsFromTemplate(costTemplate: CostTemplate, costTemplates: 
             name:  i.name.replace(/<(.*?)>/g, (_, x) => costTemplate.mapping[x])
         }))
     }))
+}
+
+export async function getGuidesFor(type: "enemy" | "character" | "material", name: string): Promise<{ guide: Guide, page: GuidePage }[]> {
+    return (await getGuides())?.flatMap(guide => guide.pages
+            .filter(page => page.links?.[type]?.includes(name))
+            .map(page => ({
+                guide, page
+            }))
+        ) ?? []
+}
+
+export function getLinkToGuide(guide: Guide, page: GuidePage): string {
+    return `/guides/${urlify(guide.name, false)}/${urlify(page.name, true)}`
+}
+
+export function urlify(input: string, shouldYeetBrackets: boolean): string {
+    if (shouldYeetBrackets)
+        input = removeBrackets(input)
+    return input.toLowerCase().replace(/\(|\)|:/g, "").trim().replace(/ +/g, "-")
+}
+
+export function removeBrackets(input: string) {
+    return input.replace(/\(.*\)/g, "").replace(/ +:/, ":")
 }

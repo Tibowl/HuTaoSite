@@ -2,8 +2,9 @@ import { GetStaticPathsResult, GetStaticPropsContext, GetStaticPropsResult } fro
 import Head from "next/head"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
-import { getGuides, urlify } from "../../utils/data-cache"
+import { getGuides } from "../../utils/data-cache"
 import { Guide } from "../../utils/types"
+import { urlify } from "../../utils/utils"
 
 interface Props {
   guide: Guide

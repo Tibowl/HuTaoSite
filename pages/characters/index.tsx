@@ -4,9 +4,9 @@ import Image from "next/image"
 import { Dispatch, SetStateAction, useState } from "react"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
-import { getCharacters, urlify } from "../../utils/data-cache"
+import { getCharacters } from "../../utils/data-cache"
 import { WeaponType } from "../../utils/types"
-import { elements, ElementType, isFullCharacter, weapons } from "../../utils/utils"
+import { elements, ElementType, isFullCharacter, urlify, weapons } from "../../utils/utils"
 
 
 interface SmallChar {

@@ -26,7 +26,7 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
 
     <div className="w-full">
       <NavBar location={router.asPath}/>
-      <div className="p-4 flex flex-col w-full flex-1 px-1 md:px-20 items-center justify-center">
+      <div className="p-4 flex flex-col w-full flex-1 px-1 lg:px-20 items-center justify-center">
         <Component {...pageProps} location={router.asPath}/>
       </div>
     </div>

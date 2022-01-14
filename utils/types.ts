@@ -20,20 +20,6 @@ export interface Reminder {
 }
 
 
-// Guides
-export interface Guide {
-  name:  string
-  pages: GuidePage[]
-}
-export interface GuidePage {
-  name:    string
-  img?:    string
-  desc?:   string
-  url?:    string
-  credits: string
-}
-
-
 // Character
 export type Character = CharacterFull | CharacterPlaceholder
 export interface CharacterPlaceholder {
@@ -193,4 +179,23 @@ export enum WeaponType {
     Claymore = "Claymore",
     Polearm = "Polearm",
     Sword = "Sword",
+}
+
+
+// Guides
+export interface Guide {
+    name:  string
+    pages: GuidePage[]
+}
+export interface GuidePage {
+    name:    string
+    img?:    string
+    desc?:   string
+    url?:    string
+    credits: string
+    links?:  {
+        material?:  string[]
+        enemy?:     string[]
+        character?: string[]
+    }
 }

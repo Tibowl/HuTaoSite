@@ -6,18 +6,19 @@ import { useState } from "react"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
 import YouTube from "../../components/YouTube"
-import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates, urlify } from "../../utils/data-cache"
-import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, image, isFullCharacter, stat, weapons } from "../../utils/utils"
+import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates } from "../../utils/data-cache"
 import { Character, CharacterFull, CostTemplate, CurveEnum, Meta, Skills } from "../../utils/types"
+import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, image, isFullCharacter, stat, urlify, weapons } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
   char: Character,
   characterCurves: CharacterCurves | null
   costTemplates: CostTemplates | null
+  guides?: string[][]
 }
 
-export default function CharacterWebpage({ char, location, characterCurves, costTemplates }: Props & { location: string }) {
+export default function CharacterWebpage({ char, location, characterCurves, costTemplates, guides }: Props & { location: string }) {
   const charElems = char.skills?.map(skill => skill.ult?.type).filter(x => x) as ElementType[] ?? [char.meta.element]
   return (
     <Main>
@@ -39,9 +40,10 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
 
       <div className="float-right border-2 border-slate-500 dark:bg-slate-600 bg-slate-200 m-2 px-2">
         Table of Contents
-        {isFullCharacter(char) && characterCurves && <TOC href="#stats" title="Stats / Ascensions" />}
-        {char.meta && <TOC href="#meta" title="Meta" />}
+        {isFullCharacter(char) && characterCurves && <TOC href="#stats" title="Stats" />}
+        {char.ascensionCosts && costTemplates && <TOC href="#ascensions" title="Ascensions" />}
         {char.media.videos && <TOC href="#videos" title={Object.keys(char.media.videos).length > 1 ? "Videos" : "Video"} />}
+        {char.meta && <TOC href="#meta" title="Meta" />}
       </div>
 
       <div id="description">
@@ -67,10 +69,11 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
 
         {char.ascensionCosts && <AscensionCosts costs={char.ascensionCosts} />}
         {char.skills && <TalentCosts skills={char.skills} />}
+        {guides && guides.length > 0 && <Guides guides={guides} />}
         {isFullCharacter(char) && characterCurves && <Stats char={char} curves={characterCurves} />}
         {char.ascensionCosts && costTemplates && <FullAscensionCosts template={char.ascensionCosts} costTemplates={costTemplates} />}
-        {char.meta && <Meta meta={char.meta} />}
         {char.media.videos && <Videos videos={char.media.videos} />}
+        {char.meta && <Meta meta={char.meta} />}
       </div>
     </Main>
   )
@@ -98,33 +101,43 @@ function AscensionCosts({ costs }: { costs: CostTemplate }) {
 }
 
 function FullAscensionCosts({ template, costTemplates }: { template: CostTemplate, costTemplates: CostTemplates }) {
+  const [expanded, setExpanded] = useState(false)
   const costs = getCostsFromTemplate(template, costTemplates)
 
   return <>
-    <table className={`table-auto w-full ${styles.table} mb-2`}>
+    <h3 className="text-lg font-bold pt-1" id="ascensions">Ascensions:</h3>
+    <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"}`} onClick={() => setExpanded(true)}>
       <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
         <td>Asc.</td>
         <td>Mora</td>
         <td>Items</td>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
-        {costs.slice(1).map(({ mora, items }, ind) => {
-          let newItems = items
-        if (ind == 0 && template.mapping.BossMat)
-          newItems = [items[0], { name: "", count: 0 }, ...items.slice(1)]
-        return <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={ind}>
-          <td>A{ind + 1}</td>
-          <td className="text-right">{mora}</td>
-          {newItems.map(({ count, name }) => <td key={name}>
-            {count > 0 &&
-            <div className="flex flex-row align-middle items-center">
-            <div>{count}&times;</div>
-            <div className="pr-1 w-6 h-6 md:h-8 md:w-8">
-              <img src={image("material", name)} alt={name} width={256} height={256} />
-            </div>
-            <div>{name}</div></div>}
-          </td>)}
-        </tr>})}
+        {costs
+          .slice(1)
+          .map(({ mora, items }, ind) => {
+            let newItems = items
+            if (ind == 0 && template.mapping.BossMat)
+              newItems = [items[0], { name: "", count: 0 }, ...items.slice(1)]
+            return <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={ind}>
+              <td>A{ind + 1}</td>
+              <td className="text-right">{mora}</td>
+              {newItems.map(({ count, name }) => <td key={name}>
+                {count > 0 &&
+                  <div className="flex flex-row align-middle items-center">
+                    <div>{count}&times;</div>
+                    <div className="pr-1 w-8 h-8 sm:h-6 sm:w-6 md:h-8 md:w-8">
+                      <img src={image("material", name)} alt={name} width={256} height={256} />
+                    </div>
+                    <div className="md:text-sm lg:text-base sm:not-sr-only sr-only text-xs">{name}</div></div>}
+              </td>)}
+            </tr>
+          })
+          .filter((_, i, arr) => expanded ? true : (i == arr.length - 1))}
+        {!expanded && <tr className="pr-1 cursor-pointer text-blue-700 dark:text-blue-300 hover:text-blue-400 dark:hover:text-blue-400 no-underline transition-all duration-200 font-semibold">
+          <td colSpan={costs[costs.length - 1].items.length + 2} style={({ textAlign: "center" })}>Click to expand...</td>
+        </tr>
+        }
       </tbody>
     </table>
   </>
@@ -163,6 +176,8 @@ function TalentCosts({ skills }: { skills: Skills[] }) {
 }
 
 function Stats({ char, curves }: { char: CharacterFull, curves: Record<CurveEnum, number[]> }) {
+  const [expanded, setExpanded] = useState(false)
+
   const maxAscension = char.ascensions[char.ascensions.length - 1]
 
   const levels: { a: number, lv: number }[] = []
@@ -176,19 +191,24 @@ function Stats({ char, curves }: { char: CharacterFull, curves: Record<CurveEnum
   const max = getCharStatsAt(char, maxAscension.maxLevel, maxAscension.level, curves)
 
   return <>
-    <h3 className="text-lg font-bold pt-1" id="stats">Stats / Ascensions:</h3>
-    <table className={`table-auto w-full ${styles.table}  ${styles.stattable} mb-2`}>
+    <h3 className="text-lg font-bold pt-1" id="stats">Stats:</h3>
+    <table className={`table-auto w-full ${styles.table} ${styles.stattable} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
       <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
         <td>Asc.</td>
         <td>Lv.</td>
         {Object.keys(max).map((name) => <td key={name}>{name}</td>)}
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
-        {levels.map(({ a, lv }) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={a + "," + lv}>
-          <td>A{a}</td>
-          <td>{lv}</td>
-          {Object.entries(getCharStatsAt(char, lv, a, curves)).map(([name, value]) => <td key={name}>{stat(name, value)}</td>)}
-        </tr>)}
+        {levels
+          .filter((r) => expanded ? true : (r.a == 0 && r.lv == 1) || (r.a == maxAscension.level && r.lv == maxAscension.maxLevel))
+          .map(({ a, lv }) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={a + "," + lv}>
+            <td>A{a}</td>
+            <td>{lv}</td>
+            {Object.entries(getCharStatsAt(char, lv, a, curves)).map(([name, value]) => <td key={name}>{stat(name, value)}</td>)}
+          </tr>)}
+        {!expanded && <tr className="pr-1 cursor-pointer text-blue-700 dark:text-blue-300 hover:text-blue-400 dark:hover:text-blue-400 no-underline transition-all duration-200 font-semibold">
+          <td colSpan={Object.keys(getCharStatsAt(char, 1, 1, curves)).length + 2} style={({ textAlign: "center" })}>Click to expand...</td>
+        </tr>}
       </tbody>
     </table>
   </>
@@ -242,6 +262,15 @@ function Video({ name, link }: { name: string, link: string }) {
   </div>
 }
 
+function Guides({ guides }: { guides: string[][] }) {
+  const multiple = guides.length > 1
+
+  return <>
+    <h3 className="text-lg font-bold pt-1" id="guides">{multiple ? "Guides" : "Guide"}:</h3>
+    {guides.map(([name, link]) => <div key={name}><FormattedLink href={link} size="base">{name}</FormattedLink></div>)}
+  </>
+}
+
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
   const charName = context.params?.name
   const data = await getCharacters()
@@ -269,11 +298,14 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 
   }
 
+  const guides = (await getGuidesFor("character", char.name))?.map(({ guide, page }) => [page.name, getLinkToGuide(guide, page)])
+
   return {
     props: {
       char,
       characterCurves,
-      costTemplates
+      costTemplates,
+      guides
     },
     revalidate: 60 * 60
   }
