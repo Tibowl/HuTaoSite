@@ -5,6 +5,7 @@ import "tailwindcss/tailwind.css"
 import Footer from "../components/Footer"
 import NavBar from "../components/NavBar"
 import * as gtag from "../utils/gtag"
+import "../public/global.css"
 
 export default function MyApp({ Component, pageProps, router }: AppProps) {
   useEffect(() => {

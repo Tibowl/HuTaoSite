@@ -1,0 +1,30 @@
+blockquote {
+    padding-left: 1.25rem/* 20px */;
+    margin-bottom: 0.5rem/* 8px */;
+    border-left-width: 2px;
+}
+
+a {
+    --tw-text-opacity: 1;
+    color: rgb(30 64 175 / var(--tw-text-opacity));
+    text-decoration-line: none;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+    font-weight: 600;
+}
+a:hover {
+    --tw-text-opacity: 1;
+    color: rgb(59 130 246 / var(--tw-text-opacity));
+}
+
+@media (prefers-color-scheme: dark) {
+    a {
+        --tw-text-opacity: 1;
+        color: rgb(219 234 254 / var(--tw-text-opacity));
+    }
+    a:hover {
+        --tw-text-opacity: 1;
+        color: rgb(96 165 250 / var(--tw-text-opacity));
+    }
+}
