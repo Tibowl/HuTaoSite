@@ -37,6 +37,16 @@ module.exports = {
           }
         ],
       },
+      {
+        source: "/:all*",
+        locale: false,
+        headers: [
+          {
+            key: "Age",
+            value: "0",
+          }
+        ],
+      },
     ]
   },
 }
