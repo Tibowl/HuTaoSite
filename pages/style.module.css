@@ -18,11 +18,11 @@
     height: 0;
 }
 
-.table tr:nth-child(odd) {
-    background-color: rgba(193, 209, 233, 0.7);
+.table tr:nth-child(even) {
+    background-color: rgba(208, 221, 240, 0.6);
 }
 @media (prefers-color-scheme: dark) {
-    .table tr:nth-child(odd) {
+    .table tr:nth-child(even) {
         background-color: rgba(71, 85, 105, 0.7);
     }
 }
