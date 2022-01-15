@@ -50,12 +50,12 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         Table of Contents
         {isFullCharacter(char) && characterCurves && <TOC href="#stats" title="Stats" />}
         {char.ascensionCosts && costTemplates && <TOC href="#ascensions" title="Ascensions" />}
-        {char.media.videos && <TOC href="#videos" title={Object.keys(char.media.videos).length > 1 ? "Videos" : "Video"} />}
         {char.meta && <TOC href="#meta" title="Meta" />}
+        {char.media.videos && <TOC href="#videos" title={Object.keys(char.media.videos).length > 1 ? "Videos" : "Video"} />}
         {char.skills && char.skills.map((s, i) => (<>
           {multiskill && <div>{s.ult?.type ?? `Skillset #${i}`}</div>}
           {s.talents && <TOC depth={multiskill ? 1 : 0} href={`#talents${i > 0 ? `-${i}` : ""}`} title="Talents" />}
-          {s.passive && <TOC depth={multiskill ? 1 : 0} href={`#passive${i > 0 ? `-${i}` : ""}`} title="Passive" />}
+          {s.passive && <TOC depth={multiskill ? 1 : 0} href={`#passive${i > 0 ? `-${i}` : ""}`} title="Passives" />}
           {s.constellations && <TOC depth={multiskill ? 1 : 0} href={`#const${i > 0 ? `-${i}` : ""}`} title="Constellations" />}
         </>))}
       </div>
@@ -96,11 +96,11 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         {char.ascensionCosts && <AscensionCosts costs={char.ascensionCosts} />}
         {char.skills && <TalentCosts skills={char.skills} />}
         {guides && guides.length > 0 && <Guides guides={guides} />}
-        <div className="clear-both"/>
+        <div className="clear-both" />
         {isFullCharacter(char) && characterCurves && <Stats char={char} curves={characterCurves} />}
         {char.ascensionCosts && costTemplates && <FullAscensionCosts template={char.ascensionCosts} costTemplates={costTemplates} />}
-        {char.media.videos && <Videos videos={char.media.videos} />}
         {char.meta && <Meta meta={char.meta} />}
+        {char.media.videos && <Videos videos={char.media.videos} />}
         {char.skills && costTemplates && <CharacterSkills skills={char.skills} costTemplates={costTemplates} />}
       </div>
     </Main>
@@ -243,9 +243,9 @@ function Stats({ char, curves }: { char: CharacterFull, curves: Record<CurveEnum
 }
 
 function Meta({ meta }: { meta: Meta }) {
-  return <>
+  return <div>
     <h3 className="text-lg font-bold pt-1" id="meta">Meta:</h3>
-    <table className={`table-auto ${styles.table} mb-2`}>
+    <table className={`table-auto ${styles.table} mb-2 w-full`}>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {meta.title && <tr><td>Title</td><td>{meta.title}</td></tr>}
         {meta.birthDay && meta.birthMonth && <tr><td>Title</td><td>{
@@ -269,16 +269,16 @@ function Meta({ meta }: { meta: Meta }) {
         {meta.cvKorean && <tr><td>Korean voice actor</td><td>{meta.cvKorean}</td></tr>}
       </tbody>
     </table>
-  </>
+  </div>
 }
 
 function Videos({ videos }: { videos: Record<string, string> }) {
   const multiple = Object.keys(videos).length > 1
 
-  return <>
+  return <div>
     <h3 className="text-lg font-bold pt-1" id="videos">{multiple ? "Videos" : "Video"}:</h3>
     {Object.entries(videos).map(([name, link]) => <Video key={name} name={name} link={link} />)}
-  </>
+  </div>
 }
 
 function Video({ name, link }: { name: string, link: string }) {
@@ -302,33 +302,40 @@ function Guides({ guides }: { guides: string[][] }) {
 function CharacterSkills({ skills, costTemplates }: { skills: Skills[], costTemplates: CostTemplates }) {
   return <>
     {skills.map((skill, i) => {
-      return <>
+      return <div key={i}>
         {(skill.talents || skill.ult) && <>
           <h3 className="text-lg font-bold pt-1" id={`talents${i > 0 ? `-${i}` : ""}`}>Talents:</h3>
           {[...(skill.talents ?? []), skill.ult].map(s => s && <Talent costTemplates={costTemplates} talent={s} key={s.name} />)}
         </>}
         {skill.passive && <>
-          <h3 className="text-lg font-bold pt-1" id={`passive${i > 0 ? `-${i}` : ""}`}>Passive:</h3>
+          <h3 className="text-lg font-bold pt-1" id={`passive${i > 0 ? `-${i}` : ""}`}>Passives:</h3>
           {skill.passive.map(p => p && <Passive passive={p} key={p.name} />)}
         </>}
         {skill.constellations && <>
           <h3 className="text-lg font-bold pt-1" id={`const${i > 0 ? `-${i}` : ""}`}>Constellations:</h3>
           {skill.constellations.map(c => c && <Constellation c={c} key={c.name} />)}
         </>}
-      </>
+      </div>
     })}
   </>
 }
 
 function Talent({ talent, costTemplates }: { talent: Skill, costTemplates: CostTemplates }) {
-
-  return <div>
-    <div className="font-semibold">{talent.name}</div>
-    {talent.icon && <Icon icon={talent} className="rounded-xl w-12 inline-block" />}
-    <ReactMarkdown>{(talent.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+  return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
+    <div className="flex flex-row items-center">
+      {talent.icon && <Icon icon={talent} className="rounded-xl w-16 h-16 mr-2" />}
+      <div className="font-bold">{talent.name}</div>
+    </div>
+    <div className="flex flex-wrap md:flex-nowrap md:flex-row pb-1">
+      <div className={(talent.video || talent.videomp4) ? "max-w-2xl pl-1" : "pl-1"}>
+        <ReactMarkdown>{(talent.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+      </div>
+      {(talent.video || talent.videomp4) && <div className="p-2 flex flex-col justify-around items-center w-full">
+        {talent.videomp4 ? <video src={talent.videomp4} autoPlay loop className="w-full" /> : <img src={talent.video} alt="Talent video" className="w-full" />}
+      </div>}
+    </div>
     {talent.talentTable && <TalentTable table={talent.talentTable} />}
     {talent.costs && !Array.isArray(talent.costs) && <TalentCost template={talent.costs} costTemplates={costTemplates} />}
-    {talent.video}
   </div>
 }
 
@@ -337,7 +344,9 @@ function TalentCost({ template, costTemplates }: { template: CostTemplate, costT
   const maxCostWidth = costs?.reduce((p, c) => Math.max(p, c.items.length), 1) ?? 1
   const [expanded, setExpanded] = useState(false)
 
-  return <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
+  return <>
+  <div className="font-bold">Talent costs:</div>
+  <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
     <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
       <td>Lv.</td>
       <td>Mora</td>
@@ -366,6 +375,7 @@ function TalentCost({ template, costTemplates }: { template: CostTemplate, costT
       </tr>}
     </tbody>
   </table>
+  </>
 }
 
 function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
@@ -390,7 +400,8 @@ function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
     return j
   }
 
-  return <div className="overflow-x-auto">
+  return <div className="overflow-x-auto pt-1">
+    <div className="font-bold">Talent values:</div>
     <table className={`${maxLevel > 3 ? "table-auto" : "table-fixed"} w-full ${styles.table} mb-2 sm:text-sm md:text-base text-xs`}>
       <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
         <td>Name</td>
@@ -408,19 +419,29 @@ function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
 }
 
 function Passive({ passive }: { passive: Passive }) {
-  return <div>
-    <div className="font-semibold">{passive.name}</div>
-    {passive.icon && <Icon icon={passive} className="rounded-xl w-12 inline-block" />}
-    <ReactMarkdown>{(passive.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
-    {passive.minAscension != undefined && <div>Unlocks at ascension {passive.minAscension}</div>}
+  return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
+    <div className="flex flex-row items-center">
+      {passive.icon && <Icon icon={passive} className="rounded-xl w-16 h-16 mr-2" />}
+      <div className="font-bold">{passive.name}</div>
+    </div>
+    <div className="flex flex-col pb-1">
+      <ReactMarkdown>{(passive.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+      {passive.minAscension != undefined && <div className="italic font-semibold pt-2">
+        {passive.minAscension == 0 ? "Unlocked by default" : `Unlocks at ascension ${passive.minAscension}`}
+      </div>}
+    </div>
   </div>
 }
 
 function Constellation({ c }: { c: Constellation }) {
-  return <div>
-    <div className="font-semibold">{c.name}</div>
-    {c.icon && <Icon icon={c} className="rounded-xl w-12 inline-block" />}
-    <ReactMarkdown>{(c.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+  return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
+    <div className="flex flex-row items-center">
+      {c.icon && <Icon icon={c} className="rounded-xl w-16 h-16 mr-2" />}
+      <div className="font-bold">{c.name}</div>
+    </div>
+    <div className="flex flex-col pb-1">
+      <ReactMarkdown>{(c.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+    </div>
   </div>
 }
 

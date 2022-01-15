@@ -3,7 +3,9 @@ blockquote {
     margin-bottom: 0.5rem/* 8px */;
     border-left-width: 2px;
 }
-
+strong {
+    font-weight: 600;
+}
 a {
     --tw-text-opacity: 1;
     color: rgb(30 64 175 / var(--tw-text-opacity));

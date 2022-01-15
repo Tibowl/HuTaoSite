@@ -163,6 +163,7 @@ export interface Skill {
     costs?:       CostTemplate
     type?:        string
     video?:       string
+    videomp4?:    string
     icon?:        string
 }
 
