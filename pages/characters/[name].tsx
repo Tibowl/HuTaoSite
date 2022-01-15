@@ -96,6 +96,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         {char.ascensionCosts && <AscensionCosts costs={char.ascensionCosts} />}
         {char.skills && <TalentCosts skills={char.skills} />}
         {guides && guides.length > 0 && <Guides guides={guides} />}
+        <div className="clear-both"/>
         {isFullCharacter(char) && characterCurves && <Stats char={char} curves={characterCurves} />}
         {char.ascensionCosts && costTemplates && <FullAscensionCosts template={char.ascensionCosts} costTemplates={costTemplates} />}
         {char.media.videos && <Videos videos={char.media.videos} />}
@@ -109,7 +110,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
 function TOC({ href, title, depth = 0 }: { href: string, title: string, depth?: number }) {
   const size = depth > 0 ? "sm" : "base"
   return <div>
-    <FormattedLink href={href} size={size} className={`ml-${depth}`}>{title}</FormattedLink>
+    <FormattedLink href={href} size={size} style={({ marginLeft: (0.25 * depth) + "rem" })}>{title}</FormattedLink>
   </div>
 }
 
