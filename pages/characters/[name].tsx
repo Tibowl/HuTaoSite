@@ -139,7 +139,7 @@ function FullAscensionCosts({ template, costTemplates }: { template: CostTemplat
       <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
         <td>Asc.</td>
         <td>Mora</td>
-        <td>Items</td>
+        <td colSpan={costs[costs.length - 1].items.length}>Items</td>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {costs
@@ -350,7 +350,7 @@ function TalentCost({ template, costTemplates }: { template: CostTemplate, costT
     <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
       <td>Lv.</td>
       <td>Mora</td>
-      <td>Items</td>
+      <td colSpan={maxCostWidth}>Items</td>
     </thead>
     <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
       {costs
