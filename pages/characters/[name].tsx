@@ -322,7 +322,7 @@ function CharacterSkills({ skills, costTemplates }: { skills: Skills[], costTemp
 
 function Talent({ talent, costTemplates }: { talent: Skill, costTemplates: CostTemplates }) {
   return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
-    <div className="flex flex-row items-center">
+    <div className="flex flex-row items-center" id={urlify(talent.name, false)}>
       {talent.icon && <Icon icon={talent} className="rounded-xl w-16 h-16 mr-2" />}
       <div className="font-bold">{talent.name}</div>
     </div>
@@ -420,7 +420,7 @@ function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
 
 function Passive({ passive }: { passive: Passive }) {
   return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
-    <div className="flex flex-row items-center">
+    <div className="flex flex-row items-center" id={urlify(passive.name, false)}>
       {passive.icon && <Icon icon={passive} className="rounded-xl w-16 h-16 mr-2" />}
       <div className="font-bold">{passive.name}</div>
     </div>
@@ -435,7 +435,7 @@ function Passive({ passive }: { passive: Passive }) {
 
 function Constellation({ c }: { c: Constellation }) {
   return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
-    <div className="flex flex-row items-center">
+    <div className="flex flex-row items-center" id={urlify(c.name, false)}>
       {c.icon && <Icon icon={c} className="rounded-xl w-16 h-16 mr-2" />}
       <div className="font-bold">{c.name}</div>
     </div>
