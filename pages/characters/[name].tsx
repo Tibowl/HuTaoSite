@@ -2,13 +2,15 @@
 import { GetStaticPathsResult, GetStaticPropsContext, GetStaticPropsResult } from "next"
 import Head from "next/head"
 import Image from "next/image"
-import { useState } from "react"
+import { ReactElement, useState } from "react"
+import ReactMarkdown from "react-markdown"
 import FormattedLink from "../../components/FormattedLink"
+import Icon from "../../components/Icon"
 import Main from "../../components/Main"
 import YouTube from "../../components/YouTube"
 import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates } from "../../utils/data-cache"
-import { Character, CharacterFull, CostTemplate, CurveEnum, Meta, Skills } from "../../utils/types"
-import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, image, isFullCharacter, stat, urlify, weapons } from "../../utils/utils"
+import { Character, CharacterFull, Constellation, CostTemplate, CurveEnum, Meta, Passive, Skill, Skills, TalentTable, TalentValue } from "../../utils/types"
+import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, image, isFullCharacter, isValueTable, stat, urlify, weapons } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
@@ -20,6 +22,11 @@ interface Props {
 
 export default function CharacterWebpage({ char, location, characterCurves, costTemplates, guides }: Props & { location: string }) {
   const charElems = char.skills?.map(skill => skill.ult?.type).filter(x => x) as ElementType[] ?? [char.meta.element]
+  const multiskill = (char.skills?.length ?? 0) > 1
+  let color = ""
+  if (char.star == 5) color = "bg-amber-600 dark:bg-amber-700"
+  if (char.star == 4) color = "bg-purple-700 dark:bg-purple-800"
+
   return (
     <Main>
       <Head>
@@ -34,39 +41,58 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         </FormattedLink>
       </h2>
 
-      <h1 className="text-4xl font-bold pb-2">
+      <h1 className="text-4xl font-bold pb-2 sm:sr-only not-sr-only">
+        <Icon icon={char} className={`${color} rounded-xl sm:w-0 mr-2 w-12 inline-block`} />
         {char.name}
       </h1>
 
-      <div className="float-right border-2 border-slate-500 dark:bg-slate-600 bg-slate-200 m-2 px-2">
+      <div className="sm:float-right border-2 border-slate-500 dark:bg-slate-600 bg-slate-200 m-2 px-2">
         Table of Contents
         {isFullCharacter(char) && characterCurves && <TOC href="#stats" title="Stats" />}
         {char.ascensionCosts && costTemplates && <TOC href="#ascensions" title="Ascensions" />}
         {char.media.videos && <TOC href="#videos" title={Object.keys(char.media.videos).length > 1 ? "Videos" : "Video"} />}
         {char.meta && <TOC href="#meta" title="Meta" />}
+        {char.skills && char.skills.map((s, i) => (<>
+          {multiskill && <div>{s.ult?.type ?? `Skillset #${i}`}</div>}
+          {s.talents && <TOC depth={multiskill ? 1 : 0} href={`#talents${i > 0 ? `-${i}` : ""}`} title="Talents" />}
+          {s.passive && <TOC depth={multiskill ? 1 : 0} href={`#passive${i > 0 ? `-${i}` : ""}`} title="Passive" />}
+          {s.constellations && <TOC depth={multiskill ? 1 : 0} href={`#const${i > 0 ? `-${i}` : ""}`} title="Constellations" />}
+        </>))}
       </div>
 
-      <div id="description">
-        <blockquote className="pl-5 mb-2 border-l-2">
-          {char.desc}
-        </blockquote>
+      <div className="grid grid-flow-col">
+        <div className="sm:w-36 mr-2 w-0 ">
+          <Icon icon={char} className={`${color} rounded-xl`} />
+        </div>
 
-        {charElems.map(e => <div key={e} className="w-5 inline-block pr-1">
-          <Image src={elements[e]} alt={`${e} Element`} />
-        </div>)}
+        <div id="description" className="w-full">
+          <h1 className="text-4xl font-bold pb-2 sm:not-sr-only sr-only">
+            {char.name}
+          </h1>
 
-        {char.star && <div className="inline-block pr-2">
-          {char.star}★
-        </div>}
+          <blockquote className="pl-5 mb-2 border-l-2">
+            <ReactMarkdown>{(char.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+          </blockquote>
 
-        {char.weaponType ? <div className="inline-block">
-          <div className="w-5 inline-block pr-1">
-            <Image src={weapons[char.weaponType]} alt={`${char.weaponType} Element`} />
-          </div>
+          {charElems.map(e => <div key={e} className="w-5 inline-block pr-1">
+            <Image src={elements[e]} alt={`${e} Element`} />
+          </div>)}
 
-          {char.weaponType} user
-        </div> : <div className="inline-block">Character (unreleased)</div>}
+          {char.star && <div className="inline-block pr-2">
+            {char.star}★
+          </div>}
 
+          {char.weaponType ? <div className="inline-block">
+            <div className="w-5 inline-block pr-1">
+              <Image src={weapons[char.weaponType]} alt={`${char.weaponType} Element`} />
+            </div>
+
+            {char.weaponType} user
+          </div> : <div className="inline-block">Character (unreleased)</div>}
+        </div>
+      </div>
+
+      <div id="details">
         {char.ascensionCosts && <AscensionCosts costs={char.ascensionCosts} />}
         {char.skills && <TalentCosts skills={char.skills} />}
         {guides && guides.length > 0 && <Guides guides={guides} />}
@@ -74,14 +100,16 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         {char.ascensionCosts && costTemplates && <FullAscensionCosts template={char.ascensionCosts} costTemplates={costTemplates} />}
         {char.media.videos && <Videos videos={char.media.videos} />}
         {char.meta && <Meta meta={char.meta} />}
+        {char.skills && costTemplates && <CharacterSkills skills={char.skills} costTemplates={costTemplates} />}
       </div>
     </Main>
   )
 }
 
-function TOC({ href, title }: { href: string, title: string }) {
+function TOC({ href, title, depth = 0 }: { href: string, title: string, depth?: number }) {
+  const size = depth > 0 ? "sm" : "base"
   return <div>
-    <FormattedLink href={href} size="base">{title}</FormattedLink>
+    <FormattedLink href={href} size={size} className={`ml-${depth}`}>{title}</FormattedLink>
   </div>
 }
 
@@ -92,7 +120,7 @@ function AscensionCosts({ costs }: { costs: CostTemplate }) {
     costs.mapping.Specialty,
     costs.mapping.EnemyDropTier3,
   ].filter(x => x)
-  return <div className="flex flex-row items-center">
+  return <div className="flex flex-wrap items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Ascension materials:</div>
     {ascensionCosts.map(e => <div className="inline-block pr-1 w-6 h-6 md:h-8 md:w-8" key={e}>
       <img src={image("material", e)} alt={e} width={256} height={256} />
@@ -167,7 +195,7 @@ function TalentCosts({ skills }: { skills: Skills[] }) {
     .filter((x, i, a) => x && a.indexOf(x) == i)
 
   const all = [...books, ...mats, ...drops] as string[]
-  return <div className="flex flex-row items-center">
+  return <div className="flex flex-wrap items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Talent materials:</div>
     {all.map(e => <div className="inline-block pr-1 w-6 h-6 md:h-8 md:w-8" key={e}>
       <img src={image("material", e)} alt={e} width={256} height={256} />
@@ -271,6 +299,132 @@ function Guides({ guides }: { guides: string[][] }) {
   </>
 }
 
+function CharacterSkills({ skills, costTemplates }: { skills: Skills[], costTemplates: CostTemplates }) {
+  return <>
+    {skills.map((skill, i) => {
+      return <>
+        {(skill.talents || skill.ult) && <>
+          <h3 className="text-lg font-bold pt-1" id={`talents${i > 0 ? `-${i}` : ""}`}>Talents:</h3>
+          {[...(skill.talents ?? []), skill.ult].map(s => s && <Talent costTemplates={costTemplates} talent={s} key={s.name} />)}
+        </>}
+        {skill.passive && <>
+          <h3 className="text-lg font-bold pt-1" id={`passive${i > 0 ? `-${i}` : ""}`}>Passive:</h3>
+          {skill.passive.map(p => p && <Passive passive={p} key={p.name} />)}
+        </>}
+        {skill.constellations && <>
+          <h3 className="text-lg font-bold pt-1" id={`const${i > 0 ? `-${i}` : ""}`}>Constellations:</h3>
+          {skill.constellations.map(c => c && <Constellation c={c} key={c.name} />)}
+        </>}
+      </>
+    })}
+  </>
+}
+
+function Talent({ talent, costTemplates }: { talent: Skill, costTemplates: CostTemplates }) {
+
+  return <div>
+    <div className="font-semibold">{talent.name}</div>
+    {talent.icon && <Icon icon={talent} className="rounded-xl w-12 inline-block" />}
+    <ReactMarkdown>{(talent.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+    {talent.talentTable && <TalentTable table={talent.talentTable} />}
+    {talent.costs && <TalentCost template={talent.costs} costTemplates={costTemplates} />}
+    {talent.video}
+  </div>
+}
+
+function TalentCost({ template, costTemplates }: { template: CostTemplate, costTemplates: CostTemplates }) {
+  const costs = getCostsFromTemplate(template, costTemplates)
+  const maxCostWidth = costs?.reduce((p, c) => Math.max(p, c.items.length), 1) ?? 1
+  const [expanded, setExpanded] = useState(false)
+
+  return <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
+    <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
+      <td>Lv.</td>
+      <td>Mora</td>
+      <td>Items</td>
+    </thead>
+    <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
+      {costs
+        .map(({ mora, items }, ind) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={ind}>
+          <td>{ind + 1}&rarr;{ind + 2}</td>
+          <td className="text-right">{mora}</td>
+          {items.map(({ count, name }, i, arr) => <td key={name} colSpan={i == arr.length - 1 ? maxCostWidth - i : 1}>
+            {count > 0 &&
+              <div className="flex flex-row align-middle items-center">
+                <div>{count}&times;</div>
+                <div className="pr-1 w-8 h-8 sm:h-6 sm:w-6 md:h-8 md:w-8">
+                  <img src={image("material", name)} alt={name} width={256} height={256} />
+                </div>
+                <div className="md:text-sm lg:text-base sm:not-sr-only sr-only text-xs">{name}</div>
+              </div>}
+          </td>)}
+        </tr>
+        )
+        .filter((_, i, arr) => expanded ? true : (i == arr.length - 1))}
+      {!expanded && <tr className="pr-1 cursor-pointer text-blue-700 dark:text-blue-300 hover:text-blue-400 dark:hover:text-blue-400 no-underline transition-all duration-200 font-semibold">
+        <td colSpan={maxCostWidth + 2} style={({ textAlign: "center" })}>Click to expand...</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+}
+
+function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
+  const maxLevel = table.reduce((p, c) => Math.max(p, isValueTable(c) ? c.values.length : 1), 1)
+  const levels = []
+  for (let i = 0; i < maxLevel; i++)
+    levels.push(i)
+
+  function hint(input: string): ReactElement {
+    return <>
+      {input.split("").map(x => <>{x}{x.match(/[+/%]/) && <wbr />}</>)}
+    </>
+  }
+  function countUp<T>(arr: T[], v: T, i: number): number {
+    let j = 1
+    while (i < arr.length) {
+      if (arr[++i] == v)
+        j++
+      else
+        break
+    }
+    return j
+  }
+
+  return <div className="overflow-x-auto">
+    <table className={`table-auto w-full ${styles.table} mb-2 sm:text-sm md:text-base text-xs`}>
+      <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
+        <td>Name</td>
+        {levels.map((i) => <td key={i}>Lv. {i + 1}</td>)}
+      </thead>
+      <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
+        {table
+          .map(row => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={row.name}>
+            <td>{row.name}</td>
+            {isValueTable(row) ? row.values.map((v, i, arr) => arr[i - 1] != v && <td key={i} colSpan={countUp(arr, v, i)} className="text-center">{hint(v)}</td>) : <td colSpan={maxLevel} style={({ textAlign: "center" })}>{hint(row.value)}</td>}
+          </tr>)}
+      </tbody>
+    </table>
+  </div>
+}
+
+function Passive({ passive }: { passive: Passive }) {
+  return <div>
+    <div className="font-semibold">{passive.name}</div>
+    {passive.icon && <Icon icon={passive} className="rounded-xl w-12 inline-block" />}
+    <ReactMarkdown>{(passive.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+    {passive.minAscension != undefined && <div>Unlocks at ascension {passive.minAscension}</div>}
+  </div>
+}
+
+function Constellation({ c }: { c: Constellation }) {
+  return <div>
+    <div className="font-semibold">{c.name}</div>
+    {c.icon && <Icon icon={c} className="rounded-xl w-12 inline-block" />}
+    <ReactMarkdown>{(c.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+  </div>
+}
+
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
   const charName = context.params?.name
   const data = await getCharacters()
@@ -283,19 +437,30 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     }
   }
 
+  const neededTemplates: string[] = []
   let characterCurves = null
   if (isFullCharacter(char)) {
     const curves = await getCharacterCurves()
     if (curves)
       characterCurves = Object.fromEntries(char.curves.map(c => c.curve).filter((v, i, arr) => arr.indexOf(v) == i).map(c => [c, curves[c]])) as CharacterCurves
+
+    neededTemplates.push(...char.skills.flatMap(s => {
+      const templates = s.talents?.flatMap(t => t.costs?.template ?? []) ?? []
+      if (s.ult?.costs?.template)
+        templates.push(s.ult.costs.template)
+      return templates
+    }))
   }
 
   let costTemplates = null
   if (char.ascensionCosts) {
+    neededTemplates.push(char.ascensionCosts.template)
+  }
+
+  if (neededTemplates.length > 0) {
     const templates = await getCostTemplates()
     if (templates)
-      costTemplates = Object.fromEntries([char.ascensionCosts.template].filter((v, i, arr) => arr.indexOf(v) == i).map(c => [c, templates[c]])) as CostTemplates
-
+      costTemplates = Object.fromEntries(neededTemplates.filter((v, i, arr) => arr.indexOf(v) == i).map(c => [c, templates[c]])) as CostTemplates
   }
 
   const guides = (await getGuidesFor("character", char.name))?.map(({ guide, page }) => [page.name, getLinkToGuide(guide, page)])

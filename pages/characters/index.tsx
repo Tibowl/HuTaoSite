@@ -3,6 +3,7 @@ import Head from "next/head"
 import Image from "next/image"
 import { Dispatch, SetStateAction, useState } from "react"
 import FormattedLink from "../../components/FormattedLink"
+import Icon from "../../components/Icon"
 import Main from "../../components/Main"
 import { getCharacters } from "../../utils/data-cache"
 import { WeaponType } from "../../utils/types"
@@ -123,7 +124,7 @@ export default function Characters(props: Props & { location: string }) {
 
             return <FormattedLink key={char.name} font="bold" size="sm" location={props.location} href={`/characters/${urlify(char.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300" >
               <div className={`${color} rounded-t-xl h-24 sm:h-28 lg:h-32`}>
-                <Icon char={char} className="rounded-t-xl m-0 p-0" />
+                <Icon icon={char} className="rounded-t-xl m-0 p-0" />
                 <span className="absolute block p-0.5 top-0 w-full">
                   <div className="flex flex-col">
                     {char.element && char.element.map(e => <div key={e} className="w-6 md:w-8">
@@ -183,17 +184,6 @@ function ToggleButton<T>({ type, value, setter, children }: { type: T[], value: 
   </div>
 }
 
-
-function Icon({ char, className }: { char: SmallChar, className?: string }) {
-  const src = char.icon ?? "img/unknown.png"
-
-  if (src.startsWith("img"))
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img alt={char.name} src={"/" + src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} loading="eager" />
-
-  return <Image alt={char.name} src={src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} loading="eager" />
-}
-
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
   const data = await getCharacters()
 
@@ -220,6 +210,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
         .map(c => {
           const char: SmallChar = { name: c.name }
           if (c.star) char.stars = c.star
+          if (c.meta.element) char.element = [c.meta.element as ElementType]
           if (c.skills) char.element = c.skills.map(skill => skill.ult?.type).filter(x => x) as ElementType[]
           if (c.weaponType) char.weapon = c.weaponType
           if (c.icon) char.icon = c.icon

@@ -11,7 +11,7 @@ import Claymore from "../public/img/weapon_types/Claymore.png"
 import Polearm from "../public/img/weapon_types/Polearm.png"
 import Sword from "../public/img/weapon_types/Sword.png"
 import { getGuides } from "./data-cache"
-import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, Guide, GuidePage, WeaponType } from "./types"
+import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, Guide, GuidePage, TalentTable, TalentValue, WeaponType } from "./types"
 
 export const elements = {
     Pyro, Electro, Cryo, Hydro, Anemo, Geo, Dendro
@@ -107,6 +107,11 @@ export async function getGuidesFor(type: "enemy" | "character" | "material", nam
             }))
         ) ?? []
 }
+
+export function isValueTable(talent: TalentTable | TalentValue): talent is TalentTable {
+    return (talent as TalentTable).values != undefined
+}
+
 
 export function getLinkToGuide(guide: Guide, page: GuidePage): string {
     return `/guides/${urlify(guide.name, false)}/${urlify(page.name, true)}`
