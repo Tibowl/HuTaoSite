@@ -323,14 +323,14 @@ function CharacterSkills({ skills, costTemplates }: { skills: Skills[], costTemp
 function Talent({ talent, costTemplates }: { talent: Skill, costTemplates: CostTemplates }) {
   return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
     <div className="flex flex-row items-center" id={urlify(talent.name, false)}>
-      {talent.icon && <Icon icon={talent} className="rounded-xl w-16 h-16 mr-2" />}
+      {talent.icon && <Icon icon={talent} className="rounded-full w-16 h-16 mr-2 bg-slate-600" />}
       <div className="font-bold">{talent.name}</div>
     </div>
     <div className="flex flex-wrap md:flex-nowrap md:flex-row pb-1">
-      <div className={(talent.video || talent.videomp4) ? "max-w-2xl pl-1" : "pl-1"}>
+      <div className={(talent.video || talent.videomp4) ? "max-w-2xl w-2xl pl-1" : "pl-1"}>
         <ReactMarkdown>{(talent.desc?.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
       </div>
-      {(talent.video || talent.videomp4) && <div className="p-2 flex flex-col justify-around items-center w-full">
+      {(talent.video || talent.videomp4) && <div className="p-2 flex flex-col justify-around items-center w-full ">
         {talent.videomp4 ? <video src={talent.videomp4} autoPlay loop className="w-full" /> : <img src={talent.video} alt="Talent video" className="w-full" />}
       </div>}
     </div>
@@ -421,10 +421,10 @@ function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
 function Passive({ passive }: { passive: Passive }) {
   return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
     <div className="flex flex-row items-center" id={urlify(passive.name, false)}>
-      {passive.icon && <Icon icon={passive} className="rounded-xl w-16 h-16 mr-2" />}
+      {passive.icon && <Icon icon={passive} className="rounded-full w-16 h-16 mr-2 bg-slate-600" />}
       <div className="font-bold">{passive.name}</div>
     </div>
-    <div className="flex flex-col pb-1">
+    <div className="flex flex-col pb-1 pl-1">
       <ReactMarkdown>{(passive.desc?.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
       {passive.minAscension != undefined && <div className="italic font-semibold pt-2">
         {passive.minAscension == 0 ? "Unlocked by default" : `Unlocks at ascension ${passive.minAscension}`}
@@ -436,10 +436,10 @@ function Passive({ passive }: { passive: Passive }) {
 function Constellation({ c }: { c: Constellation }) {
   return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
     <div className="flex flex-row items-center" id={urlify(c.name, false)}>
-      {c.icon && <Icon icon={c} className="rounded-xl w-16 h-16 mr-2" />}
+      {c.icon && <Icon icon={c} className="rounded-full w-16 h-16 mr-2 bg-slate-600" />}
       <div className="font-bold">{c.name}</div>
     </div>
-    <div className="flex flex-col pb-1">
+    <div className="flex flex-col pb-1 pl-1">
       <ReactMarkdown>{(c.desc?.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
     </div>
   </div>
