@@ -164,8 +164,7 @@ function FullAscensionCosts({ template, costTemplates }: { template: CostTemplat
           .filter((_, i, arr) => expanded ? true : (i == arr.length - 1))}
         {!expanded && <tr className="pr-1 cursor-pointer text-blue-700 dark:text-blue-300 hover:text-blue-400 dark:hover:text-blue-400 no-underline transition-all duration-200 font-semibold">
           <td colSpan={costs[costs.length - 1].items.length + 2} style={({ textAlign: "center" })}>Click to expand...</td>
-        </tr>
-        }
+        </tr>}
       </tbody>
     </table>
   </>
@@ -327,7 +326,7 @@ function Talent({ talent, costTemplates }: { talent: Skill, costTemplates: CostT
     {talent.icon && <Icon icon={talent} className="rounded-xl w-12 inline-block" />}
     <ReactMarkdown>{(talent.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
     {talent.talentTable && <TalentTable table={talent.talentTable} />}
-    {talent.costs && <TalentCost template={talent.costs} costTemplates={costTemplates} />}
+    {talent.costs && !Array.isArray(talent.costs) && <TalentCost template={talent.costs} costTemplates={costTemplates} />}
     {talent.video}
   </div>
 }
@@ -363,8 +362,7 @@ function TalentCost({ template, costTemplates }: { template: CostTemplate, costT
         .filter((_, i, arr) => expanded ? true : (i == arr.length - 1))}
       {!expanded && <tr className="pr-1 cursor-pointer text-blue-700 dark:text-blue-300 hover:text-blue-400 dark:hover:text-blue-400 no-underline transition-all duration-200 font-semibold">
         <td colSpan={maxCostWidth + 2} style={({ textAlign: "center" })}>Click to expand...</td>
-      </tr>
-      }
+      </tr>}
     </tbody>
   </table>
 }
@@ -392,7 +390,7 @@ function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
   }
 
   return <div className="overflow-x-auto">
-    <table className={`table-auto w-full ${styles.table} mb-2 sm:text-sm md:text-base text-xs`}>
+    <table className={`${maxLevel > 3 ? "table-auto" : "table-fixed"} w-full ${styles.table} mb-2 sm:text-sm md:text-base text-xs`}>
       <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
         <td>Name</td>
         {levels.map((i) => <td key={i}>Lv. {i + 1}</td>)}
