@@ -71,7 +71,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
           </h1>
 
           <blockquote className="pl-5 mb-2 border-l-2">
-            <ReactMarkdown>{(char.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+            <ReactMarkdown>{(char.desc?.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
           </blockquote>
 
           {charElems.map(e => <div key={e} className="w-5 inline-block pr-1">
@@ -328,7 +328,7 @@ function Talent({ talent, costTemplates }: { talent: Skill, costTemplates: CostT
     </div>
     <div className="flex flex-wrap md:flex-nowrap md:flex-row pb-1">
       <div className={(talent.video || talent.videomp4) ? "max-w-2xl pl-1" : "pl-1"}>
-        <ReactMarkdown>{(talent.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+        <ReactMarkdown>{(talent.desc?.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
       </div>
       {(talent.video || talent.videomp4) && <div className="p-2 flex flex-col justify-around items-center w-full">
         {talent.videomp4 ? <video src={talent.videomp4} autoPlay loop className="w-full" /> : <img src={talent.video} alt="Talent video" className="w-full" />}
@@ -425,7 +425,7 @@ function Passive({ passive }: { passive: Passive }) {
       <div className="font-bold">{passive.name}</div>
     </div>
     <div className="flex flex-col pb-1">
-      <ReactMarkdown>{(passive.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+      <ReactMarkdown>{(passive.desc?.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
       {passive.minAscension != undefined && <div className="italic font-semibold pt-2">
         {passive.minAscension == 0 ? "Unlocked by default" : `Unlocks at ascension ${passive.minAscension}`}
       </div>}
@@ -440,7 +440,7 @@ function Constellation({ c }: { c: Constellation }) {
       <div className="font-bold">{c.name}</div>
     </div>
     <div className="flex flex-col pb-1">
-      <ReactMarkdown>{(c.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
+      <ReactMarkdown>{(c.desc?.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
     </div>
   </div>
 }
