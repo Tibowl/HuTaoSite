@@ -28,7 +28,7 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
         <meta property="og:description" content={`View ${page.name} guide`} />
       </Head>
       <h2 className="font-semibold">
-        <FormattedLink href={`/guides/${urlify(guide.name, false)}`} location={location} font="semibold" size="lg">
+        <FormattedLink href={`/guides/${urlify(guide.name, false)}`} location={location} className="font-semibold text-lg">
           {guide.name}
         </FormattedLink>
       </h2>
@@ -39,14 +39,14 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
 
       <div className="flex justify-between text-base">
         <div className="px-1">
-          {prevPage && <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(prevPage.name, true)}`} location={location} font="bold" size="lg">
+          {prevPage && <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(prevPage.name, true)}`} location={location} className="font-bold text-lg">
             &larr; {removeBrackets(prevPage.name)}
           </FormattedLink>}
         </div>
 
         <div>
           {nextPage &&
-            <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(nextPage.name, true)}`} location={location} font="bold" size="lg">
+            <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(nextPage.name, true)}`} location={location} className="font-bold text-lg">
               {removeBrackets(nextPage.name)} &rarr;
             </FormattedLink>}
         </div>

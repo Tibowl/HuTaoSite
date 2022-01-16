@@ -20,6 +20,22 @@ a:hover {
     color: rgb(59 130 246 / var(--tw-text-opacity));
 }
 
+.fivestar {
+    background-color: rgb(217 119 6);
+}
+.fourstar {
+    background-color: rgb(126 34 206);
+}
+.threestar {
+    background-color: rgb(76, 159, 192);
+}
+.twostar {
+    background-color: rgb(43, 187, 146);
+}
+.onestar {
+    background-color: rgb(159, 164, 185);
+}
+
 @media (prefers-color-scheme: dark) {
     a {
         --tw-text-opacity: 1;
@@ -29,4 +45,20 @@ a:hover {
         --tw-text-opacity: 1;
         color: rgb(96 165 250 / var(--tw-text-opacity));
     }
+    .fivestar {
+        background-color: rgb(180 83 9);
+    }
+    .fourstar {
+        background-color: rgb(107 33 168);
+    }
+    .threestar {
+        background-color: rgb(82 141 164);
+    }
+    .twostar {
+        background-color: rgb(42, 143, 114);
+    }
+    .onestar {
+        background-color: rgb(114, 119, 139);
+    }
+
 }

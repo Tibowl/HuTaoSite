@@ -5,12 +5,14 @@ import Image from "next/image"
 import { ReactElement, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import FormattedLink from "../../components/FormattedLink"
+import Guides from "../../components/Guides"
 import Icon from "../../components/Icon"
 import Main from "../../components/Main"
+import { MaterialCost, MaterialImage } from "../../components/Material"
 import YouTube from "../../components/YouTube"
 import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates } from "../../utils/data-cache"
 import { Character, CharacterFull, Constellation, CostTemplate, CurveEnum, Meta, Passive, Skill, Skills, TalentTable, TalentValue } from "../../utils/types"
-import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, image, isFullCharacter, isValueTable, stat, urlify, weapons } from "../../utils/utils"
+import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, image, isFullCharacter, isValueTable, stat, urlify, weapons } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
@@ -23,9 +25,7 @@ interface Props {
 export default function CharacterWebpage({ char, location, characterCurves, costTemplates, guides }: Props & { location: string }) {
   const charElems = char.skills?.map(skill => skill.ult?.type).filter(x => x) as ElementType[] ?? [char.meta.element]
   const multiskill = (char.skills?.length ?? 0) > 1
-  let color = ""
-  if (char.star == 5) color = "bg-amber-600 dark:bg-amber-700"
-  if (char.star == 4) color = "bg-purple-700 dark:bg-purple-800"
+  const color = getStarColor(char.star ?? 0)
 
   return (
     <Main>
@@ -36,7 +36,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         <meta property="og:description" content={`View ${char.name} information`} />
       </Head>
       <h2 className="font-semibold">
-        <FormattedLink href="/characters/" location={location} font="semibold" size="lg">
+        <FormattedLink href="/characters/" location={location} className="font-semibold text-lg">
           Characters
         </FormattedLink>
       </h2>
@@ -60,7 +60,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         </>))}
       </div>
 
-      <div className="grid grid-flow-col">
+      <div className="grid grid-flow-col justify-start">
         <div className="sm:w-36 mr-2 w-0 ">
           <Icon icon={char} className={`${color} rounded-xl`} />
         </div>
@@ -110,7 +110,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
 function TOC({ href, title, depth = 0 }: { href: string, title: string, depth?: number }) {
   const size = depth > 0 ? "sm" : "base"
   return <div>
-    <FormattedLink href={href} size={size} style={({ marginLeft: (0.25 * depth) + "rem" })}>{title}</FormattedLink>
+    <FormattedLink href={href} className={`text-${size}`} style={({ marginLeft: (0.25 * depth) + "rem" })}>{title}</FormattedLink>
   </div>
 }
 
@@ -123,9 +123,7 @@ function AscensionCosts({ costs }: { costs: CostTemplate }) {
   ].filter(x => x)
   return <div className="flex flex-wrap items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Ascension materials:</div>
-    {ascensionCosts.map(e => <div className="inline-block pr-1 w-6 h-6 md:h-8 md:w-8" key={e}>
-      <img src={image("material", e)} alt={e} width={256} height={256} />
-    </div>)}
+    {ascensionCosts.map(e => <MaterialImage key={e} name={e} />)}
   </div>
 }
 
@@ -135,7 +133,7 @@ function FullAscensionCosts({ template, costTemplates }: { template: CostTemplat
 
   return <>
     <h3 className="text-lg font-bold pt-1" id="ascensions">Ascensions:</h3>
-    <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
+    <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={(e) => setExpanded(true)}>
       <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
         <td>Asc.</td>
         <td>Mora</td>
@@ -152,13 +150,7 @@ function FullAscensionCosts({ template, costTemplates }: { template: CostTemplat
               <td>A{ind + 1}</td>
               <td className="text-right">{mora}</td>
               {newItems.map(({ count, name }) => <td key={name}>
-                {count > 0 &&
-                  <div className="flex flex-row align-middle items-center">
-                    <div>{count}&times;</div>
-                    <div className="pr-1 w-8 h-8 sm:h-6 sm:w-6 md:h-8 md:w-8">
-                      <img src={image("material", name)} alt={name} width={256} height={256} />
-                    </div>
-                    <div className="md:text-sm lg:text-base sm:not-sr-only sr-only text-xs">{name}</div></div>}
+                {count > 0 && <MaterialCost name={name} count={count}/> }
               </td>)}
             </tr>
           })
@@ -197,9 +189,7 @@ function TalentCosts({ skills }: { skills: Skills[] }) {
   const all = [...books, ...mats, ...drops] as string[]
   return <div className="flex flex-wrap items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Talent materials:</div>
-    {all.map(e => <div className="inline-block pr-1 w-6 h-6 md:h-8 md:w-8" key={e}>
-      <img src={image("material", e)} alt={e} width={256} height={256} />
-    </div>)}
+    {all.map(e => <MaterialImage key={e} name={e} />)}
   </div>
 }
 
@@ -248,7 +238,7 @@ function Meta({ meta }: { meta: Meta }) {
     <table className={`table-auto ${styles.table} mb-2 w-full`}>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {meta.title && <tr><td>Title</td><td>{meta.title}</td></tr>}
-        {meta.birthDay && meta.birthMonth && <tr><td>Title</td><td>{
+        {meta.birthDay && meta.birthMonth && <tr><td>Birthday</td><td>{
           new Date(Date.UTC(2020, meta.birthMonth - 1, meta.birthDay))
             .toLocaleString("en-UK", {
               timeZone: "UTC",
@@ -288,15 +278,6 @@ function Video({ name, link }: { name: string, link: string }) {
     {name}
     {expanded && <YouTube vidID={link.replace("https://youtu.be/", "")} autoplay />}
   </div>
-}
-
-function Guides({ guides }: { guides: string[][] }) {
-  const multiple = guides.length > 1
-
-  return <>
-    <h3 className="text-lg font-bold pt-1" id="guides">{multiple ? "Guides" : "Guide"}:</h3>
-    {guides.map(([name, link]) => <div key={name}><FormattedLink href={link} size="base">{name}</FormattedLink></div>)}
-  </>
 }
 
 function CharacterSkills({ skills, costTemplates }: { skills: Skills[], costTemplates: CostTemplates }) {
@@ -358,14 +339,7 @@ function TalentCost({ template, costTemplates }: { template: CostTemplate, costT
           <td>{ind + 1}&rarr;{ind + 2}</td>
           <td className="text-right">{mora}</td>
           {items.map(({ count, name }, i, arr) => <td key={name} colSpan={i == arr.length - 1 ? maxCostWidth - i : 1}>
-            {count > 0 &&
-              <div className="flex flex-row align-middle items-center">
-                <div>{count}&times;</div>
-                <div className="pr-1 w-8 h-8 sm:h-6 sm:w-6 md:h-8 md:w-8">
-                  <img src={image("material", name)} alt={name} width={256} height={256} />
-                </div>
-                <div className="md:text-sm lg:text-base sm:not-sr-only sr-only text-xs">{name}</div>
-              </div>}
+            {count > 0 && <MaterialCost name={name} count={count}/> }
           </td>)}
         </tr>
         )
@@ -386,7 +360,7 @@ function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
 
   function hint(input: string): ReactElement {
     return <>
-      {input.split("").map(x => <>{x}{x.match(/[+/%]/) && <wbr />}</>)}
+      {input.split("").map(x => <span key={x}>{x}{x.match(/[+/%]/) && <wbr />}</span>)}
     </>
   }
   function countUp<T>(arr: T[], v: T, i: number): number {
@@ -405,7 +379,7 @@ function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
     <table className={`${maxLevel > 3 ? "table-auto" : "table-fixed"} w-full ${styles.table} mb-2 sm:text-sm md:text-base text-xs`}>
       <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
         <td>Name</td>
-        {levels.map((i) => <td key={i}>Lv. {i + 1}</td>)}
+        {levels.map((i) => <td key={i + 1}>Lv. {i + 1}</td>)}
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {table
@@ -446,7 +420,7 @@ function Constellation({ c }: { c: Constellation }) {
 }
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
-  const charName = context.params?.name
+  const charName = context.params?.char
   const data = await getCharacters()
 
   const char = Object.values(data ?? {}).find(g => urlify(g.name, false) == charName)
@@ -499,8 +473,8 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
   const data = await getCharacters()
   return {
-    paths: Object.values(data ?? {}).map(g => ({
-      params: { name: urlify(g.name, false) }
+    paths: Object.values(data ?? {}).map(c => ({
+      params: { char: urlify(c.name, false) }
     })) ?? [],
     fallback: "blocking"
   }

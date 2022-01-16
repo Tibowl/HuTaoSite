@@ -20,7 +20,7 @@ export default function CategoryWebpage({ guide, location }: Props & { location:
         <meta property="og:description" content={`View ${guide.name} guides`} />
       </Head>
       <h2 className="font-semibold">
-        <FormattedLink href="/guides/" location={location} font="semibold" size="lg">
+        <FormattedLink href="/guides/" location={location} className="font-semibold text-lg">
           Guides
         </FormattedLink>
       </h2>
@@ -32,7 +32,7 @@ export default function CategoryWebpage({ guide, location }: Props & { location:
       <ul>
         {guide.pages.map(p => (<li key={p.name}>
           -{" "}
-          <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(p.name, true)}`} location={location} font="semibold" size="xl">
+          <FormattedLink href={`/guides/${urlify(guide.name, false)}/${urlify(p.name, true)}`} location={location} className="font-semibold text-xl">
             {p.name}
           </FormattedLink>
         </li>))}

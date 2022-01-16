@@ -184,6 +184,17 @@ export enum WeaponType {
     Sword = "Sword",
 }
 
+export interface Material {
+    name:      string
+    desc:      string
+    longDesc?: string
+    stars?:    number
+    type:      string
+    category:  string
+    icon:      string
+    sources?:  string[]
+}
+
 
 // Guides
 export interface Guide {

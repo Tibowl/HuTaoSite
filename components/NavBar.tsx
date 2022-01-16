@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import FormattedLink from "./FormattedLink"
 
-const pages = ["Guides", "Characters", "Reminders"]
+const pages = ["Guides", "Characters", "Materials", "Reminders"]
 
 export default function NavBar({ location }: {location: string}) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -11,7 +11,7 @@ export default function NavBar({ location }: {location: string}) {
     <div className="text-xl bg-gradient-to-r from-blue-200 to-blue-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-between md:justify-start p-4 w-full top-0">
       <div className={`flex items-center pr-20 ${menuOpen ? "hidden": ""} sm:block`}>
         <Logo />
-        <FormattedLink font="bold" location={location} href="/">Hu Tao</FormattedLink>
+        <FormattedLink location={location} href="/" className="font-bold">Hu Tao</FormattedLink>
       </div>
       <nav className="hidden md:block space-x-6">
         {navLinks}

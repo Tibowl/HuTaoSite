@@ -112,17 +112,25 @@ export function isValueTable(talent: TalentTable | TalentValue): talent is Talen
     return (talent as TalentTable).values != undefined
 }
 
-
 export function getLinkToGuide(guide: Guide, page: GuidePage): string {
     return `/guides/${urlify(guide.name, false)}/${urlify(page.name, true)}`
 }
 
-export function urlify(input: string, shouldYeetBrackets: boolean): string {
-    if (shouldYeetBrackets)
+export function urlify(input: string, shouldRemoveBrackets: boolean): string {
+    if (shouldRemoveBrackets)
         input = removeBrackets(input)
-    return input.toLowerCase().replace(/\(|\)|:/g, "").trim().replace(/ +/g, "-")
+    return input.toLowerCase().replace(/[():"']/g, "").trim().replace(/ +/g, "-")
 }
 
 export function removeBrackets(input: string) {
     return input.replace(/\(.*\)/g, "").replace(/ +:/, ":")
+}
+
+export function getStarColor(star: number): string {
+    if (star == 5) return "fivestar"
+    if (star == 4) return "fourstar"
+    if (star == 3) return "threestar"
+    if (star == 2) return "twostar"
+    if (star == 1) return "onestar"
+    return ""
 }

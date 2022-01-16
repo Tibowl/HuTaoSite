@@ -27,7 +27,7 @@ export default function Guides(props: Props & { location: string }) {
         {props.guides.map(g => (
           <li key={g}>
             -{" "}
-            <FormattedLink font="semibold" size="xl" location={props.location} href={`/guides/${urlify(g, false)}`} >
+            <FormattedLink className="font-semibold text-xl" location={props.location} href={`/guides/${urlify(g, false)}`} >
               {g}
             </FormattedLink>
           </li>

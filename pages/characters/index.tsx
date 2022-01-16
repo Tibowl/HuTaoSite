@@ -1,13 +1,14 @@
 import { GetStaticPropsContext, GetStaticPropsResult } from "next"
 import Head from "next/head"
 import Image from "next/image"
-import { Dispatch, SetStateAction, useState } from "react"
+import { useState } from "react"
+import { ExclusiveButton, ToggleAllButton, ToggleButton } from "../../components/Filters"
 import FormattedLink from "../../components/FormattedLink"
 import Icon from "../../components/Icon"
 import Main from "../../components/Main"
 import { getCharacters } from "../../utils/data-cache"
 import { WeaponType } from "../../utils/types"
-import { elements, ElementType, isFullCharacter, urlify, weapons } from "../../utils/utils"
+import { elements, ElementType, getStarColor, isFullCharacter, urlify, weapons } from "../../utils/utils"
 
 
 interface SmallChar {
@@ -118,11 +119,9 @@ export default function Characters(props: Props & { location: string }) {
           .filter(c => elementFilter.some(e => c.element?.includes(e)) || c.element == undefined)
           .filter(c => weaponFilter.some(e => c.weapon?.includes(e)) || c.weapon == undefined)
           .map(char => {
-            let color = ""
-            if (char.stars == 5) color = "bg-amber-600 dark:bg-amber-700"
-            if (char.stars == 4) color = "bg-purple-700 dark:bg-purple-800"
+            const color = getStarColor(char.stars ?? 0)
 
-            return <FormattedLink key={char.name} font="bold" size="sm" location={props.location} href={`/characters/${urlify(char.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300" >
+            return <FormattedLink key={char.name} location={props.location} href={`/characters/${urlify(char.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm" >
               <div className={`${color} rounded-t-xl h-24 sm:h-28 lg:h-32`}>
                 <Icon icon={char} className="rounded-t-xl m-0 p-0" />
                 <span className="absolute block p-0.5 top-0 w-full">
@@ -150,39 +149,6 @@ export default function Characters(props: Props & { location: string }) {
   )
 }
 
-function ExclusiveButton<T>({ type, value, setter, children }: { type: T, value: T, setter: Dispatch<SetStateAction<T>>, children: any }) {
-  return <div
-    onClick={() => setter(value)}
-    className={`${type == value ? "bg-slate-400 dark:bg-slate-700 outline-slate-400 outline" : "bg-slate-300 dark:bg-slate-800"} px-2 py-0.5 rounded-lg cursor-pointer selection:bg-transparent`}
-  >
-    {children}
-  </div>
-}
-
-function ToggleAllButton<T>({ type, value, setter, children }: { type: T[], value: T[], setter: Dispatch<SetStateAction<T[]>>, children: any }) {
-  const equal = type.length == value.length && type.every(e => value.includes(e))
-
-  return <div
-    onClick={() => equal ? setter([]) : setter(value)}
-    className={`${equal ? "bg-slate-400 dark:bg-slate-700 outline-slate-400 outline" : "bg-slate-300 dark:bg-slate-800"} px-2 py-0.5 rounded-lg cursor-pointer selection:bg-transparent`}
-  >
-    {children}
-  </div>
-}
-
-function ToggleButton<T>({ type, value, setter, children }: { type: T[], value: T, setter: Dispatch<SetStateAction<T[]>>, children: any }) {
-  const has = type.includes(value)
-  return <div
-    onClick={() => {
-      if (has) setter(type.filter(x => x != value))
-      else setter([value, ...type])
-    }}
-    className={`${has ? "bg-slate-400 dark:bg-slate-700 outline-slate-400 outline" : "bg-slate-300 dark:bg-slate-800"
-      } px-2 py-0.5 rounded-lg cursor-pointer selection:bg-transparent`}
-  >
-    {children}
-  </div>
-}
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
   const data = await getCharacters()
