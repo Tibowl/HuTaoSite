@@ -11,7 +11,7 @@ import Claymore from "../public/img/weapon_types/Claymore.png"
 import Polearm from "../public/img/weapon_types/Polearm.png"
 import Sword from "../public/img/weapon_types/Sword.png"
 import { getGuides } from "./data-cache"
-import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, Guide, GuidePage, SmallChar, TalentTable, TalentValue, WeaponType } from "./types"
+import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, Guide, GuidePage, SmallChar, SmallWeapon, TalentTable, TalentValue, Weapon, WeaponCurveName, WeaponType } from "./types"
 
 export const elements = {
     Pyro, Electro, Cryo, Hydro, Anemo, Geo, Dendro
@@ -41,6 +41,22 @@ export function getCharStatsAt(char: CharacterFull, level: number, ascension: nu
     }
 
     const asc = char.ascensions.find(a => a.level == ascension)
+
+    for (const statup of asc?.statsUp ?? []) {
+        stats[statup.stat] = (stats[statup.stat] ?? 0) + statup.value
+    }
+
+    return stats
+}
+
+export function getWeaponStatsAt(weapon: Weapon, level: number, ascension: number, weaponCurves: Record<WeaponCurveName, number[]>): Record<string, number> {
+    const stats: Record<string, number> = {}
+
+    for (const curve of weapon.weaponCurve ?? []) {
+        stats[curve.stat] = curve.init * weaponCurves[curve.curve][level - 1]
+    }
+
+    const asc = (weapon.ascensions ?? []).find(a => a.level == ascension)
 
     for (const statup of asc?.statsUp ?? []) {
         stats[statup.stat] = (stats[statup.stat] ?? 0) + statup.value
@@ -99,7 +115,7 @@ export function getCostsFromTemplate(costTemplate: CostTemplate, costTemplates: 
     }))
 }
 
-export async function getGuidesFor(type: "enemy" | "character" | "material", name: string): Promise<{ guide: Guide, page: GuidePage }[]> {
+export async function getGuidesFor(type: "enemy" | "character" | "material" | "weapon", name: string): Promise<{ guide: Guide, page: GuidePage }[]> {
     return (await getGuides())?.flatMap(guide => guide.pages
             .filter(page => page.links?.[type]?.includes(name))
             .map(page => ({
@@ -142,5 +158,14 @@ export function createSmallChar(c: Character): SmallChar {
     if (c.skills) char.element = c.skills.map(skill => skill.ult?.type).filter(x => x) as ElementType[]
     if (c.weaponType) char.weapon = c.weaponType
     if (c.icon) char.icon = c.icon
+    return char
+}
+
+
+export function createSmallWeapon(w: Weapon): SmallWeapon {
+    const char: SmallWeapon = { name: w.name }
+    if (w.stars) char.stars = w.stars
+    if (w.weaponType) char.weapon = w.weaponType
+    if (w.icon) char.icon = w.icon
     return char
 }

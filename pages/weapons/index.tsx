@@ -5,36 +5,34 @@ import { useState } from "react"
 import { ExclusiveButton, ToggleAllButton, ToggleButton } from "../../components/Filters"
 import { SmallIcon } from "../../components/Icon"
 import Main from "../../components/Main"
-import { getCharacters } from "../../utils/data-cache"
-import { SmallChar, WeaponType } from "../../utils/types"
-import { createSmallChar, elements, ElementType, isFullCharacter, weapons } from "../../utils/utils"
+import { getWeapons } from "../../utils/data-cache"
+import { SmallWeapon, WeaponType } from "../../utils/types"
+import { createSmallWeapon, weapons } from "../../utils/utils"
 
 
 interface Props {
-  characters: SmallChar[]
+  weapons: SmallWeapon[]
 }
 
-const defaultElements: ElementType[] = Object.keys(elements) as ElementType[]
 const defaultWeapons: WeaponType[] = Object.keys(weapons) as WeaponType[]
 
-export default function Characters(props: Props & { location: string }) {
+export default function Weapons(props: Props & { location: string }) {
   const [filter, setFilter] = useState(false)
 
   const [starFilter, setStarFilter] = useState(0)
-  const [elementFilter, setElementFilter] = useState(defaultElements)
   const [weaponFilter, setWeaponFilter] = useState(defaultWeapons)
 
   return (
     <Main>
       <Head>
-        <title>Characters | Hu Tao</title>
+        <title>Weapons | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
-        <meta property="og:title" content="Characters | Hu Tao" />
-        <meta property="og:description" content="View information about different Genshin Impact characters!" />
+        <meta property="og:title" content="Weapons | Hu Tao" />
+        <meta property="og:description" content="View information about different Genshin Impact weapons!" />
       </Head>
 
       <h1 className="text-5xl font-bold pb-2">
-        Characters
+        Weapons
       </h1>
 
       {filter ? <div className="bg-slate-100 dark:bg-slate-600 flex flex-col p-2 rounded-2xl font-semibold gap-2">
@@ -57,25 +55,15 @@ export default function Characters(props: Props & { location: string }) {
             <ExclusiveButton type={starFilter} value={4} setter={setStarFilter}>
               4★ Only
             </ExclusiveButton>
-          </div>
-        </div>
-
-        <div className="py-1">
-          <div className="flex flex-row gap-4">
-            Element filter
-            <ToggleAllButton type={elementFilter} value={defaultElements} setter={setElementFilter}>
-              All
-            </ToggleAllButton>
-          </div>
-          <div className="flex flex-row flex-wrap gap-2 pt-2">
-            {defaultElements.map(e => (
-              <ToggleButton key={e} type={elementFilter} value={e} setter={setElementFilter}>
-                <div className="w-4 inline-block pr-1">
-                  <Image src={elements[e]} alt={`${e} Element`} />
-                </div>
-                {e}
-              </ToggleButton>
-            ))}
+            <ExclusiveButton type={starFilter} value={3} setter={setStarFilter}>
+              3★ Only
+            </ExclusiveButton>
+            <ExclusiveButton type={starFilter} value={2} setter={setStarFilter}>
+              2★ Only
+            </ExclusiveButton>
+            <ExclusiveButton type={starFilter} value={1} setter={setStarFilter}>
+              1★ Only
+            </ExclusiveButton>
           </div>
         </div>
 
@@ -105,11 +93,10 @@ export default function Characters(props: Props & { location: string }) {
       }
 
       <div className="flex flex-wrap justify-evenly text-center pt-2">
-        {props.characters
-          .filter(c => starFilter == 0 || starFilter == c.stars)
-          .filter(c => elementFilter.some(e => c.element?.includes(e)) || c.element == undefined)
-          .filter(c => weaponFilter.some(e => c.weapon?.includes(e)) || c.weapon == undefined)
-          .map(char => <SmallIcon key={char.name} thing={char} location={props.location} />)}
+        {props.weapons
+          .filter(w => starFilter == 0 || starFilter == w.stars)
+          .filter(w => weaponFilter.some(e => w.weapon?.includes(e)) || w.weapon == undefined)
+          .map(weapon => <SmallIcon key={weapon.name} thing={weapon} location={props.location} />)}
       </div>
     </Main>
   )
@@ -117,7 +104,7 @@ export default function Characters(props: Props & { location: string }) {
 
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
-  const data = await getCharacters()
+  const data = await getWeapons()
 
   if (!data) {
     return {
@@ -128,18 +115,10 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 
   return {
     props: {
-      characters: Object
+      weapons: Object
         .values(data)
-        .sort((a, b) => {
-          if (isFullCharacter(a) && isFullCharacter(b))
-            return b.releasedOn.localeCompare(a.releasedOn) || b.star - a.star || a.name.localeCompare(b.name)
-          else if (!isFullCharacter(b))
-            return 1
-          else if (!isFullCharacter(a))
-            return -1
-          else return a.name.localeCompare(b.name)
-        })
-        .map(c => createSmallChar(c))
+        .sort((a, b) => b.stars - a.stars || a.weaponType.localeCompare(b.weaponType) || a.name.localeCompare(b.name))
+        .map(w => createSmallWeapon(w))
     },
     revalidate: 60 * 60
   }

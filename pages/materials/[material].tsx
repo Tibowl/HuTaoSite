@@ -4,11 +4,11 @@ import Head from "next/head"
 import ReactMarkdown from "react-markdown"
 import FormattedLink from "../../components/FormattedLink"
 import Guides from "../../components/Guides"
-import Icon, { CharIcon, IconName } from "../../components/Icon"
+import Icon, { SmallIcon } from "../../components/Icon"
 import Main from "../../components/Main"
-import { CostTemplates, getCharacters, getCostTemplates, getMaterials } from "../../utils/data-cache"
-import { Cost, CostTemplate, Material, SmallChar } from "../../utils/types"
-import { createSmallChar, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, urlify } from "../../utils/utils"
+import { CostTemplates, getCharacters, getCostTemplates, getMaterials, getWeapons } from "../../utils/data-cache"
+import { Cost, CostTemplate, Material, SmallChar, SmallWeapon } from "../../utils/types"
+import { createSmallChar, createSmallWeapon, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, urlify } from "../../utils/utils"
 
 interface Props {
   mat: Material,
@@ -16,10 +16,11 @@ interface Props {
   usedBy: {
     charTalents: SmallChar[]
     charAscension: SmallChar[]
+    weaponAscension: SmallWeapon[]
   }
 }
 
-export default function CharacterWebpage({ mat, location, guides, usedBy }: Props & { location: string }) {
+export default function MaterialWebpage({ mat, location, guides, usedBy }: Props & { location: string }) {
   const color = getStarColor(mat.stars ?? 1)
 
   return (
@@ -81,14 +82,21 @@ export default function CharacterWebpage({ mat, location, guides, usedBy }: Prop
         {usedBy.charTalents.length > 0 && <>
           <h3 className="text-lg font-bold pt-1" id="chartalents">Used by character talents:</h3>
           <div className="flex flex-wrap justify-start text-center mt-2">
-            {usedBy.charTalents.map(c => <CharIcon key={c.name} char={c} location={location} />)}
+            {usedBy.charTalents.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
           </div>
         </>}
 
         {usedBy.charAscension.length > 0 && <>
           <h3 className="text-lg font-bold pt-1" id="charascension">Used by character ascensions:</h3>
           <div className="flex flex-wrap justify-start text-center mt-2">
-            {usedBy.charAscension.map(c => <CharIcon key={c.name} char={c} location={location} />)}
+            {usedBy.charAscension.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
+          </div>
+        </>}
+
+        {usedBy.weaponAscension.length > 0 && <>
+          <h3 className="text-lg font-bold pt-1" id="weaponascension">Used by weapon ascensions:</h3>
+          <div className="flex flex-wrap justify-start text-center mt-2">
+            {usedBy.weaponAscension.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
           </div>
         </>}
 
@@ -147,13 +155,25 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     }
   }
 
+
+  const weapons = await getWeapons()
+  const weaponAscension: SmallWeapon[] = []
+
+  if (weapons && costTemplates) {
+    for (const w of Object.values(weapons)) {
+      if (w.ascensionCosts && isInCosts(w.ascensionCosts, costTemplates, mat.name))
+        weaponAscension.push(createSmallWeapon(w))
+    }
+  }
+
   return {
     props: {
       mat,
       guides,
       usedBy: {
         charAscension,
-        charTalents
+        charTalents,
+        weaponAscension: weaponAscension.sort((a, b) => (a.stars && b. stars && b.stars - a.stars) || (a.weapon && b.weapon && a.weapon.localeCompare(b.weapon)) || a.name.localeCompare(b.name))
       }
     },
     revalidate: 60 * 60

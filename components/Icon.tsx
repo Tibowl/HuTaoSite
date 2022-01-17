@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/image"
-import { SmallChar } from "../utils/types"
+import { SmallChar, SmallWeapon } from "../utils/types"
 import { elements, getStarColor, image, urlify, weapons } from "../utils/utils"
 import FormattedLink from "./FormattedLink"
+import styles from "../pages/style.module.css"
 
 export default function Icon({ icon, className, loading = "lazy" }: { icon: { name: string, icon?: string }, className?: string, loading?: "eager" | "lazy" }) {
   const src = (icon.icon?.startsWith("img/") ? ("/" + icon.icon) : icon.icon) ?? "img/unknown.png"
@@ -24,29 +25,33 @@ export function IconName({ name, type, urltype, loading = "lazy" }: { name: stri
 }
 
 
-export function CharIcon({ char, location }: { char: SmallChar, location: string }) {
-  const color = getStarColor(char.stars ?? 0)
+export function SmallIcon({ thing, location }: { thing: SmallChar | SmallWeapon, location: string }) {
+  const color = getStarColor(thing.stars ?? 0)
 
-  return <FormattedLink key={char.name} location={location} href={`/characters/${urlify(char.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm" >
+  return <FormattedLink key={thing.name} location={location} href={`/${isSmallChar(thing) ? "characters" : "weapons"}/${urlify(thing.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm" >
     <div className={`${color} rounded-t-xl h-24 sm:h-28 lg:h-32`}>
-      <Icon icon={char} className="rounded-t-xl m-0 p-0" />
+      <Icon icon={thing} className="rounded-t-xl m-0 p-0" />
       <span className="absolute block p-0.5 top-0 w-full">
         <div className="flex flex-col">
-          {char.element && char.element.map(e => <div key={e} className="w-6 md:w-8">
+          {isSmallChar(thing) && thing.element && thing.element.map(e => <div key={e} className="w-6 md:w-8">
             <Image src={elements[e]} alt={`${e} Element`} loading="eager" />
           </div>)}
         </div>
       </span>
       <span className="absolute block p-0.5 top-0 w-full">
         <div className="flex flex-col float-right">
-          {char.weapon && <div className="w-6 md:w-8">
-            <Image src={weapons[char.weapon]} alt={char.weapon} loading="eager" />
+          {thing.weapon && <div className="w-6 md:w-8">
+            <Image src={weapons[thing.weapon]} alt={thing.weapon} loading="eager" />
           </div>}
         </div>
       </span>
     </div>
-    <span className="flex justify-center items-center h-10 md:h-12 m-0 p-0 duration-200 md:text-base">
-      {char.name}
+    <span className={`flex justify-center items-center m-0 p-0 px-1 ${thing.name.length > 27 ? "text-xs md:text-xs" : thing.name.length > 20 ? "text-sm md:text-sm" : ""} duration-200 md:text-base ${styles.iconHeight}`}>
+      {thing.name}
     </span>
   </FormattedLink>
+}
+
+function isSmallChar(char: SmallChar | SmallWeapon): char is SmallChar {
+  return (char as SmallChar).element != undefined
 }

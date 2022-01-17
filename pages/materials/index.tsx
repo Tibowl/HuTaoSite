@@ -172,13 +172,13 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     props: {
       materials: Object
         .values(data)
-        .map(c => {
-          const char: SmallMaterial = { name: c.name }
-          if (c.stars) char.stars = c.stars
-          if (c.icon) char.icon = c.icon
-          if (c.category) char.category = c.category
-          if (c.type) char.type = c.type
-          return char
+        .map(m => {
+          const mat: SmallMaterial = { name: m.name }
+          if (m.stars) mat.stars = m.stars
+          if (m.icon) mat.icon = m.icon
+          if (m.category) mat.category = m.category
+          if (m.type) mat.type = m.type
+          return mat
         })
     },
     revalidate: 60 * 60

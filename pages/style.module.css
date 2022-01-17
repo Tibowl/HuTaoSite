@@ -33,3 +33,17 @@
 .stattable tbody td {
     text-align: right;
 }
+
+.iconHeight {
+    min-height: 4rem;
+}
+@media (min-width: 768px) {
+    .iconHeight {
+        min-height: 3rem;
+    }
+}
+@media (min-width: 640px) {
+    .iconHeight {
+        min-height: 3rem;
+    }
+}

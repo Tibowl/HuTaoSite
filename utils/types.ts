@@ -186,6 +186,61 @@ export enum WeaponType {
     Sword = "Sword",
 }
 
+export interface Weapon {
+    name:              string
+    desc:              string
+    placeholder?:      false
+    placeholderStats?: PlaceHolderStats
+    weaponType:        WeaponType
+    stars:             number
+    weaponCurve?:      WeaponCurve[]
+    icon:              string
+    awakenIcon?:       string
+    ascensions?:       WeaponAscension[]
+    ascensionCosts?:   CostTemplate
+    lore?:             string
+    refinements?:      Refinement[]
+}
+
+export interface WeaponAscension {
+    level:    number
+    maxLevel: number
+    statsUp:  StatsUp[]
+}
+
+export interface Refinement {
+    name: string
+    desc: string
+}
+
+export interface WeaponCurve {
+    stat: StatsName
+    init: number
+    curve: WeaponCurveName
+}
+
+export enum WeaponCurveName {
+    Atk11 = "ATK 1.1",
+    Atk12 = "ATK 1.2",
+    Atk14 = "ATK 1.4",
+    Atk21 = "ATK 2.1",
+    Atk22 = "ATK 2.2",
+    Atk23 = "ATK 2.3",
+    Atk24 = "ATK 2.4",
+    Atk31 = "ATK 3.1",
+    Atk32 = "ATK 3.2",
+    Atk34 = "ATK 3.4",
+    C1 = "C1",
+    C2 = "C2",
+    C3 = "C3",
+}
+
+
+export interface PlaceHolderStats {
+    level: number
+    stats: Partial<Record<StatsName, number>>
+}
+
 export interface Material {
     name:      string
     desc:      string
@@ -211,6 +266,7 @@ export interface GuidePage {
     credits: string
     links?:  {
         material?:  string[]
+        weapon?:    string[]
         enemy?:     string[]
         character?: string[]
     }
@@ -220,6 +276,13 @@ export interface SmallChar {
     name: string
     stars?: number
     element?: ElementType[]
+    weapon?: WeaponType
+    icon?: string
+}
+
+export interface SmallWeapon {
+    name: string
+    stars?: number
     weapon?: WeaponType
     icon?: string
 }
