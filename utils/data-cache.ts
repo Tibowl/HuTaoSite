@@ -1,22 +1,30 @@
-import { Character, Cost, CurveEnum, Guide, Material, Weapon, WeaponCurveName } from "./types"
+import { Artifact, Character, Cost, CurveEnum, Guide, Material, Weapon, WeaponCurveName } from "./types"
 
 const baseURL = "https://raw.githubusercontent.com/Tibowl/HuTao/master/src/data"
 
-type Guides = Guide[]
+type Artifacts = Record<string, Artifact>
+
 type Characters = Record<string, Character>
 export type CharacterCurves = Record<CurveEnum, number[]>
 type CharacterLevels = number[]
+
 export type CostTemplates = Record<string, Cost[]>
+
+type Guides = Guide[]
+
 type Materials = Record<string, Material>
+
 type Weapons = Record<string, Weapon>
 export type WeaponCurves = Record<WeaponCurveName, number[]>
 
+
 type Cache = {
-    guides: Cacher<Guides>
+    artifacts: Cacher<Artifacts>
     characters: Cacher<Characters>
     characterCurves: Cacher<CharacterCurves>
     characterLevels: Cacher<CharacterLevels>
     costTemplates: Cacher<CostTemplates>
+    guides: Cacher<Guides>
     materials: Cacher<Materials>
     weapons: Cacher<Weapons>
     weaponCurves: Cacher<WeaponCurves>
@@ -28,6 +36,9 @@ interface Cacher<T> {
 }
 
 const cached: Cache = {
+    artifacts: {
+        time: 0
+    },
     guides: {
         time: 0
     },
@@ -56,6 +67,8 @@ const cached: Cache = {
 
 export const getGuides: (() => Promise<Guides | undefined>) = createGetCacheable("guides")
 export const getCostTemplates: (() => Promise<CostTemplates | undefined>) = createGetCacheable("costTemplates", "gamedata/cost_templates")
+
+export const getArtifacts: (() => Promise<Artifacts | undefined>) = createGetCacheable("artifacts", "gamedata/artifacts")
 
 export const getCharacters: (() => Promise<Characters | undefined>) = createGetCacheable("characters", "gamedata/characters")
 export const getCharacterCurves: (() => Promise<CharacterCurves | undefined>) = createGetCacheable("characterCurves", "gamedata/character_curves")

@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/image"
-import { SmallChar, SmallWeapon } from "../utils/types"
+import { SmallArtifact, SmallChar, SmallWeapon } from "../utils/types"
 import { elements, getStarColor, image, urlify, weapons } from "../utils/utils"
 import FormattedLink from "./FormattedLink"
 import styles from "../pages/style.module.css"
@@ -24,23 +24,23 @@ export function IconName({ name, type, urltype, loading = "lazy" }: { name: stri
   </FormattedLink>
 }
 
-
-export function SmallIcon({ thing, location }: { thing: SmallChar | SmallWeapon, location: string }) {
+type SmallThing = SmallChar | SmallWeapon | SmallArtifact
+export function SmallIcon({ thing, location }: { thing: SmallThing, location: string }) {
   const color = getStarColor(thing.stars ?? 0)
 
-  return <FormattedLink key={thing.name} location={location} href={`/${isSmallChar(thing) ? "characters" : "weapons"}/${urlify(thing.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm" >
+  return <FormattedLink key={thing.name} location={location} href={`/${thing.urlpath}/${urlify(thing.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm" >
     <div className={`${color} rounded-t-xl h-24 sm:h-28 lg:h-32`}>
       <Icon icon={thing} className="rounded-t-xl m-0 p-0" />
       <span className="absolute block p-0.5 top-0 w-full">
         <div className="flex flex-col">
-          {isSmallChar(thing) && thing.element && thing.element.map(e => <div key={e} className="w-6 md:w-8">
+          {hasElement(thing) && thing.element && thing.element.map(e => <div key={e} className="w-6 md:w-8">
             <Image src={elements[e]} alt={`${e} Element`} loading="eager" />
           </div>)}
         </div>
       </span>
       <span className="absolute block p-0.5 top-0 w-full">
         <div className="flex flex-col float-right">
-          {thing.weapon && <div className="w-6 md:w-8">
+          {hasWeapon(thing) && thing.weapon && <div className="w-6 md:w-8">
             <Image src={weapons[thing.weapon]} alt={thing.weapon} loading="eager" />
           </div>}
         </div>
@@ -52,6 +52,10 @@ export function SmallIcon({ thing, location }: { thing: SmallChar | SmallWeapon,
   </FormattedLink>
 }
 
-function isSmallChar(char: SmallChar | SmallWeapon): char is SmallChar {
+function hasElement(char: SmallThing): char is SmallChar {
   return (char as SmallChar).element != undefined
+}
+
+function hasWeapon(char: SmallThing): char is (SmallChar | SmallWeapon) {
+  return (char as SmallChar).weapon != undefined
 }

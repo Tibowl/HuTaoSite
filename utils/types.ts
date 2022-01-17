@@ -21,6 +21,33 @@ export interface Reminder {
   duration: number
 }
 
+// Artifacts
+export interface Artifact {
+    name:    string
+    levels:  number[]
+    bonuses: Bonus[]
+    artis:   Arti[]
+}
+
+export interface Arti {
+    type: ArtifactType
+    name: string
+    desc: string
+    icon: string
+}
+
+export enum ArtifactType {
+    Flower = "Flower",
+    Plume = "Plume",
+    Sands = "Sands",
+    Goblet = "Goblet",
+    Circlet = "Circlet",
+}
+
+export interface Bonus {
+    count: number
+    desc:  string
+}
 
 // Character
 export type Character = CharacterFull | CharacterPlaceholder
@@ -267,6 +294,7 @@ export interface GuidePage {
     links?:  {
         material?:  string[]
         weapon?:    string[]
+        artifact?:  string[]
         enemy?:     string[]
         character?: string[]
     }
@@ -278,6 +306,7 @@ export interface SmallChar {
     element?: ElementType[]
     weapon?: WeaponType
     icon?: string
+    urlpath: "characters"
 }
 
 export interface SmallWeapon {
@@ -285,4 +314,12 @@ export interface SmallWeapon {
     stars?: number
     weapon?: WeaponType
     icon?: string
+    urlpath: "weapons"
+}
+
+export interface SmallArtifact {
+    name: string
+    stars?: number
+    icon?: string
+    urlpath: "artifacts"
 }

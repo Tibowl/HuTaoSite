@@ -11,7 +11,7 @@ import Claymore from "../public/img/weapon_types/Claymore.png"
 import Polearm from "../public/img/weapon_types/Polearm.png"
 import Sword from "../public/img/weapon_types/Sword.png"
 import { getGuides } from "./data-cache"
-import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, Guide, GuidePage, SmallChar, SmallWeapon, TalentTable, TalentValue, Weapon, WeaponCurveName, WeaponType } from "./types"
+import { Artifact, Character, CharacterFull, Cost, CostTemplate, CurveEnum, Guide, GuidePage, SmallArtifact, SmallChar, SmallWeapon, TalentTable, TalentValue, Weapon, WeaponCurveName, WeaponType } from "./types"
 
 export const elements = {
     Pyro, Electro, Cryo, Hydro, Anemo, Geo, Dendro
@@ -115,7 +115,7 @@ export function getCostsFromTemplate(costTemplate: CostTemplate, costTemplates: 
     }))
 }
 
-export async function getGuidesFor(type: "enemy" | "character" | "material" | "weapon", name: string): Promise<{ guide: Guide, page: GuidePage }[]> {
+export async function getGuidesFor(type: "enemy" | "character" | "material" | "weapon" | "artifact", name: string): Promise<{ guide: Guide, page: GuidePage }[]> {
     return (await getGuides())?.flatMap(guide => guide.pages
             .filter(page => page.links?.[type]?.includes(name))
             .map(page => ({
@@ -151,21 +151,34 @@ export function getStarColor(star: number): string {
     return ""
 }
 
-export function createSmallChar(c: Character): SmallChar {
-    const char: SmallChar = { name: c.name }
-    if (c.star) char.stars = c.star
-    if (c.meta.element) char.element = [c.meta.element as ElementType]
-    if (c.skills) char.element = c.skills.map(skill => skill.ult?.type).filter(x => x) as ElementType[]
-    if (c.weaponType) char.weapon = c.weaponType
-    if (c.icon) char.icon = c.icon
-    return char
+export function createSmallChar(char: Character): SmallChar {
+    const c: SmallChar = { name: char.name, urlpath: "characters" }
+    if (char.star) c.stars = char.star
+    if (char.meta.element) c.element = [char.meta.element as ElementType]
+    if (char.skills) c.element = char.skills.map(skill => skill.ult?.type).filter(x => x) as ElementType[]
+    if (char.weaponType) c.weapon = char.weaponType
+    if (char.icon) c.icon = char.icon
+    return c
 }
 
+export function createSmallWeapon(weapon: Weapon): SmallWeapon {
+    const w: SmallWeapon = { name: weapon.name, urlpath: "weapons" }
+    if (weapon.stars) w.stars = weapon.stars
+    if (weapon.weaponType) w.weapon = weapon.weaponType
+    if (weapon.icon) w.icon = weapon.icon
+    return w
+}
 
-export function createSmallWeapon(w: Weapon): SmallWeapon {
-    const char: SmallWeapon = { name: w.name }
-    if (w.stars) char.stars = w.stars
-    if (w.weaponType) char.weapon = w.weaponType
-    if (w.icon) char.icon = w.icon
-    return char
+export function createSmallArtifact(arti: Artifact): SmallArtifact {
+    const a: SmallArtifact = { name: arti.name, urlpath: "artifacts" }
+    if (arti.levels) a.stars = Math.max(...arti.levels)
+    if (arti.artis?.[0]?.icon) a.icon = arti.artis[0].icon
+    return a
+}
+
+export function joinMulti(input: string[]): string {
+    if (input.length == 0) return input[0]
+
+    const last = input[input.length-1]
+    return `${input.slice(0, -1).join(", ")} and ${last}`
 }
