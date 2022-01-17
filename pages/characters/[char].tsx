@@ -312,7 +312,7 @@ function Talent({ talent, costTemplates }: { talent: Skill, costTemplates: CostT
         <ReactMarkdown>{(talent.desc?.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
       </div>
       {(talent.video || talent.videomp4) && <div className="p-2 flex flex-col justify-around items-center w-full ">
-        {talent.videomp4 ? <video src={talent.videomp4} autoPlay loop className="w-full" /> : <img src={talent.video} alt="Talent video" className="w-full" />}
+        {talent.videomp4 ? <video src={talent.videomp4} autoPlay muted loop playsInline className="w-full" /> : <img src={talent.video} alt="Talent video" className="w-full" />}
       </div>}
     </div>
     {talent.talentTable && <TalentTable table={talent.talentTable} />}

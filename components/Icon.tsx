@@ -5,13 +5,13 @@ import { elements, getStarColor, image, urlify, weapons } from "../utils/utils"
 import FormattedLink from "./FormattedLink"
 
 export default function Icon({ icon, className, loading = "lazy" }: { icon: { name: string, icon?: string }, className?: string, loading?: "eager" | "lazy" }) {
-  const src = icon.icon ?? "img/unknown.png"
+  const src = (icon.icon?.startsWith("img/") ? ("/" + icon.icon) : icon.icon) ?? "img/unknown.png"
 
-  if (src.startsWith("img"))
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img alt={icon.name} loading={loading} src={"/" + src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} />
+  // if (src.startsWith("img"))
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img alt={icon.name} loading={loading} src={src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} />
 
-  return <Image alt={icon.name} loading={loading} src={src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} />
+  // return <Image alt={icon.name} loading={loading} src={src} className={className} width={256} height={256} onError={(e) => (e.target as HTMLImageElement).src = "/img/unknown.png"} />
 }
 
 export function IconName({ name, type, urltype, loading = "lazy" }: { name: string, type: string, urltype: string, loading: "eager" | "lazy" }) {
