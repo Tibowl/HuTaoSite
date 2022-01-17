@@ -16,9 +16,9 @@ const Wrapped = forwardRef(function FLink({ children, onClick, href, className =
     )
 })
 
-function FormattedLink({ children, href, className = "", style = {}, location, target = undefined }: any) {
+function FormattedLink({ children, href, className = "", style = {}, location, target = undefined, prefetch = undefined }: any) {
     return (
-        <Link href={href} passHref><Wrapped location={location} className={className} target={target} style={style}>{children}</Wrapped></Link>
+        <Link href={href} passHref prefetch={prefetch}><Wrapped location={location} className={className} target={target} style={style}>{children}</Wrapped></Link>
     )
 }
 
