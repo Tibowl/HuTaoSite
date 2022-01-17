@@ -69,7 +69,7 @@ function DiscordAvatar({ user }: { user: DiscordUser }) {
     alt="Discord avatar"
     width={16}
     height={16}
-    className="rounded-xl p-0 m-0"
+    className="rounded-xl p-0 m-0 inline-block"
   />
 }
 
