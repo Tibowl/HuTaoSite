@@ -12,7 +12,7 @@ import { MaterialCost, MaterialImage } from "../../components/Material"
 import YouTube from "../../components/YouTube"
 import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates } from "../../utils/data-cache"
 import { Character, CharacterFull, Constellation, CostTemplate, CurveEnum, Meta, Passive, Skill, Skills, TalentTable, TalentValue } from "../../utils/types"
-import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, image, isFullCharacter, isValueTable, stat, urlify, weapons } from "../../utils/utils"
+import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, isFullCharacter, isValueTable, stat, urlify, weapons } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
@@ -52,12 +52,12 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         {char.ascensionCosts && costTemplates && <TOC href="#ascensions" title="Ascensions" />}
         {char.meta && <TOC href="#meta" title="Meta" />}
         {char.media.videos && <TOC href="#videos" title={Object.keys(char.media.videos).length > 1 ? "Videos" : "Video"} />}
-        {char.skills && char.skills.map((s, i) => (<>
+        {char.skills && char.skills.map((s, i) => (<span key={i}>
           {multiskill && <div>{s.ult?.type ?? `Skillset #${i}`}</div>}
           {s.talents && <TOC depth={multiskill ? 1 : 0} href={`#talents${i > 0 ? `-${i}` : ""}`} title="Talents" />}
           {s.passive && <TOC depth={multiskill ? 1 : 0} href={`#passive${i > 0 ? `-${i}` : ""}`} title="Passives" />}
           {s.constellations && <TOC depth={multiskill ? 1 : 0} href={`#const${i > 0 ? `-${i}` : ""}`} title="Constellations" />}
-        </>))}
+        </span>))}
       </div>
 
       <div className="grid grid-flow-col justify-start">

@@ -1,11 +1,10 @@
 import { GetServerSideProps } from "next"
-import { DiscordUser, Reminder } from "../utils/types"
-import { parseUser } from "../utils/parse-user"
-import Main from "../components/Main"
 import Head from "next/head"
+import { Component } from "react"
+import Main from "../components/Main"
 import { config } from "../utils/config"
-import { Component, useState } from "react"
-import Image from "next/image"
+import { parseUser } from "../utils/parse-user"
+import { DiscordUser, Reminder } from "../utils/types"
 
 interface Props {
   user: DiscordUser
@@ -64,7 +63,8 @@ function ReminderCard({ r, onDelete }: { r: Reminder, onDelete: () => void }) {
 }
 
 function DiscordAvatar({ user }: { user: DiscordUser }) {
-  return <Image
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img
     src={user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=16` : "https://discord.com/assets/1f0bfc0865d324c2587920a7d80c609b.png"}
     alt="Discord avatar"
     width={16}
