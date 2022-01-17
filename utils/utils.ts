@@ -11,7 +11,7 @@ import Claymore from "../public/img/weapon_types/Claymore.png"
 import Polearm from "../public/img/weapon_types/Polearm.png"
 import Sword from "../public/img/weapon_types/Sword.png"
 import { getGuides } from "./data-cache"
-import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, Guide, GuidePage, TalentTable, TalentValue, WeaponType } from "./types"
+import { Character, CharacterFull, Cost, CostTemplate, CurveEnum, Guide, GuidePage, SmallChar, TalentTable, TalentValue, WeaponType } from "./types"
 
 export const elements = {
     Pyro, Electro, Cryo, Hydro, Anemo, Geo, Dendro
@@ -133,4 +133,14 @@ export function getStarColor(star: number): string {
     if (star == 2) return "twostar"
     if (star == 1) return "onestar"
     return ""
+}
+
+export function createSmallChar(c: Character): SmallChar {
+    const char: SmallChar = { name: c.name }
+    if (c.star) char.stars = c.star
+    if (c.meta.element) char.element = [c.meta.element as ElementType]
+    if (c.skills) char.element = c.skills.map(skill => skill.ult?.type).filter(x => x) as ElementType[]
+    if (c.weaponType) char.weapon = c.weaponType
+    if (c.icon) char.icon = c.icon
+    return char
 }

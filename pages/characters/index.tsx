@@ -3,21 +3,12 @@ import Head from "next/head"
 import Image from "next/image"
 import { useState } from "react"
 import { ExclusiveButton, ToggleAllButton, ToggleButton } from "../../components/Filters"
-import FormattedLink from "../../components/FormattedLink"
-import Icon from "../../components/Icon"
+import { CharIcon } from "../../components/Icon"
 import Main from "../../components/Main"
 import { getCharacters } from "../../utils/data-cache"
-import { WeaponType } from "../../utils/types"
-import { elements, ElementType, getStarColor, isFullCharacter, urlify, weapons } from "../../utils/utils"
+import { SmallChar, WeaponType } from "../../utils/types"
+import { createSmallChar, elements, ElementType, isFullCharacter, weapons } from "../../utils/utils"
 
-
-interface SmallChar {
-  name: string
-  stars?: number
-  element?: ElementType[]
-  weapon?: WeaponType
-  icon?: string
-}
 
 interface Props {
   characters: SmallChar[]
@@ -118,32 +109,7 @@ export default function Characters(props: Props & { location: string }) {
           .filter(c => starFilter == 0 || starFilter == c.stars)
           .filter(c => elementFilter.some(e => c.element?.includes(e)) || c.element == undefined)
           .filter(c => weaponFilter.some(e => c.weapon?.includes(e)) || c.weapon == undefined)
-          .map(char => {
-            const color = getStarColor(char.stars ?? 0)
-
-            return <FormattedLink key={char.name} location={props.location} href={`/characters/${urlify(char.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm" >
-              <div className={`${color} rounded-t-xl h-24 sm:h-28 lg:h-32`}>
-                <Icon icon={char} className="rounded-t-xl m-0 p-0" />
-                <span className="absolute block p-0.5 top-0 w-full">
-                  <div className="flex flex-col">
-                    {char.element && char.element.map(e => <div key={e} className="w-6 md:w-8">
-                      <Image src={elements[e]} alt={`${e} Element`} loading="eager" />
-                    </div>)}
-                  </div>
-                </span>
-                <span className="absolute block p-0.5 top-0 w-full">
-                  <div className="flex flex-col float-right">
-                    {char.weapon && <div className="w-6 md:w-8">
-                      <Image src={weapons[char.weapon]} alt={char.weapon} loading="eager" />
-                    </div>}
-                  </div>
-                </span>
-              </div>
-              <span className="flex justify-center items-center h-10 md:h-12 m-0 p-0 duration-200 md:text-base">
-                {char.name}
-              </span>
-            </FormattedLink>
-          })}
+          .map(char => <CharIcon key={char.name} char={char} location={props.location} />)}
       </div>
     </Main>
   )
@@ -173,15 +139,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
             return -1
           else return a.name.localeCompare(b.name)
         })
-        .map(c => {
-          const char: SmallChar = { name: c.name }
-          if (c.star) char.stars = c.star
-          if (c.meta.element) char.element = [c.meta.element as ElementType]
-          if (c.skills) char.element = c.skills.map(skill => skill.ult?.type).filter(x => x) as ElementType[]
-          if (c.weaponType) char.weapon = c.weaponType
-          if (c.icon) char.icon = c.icon
-          return char
-        })
+        .map(c => createSmallChar(c))
     },
     revalidate: 60 * 60
   }

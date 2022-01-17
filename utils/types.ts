@@ -1,3 +1,5 @@
+import { ElementType } from "./utils"
+
 export interface DiscordUser {
   id:            string
   username:      string
@@ -212,4 +214,12 @@ export interface GuidePage {
         enemy?:     string[]
         character?: string[]
     }
+}
+
+export interface SmallChar {
+    name: string
+    stars?: number
+    element?: ElementType[]
+    weapon?: WeaponType
+    icon?: string
 }

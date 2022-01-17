@@ -4,18 +4,22 @@ import Head from "next/head"
 import ReactMarkdown from "react-markdown"
 import FormattedLink from "../../components/FormattedLink"
 import Guides from "../../components/Guides"
-import Icon from "../../components/Icon"
+import Icon, { CharIcon, IconName } from "../../components/Icon"
 import Main from "../../components/Main"
-import { getMaterials } from "../../utils/data-cache"
-import { Material } from "../../utils/types"
-import { getGuidesFor, getLinkToGuide, getStarColor, urlify } from "../../utils/utils"
+import { CostTemplates, getCharacters, getCostTemplates, getMaterials } from "../../utils/data-cache"
+import { Cost, CostTemplate, Material, SmallChar } from "../../utils/types"
+import { createSmallChar, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, urlify } from "../../utils/utils"
 
 interface Props {
   mat: Material,
-  guides?: string[][]
+  guides?: string[][],
+  usedBy: {
+    charTalents: SmallChar[]
+    charAscension: SmallChar[]
+  }
 }
 
-export default function CharacterWebpage({ mat, location, guides }: Props & { location: string }) {
+export default function CharacterWebpage({ mat, location, guides, usedBy }: Props & { location: string }) {
   const color = getStarColor(mat.stars ?? 1)
 
   return (
@@ -74,6 +78,20 @@ export default function CharacterWebpage({ mat, location, guides }: Props & { lo
           {mat.sources.map(s => <div key={s}>{s}</div>)}
         </>}
 
+        {usedBy.charTalents.length > 0 && <>
+          <h3 className="text-lg font-bold pt-1" id="chartalents">Used by character talents:</h3>
+          <div className="flex flex-wrap justify-start text-center mt-2">
+            {usedBy.charTalents.map(c => <CharIcon key={c.name} char={c} location={location} />)}
+          </div>
+        </>}
+
+        {usedBy.charAscension.length > 0 && <>
+          <h3 className="text-lg font-bold pt-1" id="charascension">Used by character ascensions:</h3>
+          <div className="flex flex-wrap justify-start text-center mt-2">
+            {usedBy.charAscension.map(c => <CharIcon key={c.name} char={c} location={location} />)}
+          </div>
+        </>}
+
         {mat.longDesc && <>
           <h3 className="text-lg font-bold pt-1" id="longdesc">Description:</h3>
           <blockquote className="pl-5 mb-2 border-l-2">
@@ -85,6 +103,16 @@ export default function CharacterWebpage({ mat, location, guides }: Props & { lo
   )
 }
 
+
+function isInCosts(template: CostTemplate | Cost[], costTemplates: CostTemplates, name: string): boolean {
+  const costs = Array.isArray(template) ? template : getCostsFromTemplate(template, costTemplates)
+
+  for (const c of costs)
+    if (c.items.some(i => i.name == name))
+      return true
+
+  return false
+}
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
   const matName = context.params?.material
@@ -100,10 +128,33 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 
   const guides = (await getGuidesFor("material", mat.name))?.map(({ guide, page }) => [page.name, getLinkToGuide(guide, page)])
 
+  const char = await getCharacters()
+  const costTemplates = await getCostTemplates()
+  const charAscension: SmallChar[] = []
+  const charTalents: SmallChar[] = []
+
+  if (char && costTemplates) {
+    for (const c of Object.values(char)) {
+      if (c.ascensionCosts && isInCosts(c.ascensionCosts, costTemplates, mat.name))
+        charAscension.push(createSmallChar(c))
+
+      if (c.skills) {
+        const talents = c.skills.flatMap(s => [...(s.talents ?? []), s.ult])
+
+        if (talents.some(x => x?.costs && isInCosts(x.costs, costTemplates, mat.name)))
+          charTalents.push(createSmallChar(c))
+      }
+    }
+  }
+
   return {
     props: {
       mat,
-      guides
+      guides,
+      usedBy: {
+        charAscension,
+        charTalents
+      }
     },
     revalidate: 60 * 60
   }
