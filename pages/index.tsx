@@ -77,7 +77,7 @@ export default function Home({ location }: { location: string }) {
         </div>
 
         <div className="md:flex md:flex-row items-center max-w-4xl">
-          <Card title="Weapon Information" desc="Check how many enhancement ores you need to level that shiny new weapon or which refinements/sub-stat it has" location={location} src={weapons.Sword} />
+          <Card href="/weapons" title="Weapon Information &rarr;" desc="Check which weapon ascension material you need to level that shiny new weapon or which refinements/sub-stat it has" location={location} src={weapons.Sword} alsoSite />
           <Card title="Events" desc="Get reminded when new events come out" location={location} src={alarm} />
         </div>
 
