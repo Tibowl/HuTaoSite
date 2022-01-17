@@ -138,12 +138,12 @@ export default function Materials(props: Props & { location: string }) {
           .filter(m => starFilter == 0 || starFilter == (m.stars ?? 1))
           .filter(m => categoryFilter.some(e => m.category?.includes(e)) || m.category == undefined)
           .filter(m => typeFilter.some(e => m.type?.includes(e)) || m.type == undefined)
-          .map(mat => {
+          .map((mat, i) => {
             const color = getStarColor(mat.stars ?? 1)
 
-            return <FormattedLink key={mat.name} prefetch={false} location={props.location} href={`/materials/${urlify(mat.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 text-bold text-sm" >
+            return <FormattedLink key={mat.name} prefetch={i < 21} location={props.location} href={`/materials/${urlify(mat.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 text-bold text-sm" >
               <div className={`${color} rounded-t-xl h-24 sm:h-28 lg:h-32`}>
-                <Icon icon={mat} className="rounded-t-xl m-0 p-0" />
+                <Icon icon={mat} loading={i < 21 ? "eager" : "lazy"} className="rounded-t-xl m-0 p-0" />
               </div>
               <div
                 className={`flex justify-center items-center m-0 px-1 duration-200 md:text-base ${mat.name.length > 27 ? "text-xs md:text-xs" : mat.name.length > 20 ? "text-sm md:text-sm" : ""}`}
