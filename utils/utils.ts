@@ -182,3 +182,11 @@ export function joinMulti(input: string[]): string {
     const last = input[input.length-1]
     return `${input.slice(0, -1).join(", ")} and ${last}`
 }
+
+export async function send(api: string, object: unknown) {
+    return await fetch(api, {
+        body: JSON.stringify(object),
+        headers: { "Content-Type": "application/json" },
+        method: "POST"
+      })
+}

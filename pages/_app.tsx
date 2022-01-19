@@ -1,11 +1,12 @@
 import type { AppProps } from "next/app"
 import Head from "next/head"
-import { Component, useEffect } from "react"
+import { useEffect } from "react"
 import "tailwindcss/tailwind.css"
 import Footer from "../components/Footer"
 import NavBar from "../components/NavBar"
 import * as gtag from "../utils/gtag"
 import "../public/global.css"
+import ReactModal from "react-modal"
 
 export default function MyApp({ Component, pageProps, router }: AppProps) {
   useEffect(() => {
@@ -17,7 +18,8 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
       router.events.off("routeChangeComplete", handleRouteChange)
     }
   }, [router.events])
-  return <div className="dark:bg-slate-700 min-h-screen flex flex-col items-center justify-between text-slate-900 dark:text-slate-100">
+
+  return <div className="bg-slate-50 dark:bg-slate-700 min-h-screen flex flex-col items-center justify-between text-slate-900 dark:text-slate-100">
     <Head>
       <title>{router.pathname.substring(1).replace(/^\w/, w => w.toUpperCase())} | Hu Tao</title>
       <link rel="icon" href="/favicon.ico" />

@@ -26,7 +26,6 @@ export default function Tools({ location }: {location: string}) {
               Reminders are send to your Discord DM&apos;s via the Discord bot. Please make sure you share at least one server with the Discord bot
               and have DM&apos;s enabled in that server. You can invite the bot to your own Discord server or join the support server via the links on
               the <FormattedLink location={location} href="/" >homepage</FormattedLink>.
-
             </div>
           </li>
       </ul>

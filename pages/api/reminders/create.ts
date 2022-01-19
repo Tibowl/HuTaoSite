@@ -8,9 +8,10 @@ import { Reminder } from "../../../utils/types"
 export default async function api(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.redirect("/")
   const user = parseUser(req.headers.cookie)
-  const reminder: Reminder = req.body?.r
+  const name: string = req.body?.name
+  const duration: string = req.body?.duration
 
-  if (!user || !reminder) {
+  if (!user) {
     return {
       redirect: {
         destination: "/api/oauth",
@@ -19,11 +20,14 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
     }
   }
 
-  console.log(`[${new Date().toISOString()}] Deleting reminder ${user.id} / ${reminder.id}`)
+  if (!name || !duration || typeof name !== "string" || typeof duration !== "string" || name.length > 128 || duration.length > 128)
+    return res.status(400).send("Invalid data")
 
-  const fetched = await fetch(`${config.discordUri}/reminders/${user.id}/delete`, {
+  console.log(`[${new Date().toISOString()}] Creating reminder ${user.id} / ${name}: ${duration}`)
+
+  const fetched = await fetch(`${config.discordUri}/reminders/${user.id}/create`, {
     headers: { Authorization: `${config.discordSecret}`, "Content-Type": "application/json" },
-    body: JSON.stringify(reminder),
+    body: JSON.stringify({ name, duration }),
     method: "POST"
   })
 
