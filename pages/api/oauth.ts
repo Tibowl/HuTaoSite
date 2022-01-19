@@ -1,5 +1,5 @@
 import fetch from "node-fetch"
-import { serialize } from "cookie"
+import { parse, serialize } from "cookie"
 import { config } from "../../utils/config"
 import { sign } from "jsonwebtoken"
 import { DiscordUser } from "../../utils/types"
@@ -66,5 +66,14 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
     })
   )
 
-  res.redirect("/reminders")
+  const cookie = req.headers.cookie
+  if (cookie) {
+    const parsed = parse(cookie)
+    const path = parsed["oauth-redirect"]
+
+    if (path && path.startsWith("/"))
+      return res.redirect(path)
+  }
+
+  res.redirect("/tools")
 }

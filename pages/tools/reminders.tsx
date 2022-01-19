@@ -1,10 +1,11 @@
+import { serialize } from "cookie"
 import { GetServerSideProps } from "next"
 import Head from "next/head"
 import { Component } from "react"
-import Main from "../components/Main"
-import { config } from "../utils/config"
-import { parseUser } from "../utils/parse-user"
-import { DiscordUser, Reminder } from "../utils/types"
+import Main from "../../components/Main"
+import { config } from "../../utils/config"
+import { parseUser } from "../../utils/parse-user"
+import { DiscordUser, Reminder } from "../../utils/types"
 
 interface Props {
   user: DiscordUser
@@ -77,6 +78,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async function (ctx
   const user = parseUser(ctx.req.headers.cookie)
 
   if (!user) {
+    ctx.res.setHeader(
+      "Set-Cookie",
+      serialize("oauth-redirect", ctx.resolvedUrl, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+        maxAge: 3600,
+        sameSite: "lax",
+        path: "/",
+      }))
+
     return {
       redirect: {
         destination: "/api/oauth",

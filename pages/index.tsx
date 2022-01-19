@@ -68,7 +68,7 @@ export default function Home({ location }: { location: string }) {
       <div className="grid items-center justify-around max-w-4xl mt-1">
         <div className="md:flex md:flex-row items-center max-w-4xl">
           <Card href="/guides" title="Guides &rarr;" desc="Find where those Specters are hiding" location={location} src={book} alsoSite />
-          <Card href="/reminders" title="Reminders &rarr;" desc="Remind yourself of that Parametric Transformer you forgot for the 5th time" location={location} src={alarm} alsoSite="Can be managed on site as well" />
+          <Card href="/tools/reminders" title="Reminders &rarr;" desc="Remind yourself of that Parametric Transformer you forgot for the 3rd time this month" location={location} src={alarm} alsoSite="Can be managed on site as well" />
         </div>
 
         <div className="md:flex md:flex-row items-center max-w-4xl">
