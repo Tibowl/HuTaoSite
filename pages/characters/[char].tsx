@@ -34,7 +34,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         <title>{char.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${char.name} | Hu Tao`} />
-        <meta property="og:description" content={getDescription(char, charElems)} />
+        <meta property="og:description" content={getDescription(char, charElems, characterCurves)} />
         {char.icon && <meta property="og:image" content={getIconPath(char.icon)} />}
       </Head>
       <h2 className="font-semibold">
@@ -109,8 +109,21 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
   )
 }
 
-function getDescription(char: Character, charElems: ("Pyro" | "Electro" | "Cryo" | "Hydro" | "Anemo" | "Geo" | "Dendro")[]): string | undefined {
-  return `${char.name} is a ${char.star ? `${char.star} star ` : ""}${joinMulti(charElems)} ${getWeaponLine()}.\n${getAscensionLine()}${getTalentLine()}${clean(char.desc)}`.trim()
+function getDescription(char: Character, charElems: ElementType[], characterCurves: CharacterCurves | null): string | undefined {
+  return `${char.name} is a ${char.star ? `${char.star} star ` : ""}${joinMulti(charElems)} ${getWeaponLine()}.\n${getCharStatsLine()}\n${getAscensionLine()}${getTalentLine()}`.trim()
+
+  function getCharStatsLine() {
+    if (isFullCharacter(char) && characterCurves)
+      return getStatsLine(
+        char.ascensions[char.ascensions.length - 1].maxLevel,
+        getCharStatsAt(char, char.ascensions[char.ascensions.length - 1].maxLevel, char.ascensions.length - 1, characterCurves)
+      )
+    return ""
+  }
+
+  function getStatsLine(level: number, stats: Record<string, number>) {
+    return `Stats at level ${level}: ${joinMulti(Object.entries(stats).map(([name, value]) => `${stat(name, value)} ${name}`))}. \n`
+  }
 
   function getWeaponLine() {
     if (char.weaponType)

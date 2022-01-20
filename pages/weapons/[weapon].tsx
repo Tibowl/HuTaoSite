@@ -90,7 +90,7 @@ export default function WeaponWebpage({ weapon, weaponCurves, costTemplates, loc
 }
 
 function getDescription(weapon: Weapon, weaponCurves: WeaponCurves | null): string | undefined {
-  return `${weapon.name} is a ${weapon.stars ? `${weapon.stars} star ` : ""}${weapon.weaponType}. \n{getAscensionCostsLine()}${getPlaceholderStatsLine()}${getStatsLineFromAsc()}${getRefinementLine()}`.trim()
+  return `${weapon.name} is a ${weapon.stars ? `${weapon.stars} star ` : ""}${weapon.weaponType}. \n${getStatsLineFromAsc()}\n${getAscensionCostsLine()}${getRefinementLine()}`.trim()
 
   function getRefinementLine() {
     if (weapon.refinements && weapon.refinements.length > 0)
@@ -102,10 +102,6 @@ function getDescription(weapon: Weapon, weaponCurves: WeaponCurves | null): stri
         weapon.ascensions[weapon.ascensions.length - 1].maxLevel,
         getWeaponStatsAt(weapon, weapon.ascensions[weapon.ascensions.length - 1].maxLevel, weapon.ascensions.length - 1, weaponCurves)
       )
-    return ""
-  }
-
-  function getPlaceholderStatsLine() {
     if (weapon.placeholderStats)
       return getStatsLine(weapon.placeholderStats.level, weapon.placeholderStats.stats)
     return ""
@@ -118,7 +114,7 @@ function getDescription(weapon: Weapon, weaponCurves: WeaponCurves | null): stri
   }
 
   function getStatsLine(level: number, stats: Partial<Record<StatsName, number>>) {
-    return `Stats at level ${level}: ${joinMulti(Object.entries(stats).map(([name, value]) => `${name}: ${stat(name, value)}`))}. \n`
+    return `Stats at level ${level}: ${joinMulti(Object.entries(stats).map(([name, value]) => `${stat(name, value)} ${name}`))}. \n`
   }
 }
 

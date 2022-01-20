@@ -25,14 +25,14 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
   const usedByDesc = []
 
   if (usedBy.charTalents.length > 0 && usedBy.charAscension.length > 0)
-    usedByDesc.push(`${joinMulti([...usedBy.charTalents, ...usedBy.charAscension].filter((v, i, a) => a.indexOf(v) == i).map(x => x.name))} character talents/ascensions`)
+    usedByDesc.push(`Used by ${joinMulti([...usedBy.charTalents, ...usedBy.charAscension].map(x => x.name).filter((v, i, a) => a.indexOf(v) == i))} character talents/ascensions.`)
   else if (usedBy.charTalents.length > 0)
-    usedByDesc.push(`${joinMulti(usedBy.charTalents.map(x => x.name))} character talents`)
+    usedByDesc.push(`Used by ${joinMulti(usedBy.charTalents.map(x => x.name))} character talents.`)
   else if (usedBy.charAscension.length > 0)
-    usedByDesc.push(`${joinMulti(usedBy.charAscension.map(x => x.name))} character ascensions`)
+    usedByDesc.push(`Used by ${joinMulti(usedBy.charAscension.map(x => x.name))} character ascensions.`)
 
   if (usedBy.weaponAscension.length > 0)
-    usedByDesc.push(`${joinMulti(usedBy.weaponAscension.map(x => x.name))} weapon ascensions`)
+    usedByDesc.push(`Used by ${joinMulti(usedBy.weaponAscension.map(x => x.name))} weapon ascensions.`)
 
   return (
     <Main>
@@ -40,7 +40,7 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
         <title>{mat.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${mat.name} | Hu Tao`} />
-        <meta property="og:description" content={`${mat.name} is a ${mat.stars ? `${mat.stars} star ` : ""}${mat.type}. \n${usedByDesc.length > 0 ? `Used by ${joinMulti(usedByDesc)}.\n ` : ""}${mat.desc ? clean(mat.desc ?? "") : ""}`.trim()} />
+        <meta property="og:description" content={`${mat.name} is a ${mat.stars ? `${mat.stars} star ` : ""}${mat.type}. \n${usedByDesc.join("\n")}\n${mat.desc ? clean(mat.desc ?? "") : ""}`.trim()} />
         {mat.icon && <meta property="og:image" content={getIconPath(mat.icon)} />}
       </Head>
       <h2 className="font-semibold">
