@@ -24,9 +24,9 @@ export interface Reminder {
 // Artifacts
 export interface Artifact {
     name:    string
-    levels:  number[]
-    bonuses: Bonus[]
-    artis:   Arti[]
+    levels?:  number[]
+    bonuses?: Bonus[]
+    artis?:   Arti[]
 }
 
 export interface Arti {

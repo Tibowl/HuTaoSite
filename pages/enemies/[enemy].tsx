@@ -25,7 +25,8 @@ export default function EnemyWebpage({ enemy, location, guides }: Props & { loca
         <title>{enemy.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${enemy.name} | Hu Tao`} />
-        <meta property="og:description" content={`View ${enemy.name} information`} />
+        <meta property="og:description" content={`${enemy.name}${enemy.type ? ` (${enemy.type})` : ""}${enemy.kind ? ` is a ${enemy.kind}` : " is an enemy"} in Genshin Impact.${enemy.resistance ? " Click to find out their resistances!" : ""}`} />
+        {enemy.icon && <meta property="og:image" content={enemy.icon} />}
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/enemies/" location={location} className="font-semibold text-lg">

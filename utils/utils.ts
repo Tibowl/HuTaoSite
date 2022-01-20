@@ -142,6 +142,10 @@ export function removeBrackets(input: string) {
     return input.replace(/\(.*\)/g, "").replace(/ +:/, ":")
 }
 
+export function clean(input: string) {
+    return input.replace(/ ?\$\{.*?\}/g, "").replace(/ ?\(.*?\)/g, "").replace(/[*[\]]/g, "").split("\n")[0]
+}
+
 export function getStarColor(star: number): string {
     if (star == 5) return "fivestar"
     if (star == 4) return "fourstar"
@@ -185,7 +189,7 @@ export function createSmallEnemy(enemy: Enemy): SmallEnemy {
 }
 
 export function joinMulti(input: string[]): string {
-    if (input.length == 0) return input[0]
+    if (input.length <= 1) return input[0]
 
     const last = input[input.length-1]
     return `${input.slice(0, -1).join(", ")} and ${last}`

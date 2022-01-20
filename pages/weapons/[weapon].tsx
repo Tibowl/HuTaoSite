@@ -9,8 +9,8 @@ import Main from "../../components/Main"
 import { MaterialImage } from "../../components/Material"
 import { FullAscensionCosts } from "../../components/Tables"
 import { CostTemplates, getCostTemplates, getWeaponCurves, getWeapons, WeaponCurves } from "../../utils/data-cache"
-import { CostTemplate, PlaceHolderStats, Refinement, Weapon, WeaponCurveName } from "../../utils/types"
-import { getGuidesFor, getLinkToGuide, getStarColor, getWeaponStatsAt, stat, urlify } from "../../utils/utils"
+import { CostTemplate, PlaceHolderStats, Refinement, StatsName, Weapon, WeaponCurveName } from "../../utils/types"
+import { clean, getGuidesFor, getLinkToGuide, getStarColor, getWeaponStatsAt, joinMulti, stat, urlify } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
@@ -20,8 +20,10 @@ interface Props {
   guides?: string[][],
 }
 
+
 export default function WeaponWebpage({ weapon, weaponCurves, costTemplates, location, guides }: Props & { location: string }) {
   const color = getStarColor(weapon.stars ?? 1)
+
 
   return (
     <Main>
@@ -29,7 +31,8 @@ export default function WeaponWebpage({ weapon, weaponCurves, costTemplates, loc
         <title>{weapon.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${weapon.name} | Hu Tao`} />
-        <meta property="og:description" content={`View ${weapon.name} information`} />
+        <meta property="og:description" content={getDescription(weapon, weaponCurves)} />
+        {weapon.icon && <meta property="og:image" content={weapon.icon} />}
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/weapons/" location={location} className="font-semibold text-lg">
@@ -71,7 +74,7 @@ export default function WeaponWebpage({ weapon, weaponCurves, costTemplates, loc
         {guides && guides.length > 0 && <Guides guides={guides} />}
         <div className="clear-both" />
         {weapon.ascensions && weapon.weaponCurve && weaponCurves && <Stats weapon={weapon} curves={weaponCurves} />}
-        {weapon.refinements && weapon.refinements.length > 0 && <Refinements refinements={weapon.refinements}/>}
+        {weapon.refinements && weapon.refinements.length > 0 && <Refinements refinements={weapon.refinements} />}
         {weapon.placeholderStats && <PlaceholderStats placeholderStats={weapon.placeholderStats} />}
         {weapon.ascensionCosts && costTemplates && <FullAscensionCosts template={weapon.ascensionCosts} costTemplates={costTemplates} />}
 
@@ -86,12 +89,49 @@ export default function WeaponWebpage({ weapon, weaponCurves, costTemplates, loc
   )
 }
 
-function AscensionCosts({ costs }: { costs: CostTemplate }) {
-  const ascensionCosts = [
+function getDescription(weapon: Weapon, weaponCurves: WeaponCurves | null): string | undefined {
+  return `${weapon.name} is a ${weapon.stars ? `${weapon.stars} star ` : ""}${weapon.weaponType}. ${getAscensionCostsLine()}${getPlaceholderStatsLine()}${getStatsLineFromAsc()}${getRefinementLine()}`
+
+  function getRefinementLine() {
+    if (weapon.refinements && weapon.refinements.length > 0)
+      return `Refinement ${weapon.refinements[0].name} Lv. 1: ${clean(weapon.refinements[0].desc)}`
+  }
+  function getStatsLineFromAsc() {
+    if (weapon.ascensions && weapon.weaponCurve && weaponCurves)
+      return getStatsLine(
+        weapon.ascensions[weapon.ascensions.length - 1].maxLevel,
+        getWeaponStatsAt(weapon, weapon.ascensions[weapon.ascensions.length - 1].maxLevel, weapon.ascensions.length - 1, weaponCurves)
+      )
+    return ""
+  }
+
+  function getPlaceholderStatsLine() {
+    if (weapon.placeholderStats)
+      return getStatsLine(weapon.placeholderStats.level, weapon.placeholderStats.stats)
+    return ""
+  }
+
+  function getAscensionCostsLine() {
+    if (weapon.ascensionCosts)
+      return `Uses ${joinMulti(getAscensionCosts(weapon.ascensionCosts))} for ascensions. `
+    return ""
+  }
+
+  function getStatsLine(level: number, stats: Partial<Record<StatsName, number>>) {
+    return `Stats at level ${level}: ${joinMulti(Object.entries(stats).map(([name, value]) => `${name}: ${stat(name, value)}`))}. `
+  }
+}
+
+function getAscensionCosts(costs: CostTemplate) {
+  return [
     costs.mapping.WeaponAsc4 ?? costs.mapping.WeaponAsc3,
     costs.mapping.EnemyDropTierA3 ?? costs.mapping.EnemyDropTierA2,
     costs.mapping.EnemyDropTierB3 ?? costs.mapping.EnemyDropTierB2,
   ].filter(x => x)
+}
+
+function AscensionCosts({ costs }: { costs: CostTemplate }) {
+  const ascensionCosts = getAscensionCosts(costs)
   return <div className="flex flex-wrap items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Ascension materials:</div>
     {ascensionCosts.map(e => <MaterialImage key={e} name={e} />)}
@@ -150,17 +190,17 @@ function PlaceholderStats({ placeholderStats }: { placeholderStats: PlaceHolderS
         {Object.keys(stats).map((name) => <td key={name}>{name}</td>)}
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
-         <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500">
-            <td>{level}</td>
-            {Object.entries(stats).map(([name, value]) => <td key={name}>{stat(name, value)}</td>)}
-          </tr>
+        <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500">
+          <td>{level}</td>
+          {Object.entries(stats).map(([name, value]) => <td key={name}>{stat(name, value)}</td>)}
+        </tr>
       </tbody>
     </table>
   </>
 }
 
 
-function Refinements({ refinements }: { refinements: Refinement[]}) {
+function Refinements({ refinements }: { refinements: Refinement[] }) {
   const [expanded, setExpanded] = useState(false)
 
   return <>
@@ -172,9 +212,9 @@ function Refinements({ refinements }: { refinements: Refinement[]}) {
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {refinements
-          .filter((r, i, arr) => expanded ? true : (i == 0 || i == arr.length-1))
+          .filter((r, i, arr) => expanded ? true : (i == 0 || i == arr.length - 1))
           .map(({ name, desc }, i) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={i}>
-            <td>{name} <span className="font-semibold">R{i+1}</span></td>
+            <td>{name} <span className="font-semibold">R{i + 1}</span></td>
             <td><ReactMarkdown>{desc}</ReactMarkdown></td>
           </tr>)}
         {!expanded && <tr className="pr-1 cursor-pointer text-blue-700 dark:text-blue-300 hover:text-blue-400 dark:hover:text-blue-400 no-underline transition-all duration-200 font-semibold">

@@ -17,7 +17,7 @@ export default function CategoryWebpage({ guide, location }: Props & { location:
         <title>{guide.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${guide.name} | Hu Tao`} />
-        <meta property="og:description" content={`View ${guide.name} guides`} />
+        <meta property="og:description" content={`View ${guide.pages.length} ${guide.name} guides`} />
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/guides/" location={location} className="font-semibold text-lg">

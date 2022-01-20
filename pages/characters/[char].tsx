@@ -13,7 +13,7 @@ import { FullAscensionCosts } from "../../components/Tables"
 import YouTube from "../../components/YouTube"
 import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates } from "../../utils/data-cache"
 import { Character, CharacterFull, Constellation, CostTemplate, CurveEnum, Meta, Passive, Skill, Skills, TalentTable, TalentValue } from "../../utils/types"
-import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, isFullCharacter, isValueTable, stat, urlify, weapons } from "../../utils/utils"
+import { clean, elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, isFullCharacter, isValueTable, joinMulti, stat, urlify, weapons } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
@@ -34,7 +34,8 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         <title>{char.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${char.name} | Hu Tao`} />
-        <meta property="og:description" content={`View ${char.name} information`} />
+        <meta property="og:description" content={getDescription(char, charElems)} />
+        {char.icon && <meta property="og:image" content={char.icon} />}
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/characters/" location={location} className="font-semibold text-lg">
@@ -108,27 +109,51 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
   )
 }
 
+function getDescription(char: Character, charElems: ("Pyro" | "Electro" | "Cryo" | "Hydro" | "Anemo" | "Geo" | "Dendro")[]): string | undefined {
+  return `${char.name} is a ${char.star ? `${char.star} star ` : ""}${joinMulti(charElems)} ${getWeaponLine()}. ${getAscensionLine()}${getTalentLine()}${clean(char.desc)}`
+
+  function getWeaponLine() {
+    if (char.weaponType)
+      return `${char.weaponType} user`
+    return "character (unreleased)"
+  }
+
+  function getTalentLine() {
+    if (char.skills && getTalentCosts(char.skills).length > 0)
+      return `Uses ${joinMulti(getTalentCosts(char.skills))} for talents. `
+    return ""
+  }
+
+  function getAscensionLine() {
+    if (char.ascensionCosts)
+      return `Uses ${joinMulti(getAscensionCosts(char.ascensionCosts))} for ascensions. `
+    return ""
+  }
+}
+
 function TOC({ href, title, depth = 0 }: { href: string, title: string, depth?: number }) {
   const size = depth > 0 ? "sm" : "base"
   return <div>
     <FormattedLink href={href} className={`text-${size}`} style={({ marginLeft: (0.25 * depth) + "rem" })}>{title}</FormattedLink>
   </div>
 }
-
-function AscensionCosts({ costs }: { costs: CostTemplate }) {
-  const ascensionCosts = [
+function getAscensionCosts(costs: CostTemplate) {
+  return [
     costs.mapping.Gem4,
     costs.mapping.BossMat,
     costs.mapping.Specialty,
     costs.mapping.EnemyDropTier3,
   ].filter(x => x)
+}
+function AscensionCosts({ costs }: { costs: CostTemplate }) {
+  const ascensionCosts = getAscensionCosts(costs)
   return <div className="flex flex-wrap items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Ascension materials:</div>
     {ascensionCosts.map(e => <MaterialImage key={e} name={e} />)}
   </div>
 }
 
-function TalentCosts({ skills }: { skills: Skills[] }) {
+function getTalentCosts(skills: Skills[]): string[] {
   const talents = skills
     .flatMap(s => [...(s.talents ?? []), s.ult])
     .filter(x => x)
@@ -151,10 +176,13 @@ function TalentCosts({ skills }: { skills: Skills[] }) {
     .map(s => s?.costs?.mapping?.EnemyDropTier3)
     .filter((x, i, a) => x && a.indexOf(x) == i)
 
-  const all = [...books, ...mats, ...drops] as string[]
+  return [...books, ...mats, ...drops] as string[]
+}
+
+function TalentCosts({ skills }: { skills: Skills[] }) {
   return <div className="flex flex-wrap items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Talent materials:</div>
-    {all.map(e => <MaterialImage key={e} name={e} />)}
+    {getTalentCosts(skills).map(e => <MaterialImage key={e} name={e} />)}
   </div>
 }
 
@@ -291,29 +319,29 @@ function TalentCost({ template, costTemplates }: { template: CostTemplate, costT
   const [expanded, setExpanded] = useState(false)
 
   return <>
-  <div className="font-bold">Talent costs:</div>
-  <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
-    <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
-      <td>Lv.</td>
-      <td>Mora</td>
-      <td colSpan={maxCostWidth}>Items</td>
-    </thead>
-    <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
-      {costs
-        .map(({ mora, items }, ind) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={ind}>
-          <td>{ind + 1}&rarr;{ind + 2}</td>
-          <td className="text-right">{mora}</td>
-          {items.map(({ count, name }, i, arr) => <td key={name} colSpan={i == arr.length - 1 ? maxCostWidth - i : 1}>
-            {count > 0 && <MaterialCost name={name} count={count}/> }
-          </td>)}
-        </tr>
-        )
-        .filter((_, i, arr) => expanded ? true : (i == arr.length - 1))}
-      {!expanded && <tr className="pr-1 cursor-pointer text-blue-700 dark:text-blue-300 hover:text-blue-400 dark:hover:text-blue-400 no-underline transition-all duration-200 font-semibold">
-        <td colSpan={maxCostWidth + 2} style={({ textAlign: "center" })}>Click to expand...</td>
-      </tr>}
-    </tbody>
-  </table>
+    <div className="font-bold">Talent costs:</div>
+    <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
+      <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
+        <td>Lv.</td>
+        <td>Mora</td>
+        <td colSpan={maxCostWidth}>Items</td>
+      </thead>
+      <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
+        {costs
+          .map(({ mora, items }, ind) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={ind}>
+            <td>{ind + 1}&rarr;{ind + 2}</td>
+            <td className="text-right">{mora}</td>
+            {items.map(({ count, name }, i, arr) => <td key={name} colSpan={i == arr.length - 1 ? maxCostWidth - i : 1}>
+              {count > 0 && <MaterialCost name={name} count={count} />}
+            </td>)}
+          </tr>
+          )
+          .filter((_, i, arr) => expanded ? true : (i == arr.length - 1))}
+        {!expanded && <tr className="pr-1 cursor-pointer text-blue-700 dark:text-blue-300 hover:text-blue-400 dark:hover:text-blue-400 no-underline transition-all duration-200 font-semibold">
+          <td colSpan={maxCostWidth + 2} style={({ textAlign: "center" })}>Click to expand...</td>
+        </tr>}
+      </tbody>
+    </table>
   </>
 }
 

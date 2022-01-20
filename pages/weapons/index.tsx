@@ -28,7 +28,7 @@ export default function Weapons(props: Props & { location: string }) {
         <title>Weapons | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Weapons | Hu Tao" />
-        <meta property="og:description" content="View information about different Genshin Impact weapons!" />
+        <meta property="og:description" content={`View stats, refinements and description of the ${props.weapons.length} different weapons in Genshin Impact.`} />
       </Head>
 
       <h1 className="text-5xl font-bold pb-2">

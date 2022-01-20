@@ -8,7 +8,7 @@ import Icon, { SmallIcon } from "../../components/Icon"
 import Main from "../../components/Main"
 import { CostTemplates, getCharacters, getCostTemplates, getMaterials, getWeapons } from "../../utils/data-cache"
 import { Cost, CostTemplate, Material, SmallChar, SmallWeapon } from "../../utils/types"
-import { createSmallChar, createSmallWeapon, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, urlify } from "../../utils/utils"
+import { clean, createSmallChar, createSmallWeapon, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, joinMulti, urlify } from "../../utils/utils"
 
 interface Props {
   mat: Material,
@@ -22,6 +22,17 @@ interface Props {
 
 export default function MaterialWebpage({ mat, location, guides, usedBy }: Props & { location: string }) {
   const color = getStarColor(mat.stars ?? 1)
+  const usedByDesc = []
+
+  if (usedBy.charTalents.length > 0 && usedBy.charAscension.length > 0)
+    usedByDesc.push(`${joinMulti([...usedBy.charTalents, ...usedBy.charAscension].filter((v, i, a) => a.indexOf(v) == i).map(x => x.name))} character talents/ascensions`)
+  else if (usedBy.charTalents.length > 0)
+    usedByDesc.push(`${joinMulti(usedBy.charTalents.map(x => x.name))} character talents`)
+  else if (usedBy.charAscension.length > 0)
+    usedByDesc.push(`${joinMulti(usedBy.charAscension.map(x => x.name))} character ascensions`)
+
+  if (usedBy.weaponAscension.length > 0)
+    usedByDesc.push(`${joinMulti(usedBy.weaponAscension.map(x => x.name))} weapon ascensions`)
 
   return (
     <Main>
@@ -29,7 +40,8 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
         <title>{mat.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${mat.name} | Hu Tao`} />
-        <meta property="og:description" content={`View ${mat.name} information`} />
+        <meta property="og:description" content={`${mat.name} is a ${mat.stars ? `${mat.stars} star ` : ""}${mat.type}. ${usedByDesc.length > 0 ? `Used by ${joinMulti(usedByDesc)}. ` : ""}${mat.desc ? clean(mat.desc ?? "") : ""}`.trim()} />
+        {mat.icon && <meta property="og:image" content={mat.icon} />}
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/materials/" location={location} className="font-semibold text-lg">
@@ -173,7 +185,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
       usedBy: {
         charAscension,
         charTalents,
-        weaponAscension: weaponAscension.sort((a, b) => (a.stars && b. stars && b.stars - a.stars) || (a.weapon && b.weapon && a.weapon.localeCompare(b.weapon)) || a.name.localeCompare(b.name))
+        weaponAscension: weaponAscension.sort((a, b) => (a.stars && b.stars && b.stars - a.stars) || (a.weapon && b.weapon && a.weapon.localeCompare(b.weapon)) || a.name.localeCompare(b.name))
       }
     },
     revalidate: 60 * 60

@@ -29,7 +29,7 @@ export default function Enemies(props: Props & { location: string }) {
         <title>Enemies | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Enemies | Hu Tao" />
-        <meta property="og:description" content="View information about different Genshin Impact enemies!" />
+        <meta property="og:description" content={`View description, classification and resistances of the ${props.enemies.length} different enemies in Genshin Impact.`} />
       </Head>
 
       <h1 className="text-5xl font-bold pb-2">

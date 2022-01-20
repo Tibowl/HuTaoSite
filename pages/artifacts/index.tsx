@@ -24,7 +24,7 @@ export default function Artifacts(props: Props & { location: string }) {
         <title>Artifacts | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Artifacts | Hu Tao" />
-        <meta property="og:description" content="View information about different Genshin Impact artifacts!" />
+        <meta property="og:description" content={`View set bonuses and description of the ${props.artifacts.length} different artifact sets in Genshin Impact.`} />
       </Head>
 
       <h1 className="text-5xl font-bold pb-2">
@@ -87,7 +87,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     props: {
       artifacts: Object
         .values(data)
-        .sort((a, b) => Math.max(...b.levels) - Math.max(...a.levels) || Math.min(...a.levels) - Math.min(...b.levels) || a.name.localeCompare(b.name))
+        .sort((a, b) => Math.max(...b.levels ?? [5]) - Math.max(...a.levels ?? [5]) || Math.min(...a.levels ?? [4]) - Math.min(...b.levels ?? [4]) || a.name.localeCompare(b.name))
         .map(w => createSmallArtifact(w))
     },
     revalidate: 60 * 60

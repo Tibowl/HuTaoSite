@@ -72,7 +72,7 @@ export default class Reminders extends Component<Props, { reminders: Reminder[],
           <title>Reminders | Hu Tao</title>
           <meta name="twitter:card" content="summary" />
           <meta property="og:title" content="Reminders | Hu Tao" />
-          <meta property="og:description" content="Change, add and remove your Discord reminders" />
+          <meta property="og:description" content="Change, add and remove your Discord reminders." />
         </Head>
         <h1 className="text-5xl font-bold">
           Reminders

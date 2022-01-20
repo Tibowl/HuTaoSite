@@ -17,7 +17,7 @@ export default function Home({ location }: { location: string }) {
         <title>Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Hu Tao" />
-        <meta property="og:description" content="Genshin Impact tools" />
+        <meta property="og:description" content="Genshin Impact database and tools, available as a website and Discord bot." />
       </Head>
 
       <div className="flex flex-col items-center justify-center w-full flex-1 text-center">
