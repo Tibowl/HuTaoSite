@@ -1,9 +1,9 @@
 import { serialize } from "cookie"
 import { GetServerSideProps } from "next"
 import Head from "next/head"
-import { useRouter } from "next/router"
 import { Component, useEffect, useState } from "react"
 import ReactModal from "react-modal"
+import { toast } from "react-toastify"
 import Main from "../../components/Main"
 import { config } from "../../utils/config"
 import { parseUser } from "../../utils/parse-user"
@@ -86,10 +86,7 @@ export default class Reminders extends Component<Props, { reminders: Reminder[],
           })}
         />)}
         <div className="flex flex-wrap gap-2">
-          <span className="bg-blue-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" onClick={() => fetch("/api/sendmessage", {
-            headers: { "Content-Type": "application/json" },
-            method: "POST"
-          })}>Send test message</span>
+          <span className="bg-blue-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" onClick={() => sendTest()}>Send test message</span>
           <span className="bg-green-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" onClick={() => this.setState({ createReminderOpen: true })}>Create reminder</span>
           <CreateReminder
             isOpen={this.state.createReminderOpen}
@@ -101,13 +98,20 @@ export default class Reminders extends Component<Props, { reminders: Reminder[],
     )
   }
 }
+async function sendTest() {
+  const res = await fetch("/api/sendmessage", {
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  })
+  if (res.status == 200)
+    toast.success("Successfully send test message")
+  else toast.error("An error occurred while sending a test message: " + await res.text())
+}
 
 function CreateReminder({ isOpen, requestClose, addReminder }: { isOpen: boolean, requestClose: () => void, addReminder: (r: Reminder) => void }) {
   const [name, setName] = useState("")
   const [duration, setDuration] = useState("")
   const [target, setTarget] = useState(formatTime(new Date()))
-
-  const [error, setError] = useState("")
 
   useEffect(() => {
     setTarget(formatTime(new Date(Date.now() + parseDuration(duration))))
@@ -125,10 +129,10 @@ function CreateReminder({ isOpen, requestClose, addReminder }: { isOpen: boolean
   }, [duration])
 
   async function createReminder(name: string, duration: string) {
-    if (name.length > 128) return setError("Name too long")
-    if (name.length == 0) return setError("No name given")
-    if (duration.length == 0) return setError("No duration given")
-    if (parseDuration(duration) < 120000) return setError("Duration is too short (at least 2 minutes)")
+    if (name.length > 128) return toast.error("Name too long")
+    if (name.length == 0) return toast.error("No name given")
+    if (duration.length == 0) return toast.error("No duration given")
+    if (parseDuration(duration) < 120000) return toast.error("Duration is too short (at least 2 minutes)")
 
     const res = await send("/api/reminders/create", { name, duration })
 
@@ -136,21 +140,15 @@ function CreateReminder({ isOpen, requestClose, addReminder }: { isOpen: boolean
       requestClose()
       addReminder(await res.json())
 
+      toast.success("Created reminder!")
+
       setName("")
       setDuration("")
     } else {
-      return setError("An error occurred... Try again later")
+      return toast.error("An error occurred... Try again later")
     }
   }
   return <ReactModal style={modalStyle} isOpen={isOpen} onRequestClose={requestClose} ariaHideApp={false}>
-    <ReactModal style={erorrModalStyle} isOpen={error.length > 0} onRequestClose={() => setError("")} ariaHideApp={false}>
-      <div className="flex flex-1 justify-center items-center h-full" onKeyDown={() => setError("")}>
-        <div className="font-semibold text-xl">
-          {error}
-        </div>
-      </div>
-    </ReactModal>
-
     <h4 className="text-lg font-semibold">Create a reminder</h4>
     <div className="flex flex-col">
       <form onSubmit={(e) => {
@@ -161,15 +159,31 @@ function CreateReminder({ isOpen, requestClose, addReminder }: { isOpen: boolean
         <TextInput value={name} set={setName} placeholder="Enter a name" maxLength={128} label="Name:" />
         <TextInput value={duration} set={setDuration} placeholder="Enter a duration (ex. 10 hours 2 resin 5s)" maxLength={128} label="Duration:" />
         <div>Will trigger {parseDuration(duration) > 0 && <>in <span className="text-slate-100">{timeLeft(formatDuration(parseDuration(duration)), true)}</span></>} on <span className="text-slate-100">{target}</span></div>
-        <button className="bg-green-600 disabled:bg-slate-900 text-slate-50 disabled:text-slate-400 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" formAction="submit" disabled={duration.length == 0 || name.length == 0 || parseDuration(duration) < 120000}>Create reminder</button>
+        <button
+          className="bg-green-600 disabled:bg-slate-900 text-slate-50 disabled:text-slate-400 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer"
+          formAction="submit"
+          disabled={duration.length == 0 || name.length == 0 || parseDuration(duration) < 120000}
+        >
+          Create reminder
+        </button>
       </form>
     </div>
     <br />
 
     <h4 className="text-lg font-semibold">Presets</h4>
     <div className="flex flex-wrap gap-2">
-      <span className="bg-green-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" onClick={() => createReminder("Parametric", "6d22h")}>Parametric (6d22h)</span>
-      <span className="bg-green-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" onClick={() => createReminder("Ores", "72h")}>Ores (72h)</span>
+      <span
+        className="bg-green-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer"
+        onClick={() => createReminder("Parametric", "6d22h")}
+      >
+        Parametric (6d22h)
+      </span>
+      <span
+        className="bg-green-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer"
+        onClick={() => createReminder("Ores", "72h")}
+      >
+        Ores (72h)
+      </span>
     </div>
   </ReactModal>
 }
@@ -188,7 +202,7 @@ function TextInput({ value, set, maxLength, placeholder, label }: { value: strin
 }
 
 function formatTime(date: Date) {
-  return date.toLocaleString(undefined, { day: "numeric", year: "numeric", month: "short", hour: "2-digit", minute: "2-digit", second:"2-digit" })
+  return date.toLocaleString(undefined, { day: "numeric", year: "numeric", month: "short", hour: "2-digit", minute: "2-digit", second: "2-digit" })
 }
 
 function formatDuration(duration: number) {
@@ -211,13 +225,13 @@ function ReminderCard({ r, onDelete }: { r: Reminder, onDelete: () => void }) {
 
 function DiscordAvatar({ user }: { user: DiscordUser }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img
-    src={user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=16` : "https://discord.com/assets/1f0bfc0865d324c2587920a7d80c609b.png"}
+  return user.avatar ? <img
+    src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=16`}
     alt="Discord avatar"
     width={16}
     height={16}
     className="rounded-xl p-0 m-0 inline-block"
-  />
+  /> : <></>
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async function (ctx) {
