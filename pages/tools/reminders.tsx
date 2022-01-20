@@ -52,12 +52,13 @@ const erorrModalStyle: ReactModal.Styles = {
   }
 }
 
-export default class Reminders extends Component<Props, { reminders: Reminder[], createReminderOpen: boolean }> {
+export default class Reminders extends Component<Props, { reminders: Reminder[], createReminderOpen: boolean, disabledTest: boolean }> {
   constructor(props: Props) {
     super(props)
     this.state = {
       reminders: this.props.reminders,
-      createReminderOpen: false
+      createReminderOpen: false,
+      disabledTest: false
     }
   }
 
@@ -86,8 +87,31 @@ export default class Reminders extends Component<Props, { reminders: Reminder[],
           })}
         />)}
         <div className="flex flex-wrap gap-2">
-          <span className="bg-blue-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" onClick={() => sendTest()}>Send test message</span>
-          <span className="bg-green-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" onClick={() => this.setState({ createReminderOpen: true })}>Create reminder</span>
+          <button
+            className="bg-blue-600 disabled:bg-gray-900 text-slate-50 disabled:text-slate-400 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer"
+            onClick={() => {
+              this.setState({
+                disabledTest: true
+              })
+
+              sendTest()
+
+              setTimeout(() => {
+                this.setState({
+                  disabledTest: false
+                })
+              }, 5000)
+            }}
+            disabled={this.state.disabledTest}
+          >
+            Send test message
+          </button>
+          <button
+            className="bg-green-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer"
+            onClick={() => this.setState({ createReminderOpen: true })}
+          >
+            Create reminder
+          </button>
           <CreateReminder
             isOpen={this.state.createReminderOpen}
             requestClose={() => this.setState({ createReminderOpen: false })}
