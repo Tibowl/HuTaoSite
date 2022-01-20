@@ -19,7 +19,7 @@ export default function Tools({ location }: {location: string}) {
       <ul>
           <li>
             -{" "}
-            <FormattedLink className="font-semibold text-xl" location={location} href="/tools/reminders" >
+            <FormattedLink className="font-semibold text-2xl" location={location} href="/tools/reminders" >
               Reminders
             </FormattedLink>
             <div className="ml-6">

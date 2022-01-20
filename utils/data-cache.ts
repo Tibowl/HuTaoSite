@@ -1,4 +1,4 @@
-import { Artifact, Character, Cost, CurveEnum, Guide, Material, Weapon, WeaponCurveName } from "./types"
+import { Artifact, Character, Cost, CurveEnum, Enemy, Guide, Material, Weapon, WeaponCurveName } from "./types"
 
 const baseURL = "https://raw.githubusercontent.com/Tibowl/HuTao/master/src/data"
 
@@ -17,6 +17,8 @@ type Materials = Record<string, Material>
 type Weapons = Record<string, Weapon>
 export type WeaponCurves = Record<WeaponCurveName, number[]>
 
+type Enemies = Record<string, Enemy>
+
 
 type Cache = {
     artifacts: Cacher<Artifacts>
@@ -28,6 +30,7 @@ type Cache = {
     materials: Cacher<Materials>
     weapons: Cacher<Weapons>
     weaponCurves: Cacher<WeaponCurves>
+    enemies: Cacher<Enemies>
 }
 
 interface Cacher<T> {
@@ -35,35 +38,7 @@ interface Cacher<T> {
     time: number
 }
 
-const cached: Cache = {
-    artifacts: {
-        time: 0
-    },
-    guides: {
-        time: 0
-    },
-    characters: {
-        time: 0
-    },
-    characterCurves: {
-        time: 0
-    },
-    characterLevels: {
-        time: 0
-    },
-    costTemplates: {
-        time: 0
-    },
-    materials: {
-        time: 0
-    },
-    weapons: {
-        time: 0
-    },
-    weaponCurves: {
-        time: 0
-    }
-}
+const cached: Partial<Cache> = {}
 
 export const getGuides: (() => Promise<Guides | undefined>) = createGetCacheable("guides")
 export const getCostTemplates: (() => Promise<CostTemplates | undefined>) = createGetCacheable("costTemplates", "gamedata/cost_templates")
@@ -79,6 +54,8 @@ export const getMaterials: (() => Promise<Materials | undefined>) = createGetCac
 export const getWeapons: (() => Promise<Weapons | undefined>) = createGetCacheable("weapons", "gamedata/weapons")
 export const getWeaponCurves: (() => Promise<WeaponCurves | undefined>) = createGetCacheable("weaponCurves", "gamedata/weapon_curves")
 
+export const getEnemies: (() => Promise<Enemies | undefined>) = createGetCacheable("enemies", "gamedata/enemies")
+
 
 function createGetCacheable(name: keyof Cache, path: string = name): () => Promise<any> {
     async function fetchNew(): Promise<any> {
@@ -92,15 +69,20 @@ function createGetCacheable(name: keyof Cache, path: string = name): () => Promi
     }
 
     return async () => {
-            if (cached[name].time > Date.now() - 60 * 1000)
-            return await cached[name].data
+        if (cached[name] == undefined)
+            cached[name] = { time: 0 }
 
-        if (cached[name].data && cached[name].time > Date.now() - 15 * 60 * 1000)
-            return await cached[name].data
+        const data = cached[name]!
 
-        cached[name].data = fetchNew()
-        cached[name].time = Date.now()
+        if (data.time > Date.now() - 60 * 1000)
+            return await data.data
 
-        return await cached[name].data
+        if (data.data && data.time > Date.now() - 15 * 60 * 1000)
+            return await data.data
+
+        data.data = fetchNew()
+        data.time = Date.now()
+
+        return await data.data
     }
 }

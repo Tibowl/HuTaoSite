@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/image"
-import { SmallArtifact, SmallChar, SmallWeapon } from "../utils/types"
+import { SmallArtifact, SmallChar, SmallEnemy, SmallThing, SmallWeapon } from "../utils/types"
 import { elements, getStarColor, image, urlify, weapons } from "../utils/utils"
 import FormattedLink from "./FormattedLink"
 import styles from "../pages/style.module.css"
@@ -24,9 +24,8 @@ export function IconName({ name, type, urltype, loading = "lazy" }: { name: stri
   </FormattedLink>
 }
 
-type SmallThing = SmallChar | SmallWeapon | SmallArtifact
 export function SmallIcon({ thing, location }: { thing: SmallThing, location: string }) {
-  const color = getStarColor(thing.stars ?? 0)
+  const color = getStarColor((hasStars(thing) ? thing.stars : 0) ?? 0)
 
   return <FormattedLink key={thing.name} location={location} href={`/${thing.urlpath}/${urlify(thing.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm" >
     <div className={`${color} rounded-t-xl h-24 sm:h-28 lg:h-32`}>
@@ -58,4 +57,8 @@ function hasElement(char: SmallThing): char is SmallChar {
 
 function hasWeapon(char: SmallThing): char is (SmallChar | SmallWeapon) {
   return (char as SmallChar).weapon != undefined
+}
+
+function hasStars(char: SmallThing): char is (SmallChar | SmallWeapon | SmallArtifact) {
+  return (char as SmallChar).stars != undefined
 }

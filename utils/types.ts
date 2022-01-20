@@ -268,6 +268,17 @@ export interface PlaceHolderStats {
     stats: Partial<Record<StatsName, number>>
 }
 
+export interface Enemy {
+    name:         string
+    placeholder?: true
+    icon?:        string
+    type?:        string
+    kind?:        string
+    desc?:        string
+    notes?:       string
+    resistance?:  string[][]
+}
+
 export interface Material {
     name:      string
     desc:      string
@@ -300,26 +311,30 @@ export interface GuidePage {
     }
 }
 
-export interface SmallChar {
+export interface SmallThing {
     name: string
+    icon?: string
     stars?: number
+    urlpath: unknown
+}
+
+export interface SmallChar extends SmallThing {
     element?: ElementType[]
     weapon?: WeaponType
-    icon?: string
     urlpath: "characters"
 }
 
-export interface SmallWeapon {
-    name: string
-    stars?: number
+export interface SmallWeapon extends SmallThing {
     weapon?: WeaponType
-    icon?: string
     urlpath: "weapons"
 }
 
-export interface SmallArtifact {
-    name: string
-    stars?: number
-    icon?: string
+export interface SmallArtifact extends SmallThing {
     urlpath: "artifacts"
+}
+
+export interface SmallEnemy extends SmallThing {
+    type?: string
+    kind?: string
+    urlpath: "enemies"
 }
