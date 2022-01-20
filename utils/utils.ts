@@ -103,6 +103,10 @@ export function image(type: string, name: string, ext="png"): string {
     return `/img/${type}/${name.replace(/[:\-,'"]/g, "").replace(/ +/g, "_")}.${ext}`
 }
 
+export function getIconPath(icon?: string) {
+    return (icon?.startsWith("img/") ? ("/" + icon) : icon) ?? "/img/unknown.png"
+}
+
 export function getCostsFromTemplate(costTemplate: CostTemplate, costTemplates: Record<string, Cost[]>): Cost[] {
     const template = costTemplates[costTemplate.template]
 

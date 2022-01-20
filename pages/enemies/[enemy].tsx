@@ -8,7 +8,7 @@ import Icon from "../../components/Icon"
 import Main from "../../components/Main"
 import { getEnemies } from "../../utils/data-cache"
 import { Enemy } from "../../utils/types"
-import { elements, getGuidesFor, getLinkToGuide, getStarColor, urlify } from "../../utils/utils"
+import { elements, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, urlify } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
@@ -26,7 +26,7 @@ export default function EnemyWebpage({ enemy, location, guides }: Props & { loca
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${enemy.name} | Hu Tao`} />
         <meta property="og:description" content={`${enemy.name}${enemy.type ? ` (${enemy.type})` : ""}${enemy.kind ? ` is a ${enemy.kind}` : " is an enemy"} in Genshin Impact.${enemy.resistance ? " Click to find out their resistances!" : ""}`} />
-        {enemy.icon && <meta property="og:image" content={enemy.icon} />}
+        {enemy.icon && <meta property="og:image" content={getIconPath(enemy.icon)} />}
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/enemies/" location={location} className="font-semibold text-lg">

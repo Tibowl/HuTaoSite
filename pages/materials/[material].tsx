@@ -8,7 +8,7 @@ import Icon, { SmallIcon } from "../../components/Icon"
 import Main from "../../components/Main"
 import { CostTemplates, getCharacters, getCostTemplates, getMaterials, getWeapons } from "../../utils/data-cache"
 import { Cost, CostTemplate, Material, SmallChar, SmallWeapon } from "../../utils/types"
-import { clean, createSmallChar, createSmallWeapon, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, joinMulti, urlify } from "../../utils/utils"
+import { clean, createSmallChar, createSmallWeapon, getCostsFromTemplate, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, joinMulti, urlify } from "../../utils/utils"
 
 interface Props {
   mat: Material,
@@ -40,8 +40,8 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
         <title>{mat.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${mat.name} | Hu Tao`} />
-        <meta property="og:description" content={`${mat.name} is a ${mat.stars ? `${mat.stars} star ` : ""}${mat.type}. ${usedByDesc.length > 0 ? `Used by ${joinMulti(usedByDesc)}. ` : ""}${mat.desc ? clean(mat.desc ?? "") : ""}`.trim()} />
-        {mat.icon && <meta property="og:image" content={mat.icon} />}
+        <meta property="og:description" content={`${mat.name} is a ${mat.stars ? `${mat.stars} star ` : ""}${mat.type}. \n${usedByDesc.length > 0 ? `Used by ${joinMulti(usedByDesc)}.\n ` : ""}${mat.desc ? clean(mat.desc ?? "") : ""}`.trim()} />
+        {mat.icon && <meta property="og:image" content={getIconPath(mat.icon)} />}
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/materials/" location={location} className="font-semibold text-lg">

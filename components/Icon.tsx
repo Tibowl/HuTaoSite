@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/image"
-import { SmallArtifact, SmallChar, SmallEnemy, SmallThing, SmallWeapon } from "../utils/types"
-import { elements, getStarColor, image, urlify, weapons } from "../utils/utils"
-import FormattedLink from "./FormattedLink"
 import styles from "../pages/style.module.css"
+import { SmallArtifact, SmallChar, SmallThing, SmallWeapon } from "../utils/types"
+import { elements, getIconPath, getStarColor, image, urlify, weapons } from "../utils/utils"
+import FormattedLink from "./FormattedLink"
 
 export default function Icon({ icon, className, loading = "lazy" }: { icon: { name: string, icon?: string }, className?: string, loading?: "eager" | "lazy" }) {
-  const src = (icon.icon?.startsWith("img/") ? ("/" + icon.icon) : icon.icon) ?? "img/unknown.png"
+  const src = getIconPath(icon.icon)
 
   // if (src.startsWith("img"))
   // eslint-disable-next-line @next/next/no-img-element

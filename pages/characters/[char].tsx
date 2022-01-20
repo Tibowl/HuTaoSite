@@ -13,7 +13,7 @@ import { FullAscensionCosts } from "../../components/Tables"
 import YouTube from "../../components/YouTube"
 import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates } from "../../utils/data-cache"
 import { Character, CharacterFull, Constellation, CostTemplate, CurveEnum, Meta, Passive, Skill, Skills, TalentTable, TalentValue } from "../../utils/types"
-import { clean, elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getLinkToGuide, getStarColor, isFullCharacter, isValueTable, joinMulti, stat, urlify, weapons } from "../../utils/utils"
+import { clean, elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, image, isFullCharacter, isValueTable, joinMulti, stat, urlify, weapons } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
@@ -35,7 +35,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${char.name} | Hu Tao`} />
         <meta property="og:description" content={getDescription(char, charElems)} />
-        {char.icon && <meta property="og:image" content={char.icon} />}
+        {char.icon && <meta property="og:image" content={getIconPath(char.icon)} />}
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/characters/" location={location} className="font-semibold text-lg">
@@ -110,7 +110,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
 }
 
 function getDescription(char: Character, charElems: ("Pyro" | "Electro" | "Cryo" | "Hydro" | "Anemo" | "Geo" | "Dendro")[]): string | undefined {
-  return `${char.name} is a ${char.star ? `${char.star} star ` : ""}${joinMulti(charElems)} ${getWeaponLine()}. ${getAscensionLine()}${getTalentLine()}${clean(char.desc)}`
+  return `${char.name} is a ${char.star ? `${char.star} star ` : ""}${joinMulti(charElems)} ${getWeaponLine()}.\n${getAscensionLine()}${getTalentLine()}${clean(char.desc)}`.trim()
 
   function getWeaponLine() {
     if (char.weaponType)
@@ -120,13 +120,13 @@ function getDescription(char: Character, charElems: ("Pyro" | "Electro" | "Cryo"
 
   function getTalentLine() {
     if (char.skills && getTalentCosts(char.skills).length > 0)
-      return `Uses ${joinMulti(getTalentCosts(char.skills))} for talents. `
+      return `Uses ${joinMulti(getTalentCosts(char.skills))} for talents. \n`
     return ""
   }
 
   function getAscensionLine() {
     if (char.ascensionCosts)
-      return `Uses ${joinMulti(getAscensionCosts(char.ascensionCosts))} for ascensions. `
+      return `Uses ${joinMulti(getAscensionCosts(char.ascensionCosts))} for ascensions. \n`
     return ""
   }
 }

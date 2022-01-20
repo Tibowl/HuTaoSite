@@ -10,7 +10,7 @@ import { MaterialImage } from "../../components/Material"
 import { FullAscensionCosts } from "../../components/Tables"
 import { CostTemplates, getCostTemplates, getWeaponCurves, getWeapons, WeaponCurves } from "../../utils/data-cache"
 import { CostTemplate, PlaceHolderStats, Refinement, StatsName, Weapon, WeaponCurveName } from "../../utils/types"
-import { clean, getGuidesFor, getLinkToGuide, getStarColor, getWeaponStatsAt, joinMulti, stat, urlify } from "../../utils/utils"
+import { clean, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, getWeaponStatsAt, joinMulti, stat, urlify } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
@@ -32,7 +32,7 @@ export default function WeaponWebpage({ weapon, weaponCurves, costTemplates, loc
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${weapon.name} | Hu Tao`} />
         <meta property="og:description" content={getDescription(weapon, weaponCurves)} />
-        {weapon.icon && <meta property="og:image" content={weapon.icon} />}
+        {weapon.icon && <meta property="og:image" content={getIconPath(weapon.icon)} />}
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/weapons/" location={location} className="font-semibold text-lg">
@@ -90,11 +90,11 @@ export default function WeaponWebpage({ weapon, weaponCurves, costTemplates, loc
 }
 
 function getDescription(weapon: Weapon, weaponCurves: WeaponCurves | null): string | undefined {
-  return `${weapon.name} is a ${weapon.stars ? `${weapon.stars} star ` : ""}${weapon.weaponType}. ${getAscensionCostsLine()}${getPlaceholderStatsLine()}${getStatsLineFromAsc()}${getRefinementLine()}`
+  return `${weapon.name} is a ${weapon.stars ? `${weapon.stars} star ` : ""}${weapon.weaponType}. \n{getAscensionCostsLine()}${getPlaceholderStatsLine()}${getStatsLineFromAsc()}${getRefinementLine()}`.trim()
 
   function getRefinementLine() {
     if (weapon.refinements && weapon.refinements.length > 0)
-      return `Refinement ${weapon.refinements[0].name} Lv. 1: ${clean(weapon.refinements[0].desc)}`
+      return `Refinement ${weapon.refinements[0].name} Lv. 1: ${clean(weapon.refinements[0].desc)}\n`
   }
   function getStatsLineFromAsc() {
     if (weapon.ascensions && weapon.weaponCurve && weaponCurves)
@@ -113,12 +113,12 @@ function getDescription(weapon: Weapon, weaponCurves: WeaponCurves | null): stri
 
   function getAscensionCostsLine() {
     if (weapon.ascensionCosts)
-      return `Uses ${joinMulti(getAscensionCosts(weapon.ascensionCosts))} for ascensions. `
+      return `Uses ${joinMulti(getAscensionCosts(weapon.ascensionCosts))} for ascensions. \n`
     return ""
   }
 
   function getStatsLine(level: number, stats: Partial<Record<StatsName, number>>) {
-    return `Stats at level ${level}: ${joinMulti(Object.entries(stats).map(([name, value]) => `${name}: ${stat(name, value)}`))}. `
+    return `Stats at level ${level}: ${joinMulti(Object.entries(stats).map(([name, value]) => `${name}: ${stat(name, value)}`))}. \n`
   }
 }
 

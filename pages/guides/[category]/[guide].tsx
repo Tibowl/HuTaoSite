@@ -6,7 +6,7 @@ import Main from "../../../components/Main"
 import YouTube from "../../../components/YouTube"
 import { getGuides } from "../../../utils/data-cache"
 import { Guide } from "../../../utils/types"
-import { clean, removeBrackets, urlify } from "../../../utils/utils"
+import { clean, getIconPath, removeBrackets, urlify } from "../../../utils/utils"
 import styles from "../../style.module.css"
 
 interface Props {
@@ -25,8 +25,8 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
         <title>{page.name} | Hu Tao</title>
         <meta name="twitter:card" content={page.img ? "summary_large_image" : "summary"} />
         <meta property="og:title" content={`${page.name} | Hu Tao`} />
-        <meta property="og:description" content={`View ${page.name} guide by ${page.credits}${page.url && page.url.startsWith("https://youtu.be/") ? " (video available!)" : ""}. ${page.desc ? clean(page.desc) : ""}`} />
-        {page.img && <meta property="og:image" content={page.img} />}
+        <meta property="og:description" content={`View ${page.name} guide by ${page.credits}${page.url && page.url.startsWith("https://youtu.be/") ? " (video available!)" : ""}. \n${page.desc ? clean(page.desc) : ""}`.trim()} />
+        {page.img && <meta property="og:image" content={getIconPath(page.img)} />}
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href={`/guides/${urlify(guide.name, false)}`} location={location} className="font-semibold text-lg">
