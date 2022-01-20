@@ -190,3 +190,55 @@ export async function send(api: string, object: unknown) {
         method: "POST"
       })
 }
+
+const minutes_per_resin = 8
+export function parseDuration(time: string): number {
+    let duration = 0
+    const times = [...time.matchAll(/((\d+) ?(months?|mo|weeks?|w|days?|d|hours?|h|minutes?|min|m|seconds?|sec|s|resins?|r))/gi)]
+
+    for (const time of times) {
+        const name = time[3].toLowerCase(), amount = parseInt(time[2])
+        if      (name.startsWith("mo")) duration += amount * 30 * 24 * 60 * 60 * 1000
+        else if (name.startsWith("w"))  duration += amount *  7 * 24 * 60 * 60 * 1000
+        else if (name.startsWith("d"))  duration += amount * 24 * 60 * 60 * 1000
+        else if (name.startsWith("h"))  duration += amount * 60 * 60 * 1000
+        else if (name.startsWith("m"))  duration += amount * 60 * 1000
+        else if (name.startsWith("s"))  duration += amount * 1000
+        else if (name.startsWith("r"))  duration += amount * minutes_per_resin * 60 * 1000
+    }
+
+    return duration
+}
+
+export function timeLeft(diff: number, full = false, short = true): string {
+    const ago = diff < 0
+    if (ago) diff = -diff
+
+    const result = [], originalTime = diff / 1000
+
+    diff /= 1000 // convert to s
+    if (diff >= 24*60*60) {
+        const days = Math.floor(diff / 24 / 60 / 60)
+        result.push(days + (short ? "d" : (days == 1 ? " day" : " days")))
+        diff -= days * 24 * 60 * 60
+    }
+
+    if (diff >= 60*60) {
+        const hours = Math.floor(diff / 60 / 60)
+        result.push(hours + (short ? "h" : (hours == 1 ? " hour" : " hours")))
+        diff -= hours * 60 * 60
+    }
+
+    if (diff >= 60 && (originalTime < 24*60*60 || full)) {
+        const minutes = Math.floor(diff / 60)
+        result.push(minutes + (short ? "m" : (minutes == 1 ? " minute" : " minutes")))
+        diff -= minutes * 60
+    }
+
+    if (diff > 0  && (originalTime < 60*60 || full)) {
+        const seconds = Math.floor(diff)
+        result.push(seconds + (short ? "s" : (seconds == 1 ? " second" : " seconds")))
+    }
+
+    return result.join(", ") + (ago ? " ago" : "")
+}

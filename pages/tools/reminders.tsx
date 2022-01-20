@@ -2,13 +2,13 @@ import { serialize } from "cookie"
 import { GetServerSideProps } from "next"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { Component, useState } from "react"
+import { Component, useEffect, useState } from "react"
 import ReactModal from "react-modal"
 import Main from "../../components/Main"
 import { config } from "../../utils/config"
 import { parseUser } from "../../utils/parse-user"
 import { DiscordUser, Reminder } from "../../utils/types"
-import { send } from "../../utils/utils"
+import { parseDuration, send, timeLeft } from "../../utils/utils"
 
 interface Props {
   user: DiscordUser
@@ -105,13 +105,30 @@ export default class Reminders extends Component<Props, { reminders: Reminder[],
 function CreateReminder({ isOpen, requestClose, addReminder }: { isOpen: boolean, requestClose: () => void, addReminder: (r: Reminder) => void }) {
   const [name, setName] = useState("")
   const [duration, setDuration] = useState("")
+  const [target, setTarget] = useState(formatTime(new Date()))
 
   const [error, setError] = useState("")
+
+  useEffect(() => {
+    setTarget(formatTime(new Date(Date.now() + parseDuration(duration))))
+
+    function queue() {
+      return setTimeout(() => {
+        setTarget(formatTime(new Date(Date.now() + parseDuration(duration))))
+        timer = queue()
+      }, 1000 - (Date.now() % 1000))
+    }
+
+    let timer = queue()
+
+    return () => clearTimeout(timer)
+  }, [duration])
 
   async function createReminder(name: string, duration: string) {
     if (name.length > 128) return setError("Name too long")
     if (name.length == 0) return setError("No name given")
     if (duration.length == 0) return setError("No duration given")
+    if (parseDuration(duration) < 120000) return setError("Duration is too short (at least 2 minutes)")
 
     const res = await send("/api/reminders/create", { name, duration })
 
@@ -138,11 +155,13 @@ function CreateReminder({ isOpen, requestClose, addReminder }: { isOpen: boolean
     <div className="flex flex-col">
       <form onSubmit={(e) => {
         e.preventDefault()
-        createReminder(name, duration)
+        if (duration.length > 0)
+          createReminder(name, duration)
       }}>
         <TextInput value={name} set={setName} placeholder="Enter a name" maxLength={128} label="Name:" />
         <TextInput value={duration} set={setDuration} placeholder="Enter a duration (ex. 10 hours 2 resin 5s)" maxLength={128} label="Duration:" />
-        <button className="bg-green-600 text-slate-50 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" formAction="submit">Create reminder</button>
+        <div>Will trigger {parseDuration(duration) > 0 && <>in <span className="text-slate-100">{timeLeft(formatDuration(parseDuration(duration)), true)}</span></>} on <span className="text-slate-100">{target}</span></div>
+        <button className="bg-green-600 disabled:bg-slate-900 text-slate-50 disabled:text-slate-400 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer" formAction="submit" disabled={duration.length == 0 || name.length == 0 || parseDuration(duration) < 120000}>Create reminder</button>
       </form>
     </div>
     <br />
@@ -159,13 +178,21 @@ function TextInput({ value, set, maxLength, placeholder, label }: { value: strin
   return <div><label>
     {label}
     <input
-      className="bg-slate-800 rounded-lg px-2 ml-2 mt-1"
+      className="bg-slate-800 rounded-lg px-2 ml-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500 w-96"
       value={value}
       onChange={(e) => set(e.target.value)}
       placeholder={placeholder}
       maxLength={maxLength}
     />
   </label></div>
+}
+
+function formatTime(date: Date) {
+  return date.toLocaleString(undefined, { day: "numeric", year: "numeric", month: "short", hour: "2-digit", minute: "2-digit", second:"2-digit" })
+}
+
+function formatDuration(duration: number) {
+  return duration
 }
 
 function ReminderCard({ r, onDelete }: { r: Reminder, onDelete: () => void }) {
@@ -177,7 +204,7 @@ function ReminderCard({ r, onDelete }: { r: Reminder, onDelete: () => void }) {
   }
   return <div key={r.id} className="border rounded-md p-2 mt-2 text-slate-700 dark:text-slate-300">
     <div className="text-xl text-slate-900 dark:text-slate-100">#{r.id}: <span>{r.subject}</span></div>
-    Will trigger on <span className="text-slate-900 dark:text-slate-100">{new Date(r.timestamp).toLocaleString(undefined, { day: "numeric", year: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+    Will trigger on <span className="text-slate-900 dark:text-slate-100">{formatTime(new Date(r.timestamp))}</span>
     <div className="bg-red-500 text-slate-50 w-16 text-center rounded-lg mt-2 cursor-pointer" onClick={deleteReminder}>Delete</div>
   </div>
 }
