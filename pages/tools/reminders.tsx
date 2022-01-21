@@ -6,6 +6,7 @@ import ReactModal from "react-modal"
 import { toast } from "react-toastify"
 import Main from "../../components/Main"
 import { config } from "../../utils/config"
+import * as gtag from "../../utils/gtag"
 import { parseUser } from "../../utils/parse-user"
 import { DiscordUser, Reminder } from "../../utils/types"
 import { parseDuration, send, timeLeft } from "../../utils/utils"
@@ -30,24 +31,6 @@ const modalStyle: ReactModal.Styles = {
     border: "1px solid rgb(64, 79, 100)",
     color: "white",
     background: "rgb(51 65 85)",
-    borderRadius: "1rem"
-  }
-}
-const erorrModalStyle: ReactModal.Styles = {
-  overlay: {
-    backgroundColor: "rgba(10, 0, 0, 0.66)"
-  },
-  content: {
-    position: "absolute",
-    top: "max(calc(50% - (10rem/2)), 20px)",
-    maxHeight: "10rem",
-
-    width: "min(20rem, calc(100% - 40px))",
-    left: "max(calc(50% - (20rem/2)), 20px)",
-
-    border: "1px solid rgb(156, 79, 100)",
-    color: "white",
-    background: "rgb(156 65 85)",
     borderRadius: "1rem"
   }
 }
@@ -129,6 +112,7 @@ async function sendTest() {
     headers: { "Content-Type": "application/json" },
     method: "POST"
   })
+  gtag.event({ action: "reminder_test_message", category: "reminders", label: "Send a test message", value: 1 })
   if (res.status == 200)
     toast.success("Successfully send test message")
   else toast.error("An error occurred while sending a test message: " + await res.text())
@@ -167,6 +151,7 @@ function CreateReminder({ isOpen, requestClose, addReminder }: { isOpen: boolean
       addReminder(await res.json())
 
       toast.success("Created reminder!")
+      gtag.event({ action: "reminder_create", category: "reminders", label: "Create reminder", value: 1 })
 
       setName("")
       setDuration("")
@@ -238,6 +223,7 @@ function formatDuration(duration: number) {
 function ReminderCard({ r, onDelete }: { r: Reminder, onDelete: () => void }) {
   const deleteReminder = async () => {
     const res = await send("/api/reminders/delete", { r })
+    gtag.event({ action: "reminder_delete", category: "reminders", label: "Delete a reminder", value: 1 })
 
     if ((res.status >= 200 && res.status < 300) || res.status == 404)
       onDelete()
