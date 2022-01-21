@@ -19,6 +19,13 @@ a:hover {
     --tw-text-opacity: 1;
     color: rgb(59 130 246 / var(--tw-text-opacity));
 }
+th {
+    font-weight: 600;
+    padding-left: 0.25rem/* 4px */;
+}
+thead {
+    text-align: left;
+}
 
 .fivestar {
     background-color: rgb(217 119 6);

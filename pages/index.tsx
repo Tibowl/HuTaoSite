@@ -84,7 +84,7 @@ export default function Home({ location }: { location: string }) {
         </div>
 
         <div className="md:flex md:flex-row items-center max-w-4xl">
-          <Card title="Gacha calculator" desc="Want to check the odds of getting C1 from the 134 pulls you've got right now?" location={location} src={calc} />
+          <Card href="/tools/gachacalc" title="Gacha calculator &rarr;" desc="Want to check the odds of getting C1 from the 134 pulls you've got right now?" location={location} src={calc} alsoSite />
           <Card title="And more!" desc="Abyss schedule/floors, this month's Paimon's Bargains, ..." location={location} />
         </div>
       </div>

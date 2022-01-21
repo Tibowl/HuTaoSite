@@ -156,10 +156,12 @@ function Stats({ weapon, curves }: { weapon: Weapon, curves: Record<WeaponCurveN
   return <>
     <h3 className="text-lg font-bold pt-1" id="stats">Stats:</h3>
     <table className={`table-auto w-full md:max-w-xl ${styles.table} ${styles.stattable} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-base text-sm`} onClick={() => setExpanded(true)}>
-      <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
-        <td>Asc.</td>
-        <td>Lv.</td>
-        {Object.keys(max).map((name) => <td key={name}>{name}</td>)}
+      <thead>
+        <tr className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
+          <th>Asc.</th>
+          <th>Lv.</th>
+          {Object.keys(max).map((name) => <th key={name}>{name}</th>)}
+        </tr>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {levels
@@ -183,9 +185,11 @@ function PlaceholderStats({ placeholderStats }: { placeholderStats: PlaceHolderS
   return <>
     <h3 className="text-lg font-bold pt-1" id="stats">Placeholder stats:</h3>
     <table className={`table-auto w-full md:max-w-xl ${styles.table} ${styles.stattable} mb-2 sm:text-base text-sm`}>
-      <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
-        <td>Lv.</td>
-        {Object.keys(stats).map((name) => <td key={name}>{name}</td>)}
+      <thead>
+        <tr className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
+          <th>Lv.</th>
+          {Object.keys(stats).map((name) => <th key={name}>{name}</th>)}
+        </tr>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500">
@@ -204,9 +208,11 @@ function Refinements({ refinements }: { refinements: Refinement[] }) {
   return <>
     <h3 className="text-lg font-bold pt-1" id="refinements">Refinements:</h3>
     <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-base text-sm`} onClick={() => setExpanded(true)}>
-      <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
-        <td>Refinement</td>
-        <td>Desc</td>
+      <thead>
+        <tr className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
+          <th>Refinement</th>
+          <th>Desc</th>
+        </tr>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {refinements

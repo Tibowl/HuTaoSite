@@ -19,8 +19,7 @@ export default function Tools({ location }: { location: string }) {
       </h1>
 
       <ul>
-        <li>
-          -{" "}
+        <li className="pb-3">
           <FormattedLink className="font-semibold text-2xl" location={location} href="/tools/reminders" >
             Reminders
           </FormattedLink>
@@ -28,6 +27,14 @@ export default function Tools({ location }: { location: string }) {
             Reminders are send to your Discord DM&apos;s via the Discord bot. Please make sure you share at least one server with the Discord bot
             and have DM&apos;s enabled in that server. You can invite the bot to your own Discord server or join the support server via the links on
             the <FormattedLink location={location} href="/" >homepage</FormattedLink>.
+          </div>
+        </li>
+        <li className="pb-3">
+          <FormattedLink className="font-semibold text-2xl" location={location} href="/tools/gachacalc" >
+            Gacha Rate Calculator
+          </FormattedLink>
+          <div className="ml-6">
+            Calculate odds of getting a certain constellation/refinement within a certain amount of pulls.
           </div>
         </li>
       </ul>

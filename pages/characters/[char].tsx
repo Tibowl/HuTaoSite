@@ -218,10 +218,12 @@ function Stats({ char, curves }: { char: CharacterFull, curves: Record<CurveEnum
   return <>
     <h3 className="text-lg font-bold pt-1" id="stats">Stats:</h3>
     <table className={`table-auto w-full ${styles.table} ${styles.stattable} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
-      <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
-        <td>Asc.</td>
-        <td>Lv.</td>
-        {Object.keys(max).map((name) => <td key={name}>{name}</td>)}
+      <thead>
+        <tr className="divide-x divide-gray-200 dark:divide-gray-500">
+          <th>Asc.</th>
+          <th>Lv.</th>
+          {Object.keys(max).map((name) => <th key={name}>{name}</th>)}
+        </tr>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {levels
@@ -335,10 +337,12 @@ function TalentCost({ template, costTemplates }: { template: CostTemplate, costT
   return <>
     <div className="font-bold">Talent costs:</div>
     <table className={`table-auto w-full ${styles.table} mb-2 ${expanded ? "" : "cursor-pointer"} sm:text-sm md:text-base text-xs`} onClick={() => setExpanded(true)}>
-      <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
-        <td>Lv.</td>
-        <td>Mora</td>
-        <td colSpan={maxCostWidth}>Items</td>
+      <thead>
+        <tr className="divide-x divide-gray-200 dark:divide-gray-500">
+          <th>Lv.</th>
+          <th>Mora</th>
+          <th colSpan={maxCostWidth}>Items</th>
+        </tr>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {costs
@@ -384,9 +388,11 @@ function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
   return <div className="overflow-x-auto pt-1">
     <div className="font-bold">Talent values:</div>
     <table className={`${maxLevel > 3 ? "table-auto" : "table-fixed"} w-full ${styles.table} mb-2 sm:text-sm md:text-base text-xs`}>
-      <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
-        <td>Name</td>
-        {levels.map((i) => <td key={i + 1}>Lv. {i + 1}</td>)}
+      <thead>
+        <tr className="divide-x divide-gray-200 dark:divide-gray-500">
+          <th>Name</th>
+          {levels.map((i) => <th key={i + 1}>Lv. {i + 1}</th>)}
+        </tr>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {table

@@ -4,6 +4,7 @@ import Head from "next/head"
 import { Component, useEffect, useState } from "react"
 import ReactModal from "react-modal"
 import { toast } from "react-toastify"
+import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
 import { config } from "../../utils/config"
 import * as gtag from "../../utils/gtag"
@@ -59,6 +60,13 @@ export default class Reminders extends Component<Props, { reminders: Reminder[],
           <meta property="og:description" content={desc} />
           <meta property="description" content={desc} />
         </Head>
+
+        <h2 className="font-semibold">
+          <FormattedLink href="/tools/" location={location} className="font-semibold text-lg">
+            Tools
+          </FormattedLink>
+        </h2>
+
         <h1 className="text-5xl font-bold">
           Reminders
         </h1>

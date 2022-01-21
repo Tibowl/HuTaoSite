@@ -91,45 +91,47 @@ function Resistances({ resistance }: { resistance: string[][] }) {
   return <>
     <h3 className="text-lg font-bold pt-1" id="resistance">Resistances:</h3>
     <table className={`table-auto w-full ${styles.table} mb-2 sm:text-base text-sm`}>
-      <thead className="font-semibold divide-x divide-gray-200 dark:divide-gray-500">
-        <td>
-          <div className="flex flex-row items-center content-center">
-            <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Pyro} alt={"Pyro Element"} /></div>
-            <div>Pyro</div>
-          </div>
-        </td>
-        <td>
-          <div className="flex flex-row items-center content-center">
-            <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Electro} alt={"Electro Element"} /></div>
-            <div>Electro</div>
-          </div>
-        </td>
-        <td>
-          <div className="flex flex-row items-center content-center">
-            <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Cryo} alt={"Cryo Element"} /></div>
-            <div>Cryo</div>
-          </div>
-        </td>
-        <td>
-          <div className="flex flex-row items-center content-center">
-            <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Hydro} alt={"Hydro Element"} /></div>
-            <div>Hydro</div>
-          </div>
-        </td>
-        <td>
-          <div className="flex flex-row items-center content-center">
-            <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Anemo} alt={"Anemo Element"} /></div>
-            <div>Anemo</div>
-          </div>
-        </td>
-        <td>
-          <div className="flex flex-row items-center content-center">
-            <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Geo} alt={"Geo Element"} /></div>
-            <div>Geo</div>
-          </div>
-        </td>
-        <td>Physical</td>
-        {resistance[0].length > 7 && <td>Note</td>}
+      <thead>
+        <tr className="divide-x divide-gray-200 dark:divide-gray-500">
+          <th>
+            <div className="flex flex-row items-center content-center">
+              <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Pyro} alt={"Pyro Element"} /></div>
+              <div>Pyro</div>
+            </div>
+          </th>
+          <th>
+            <div className="flex flex-row items-center content-center">
+              <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Electro} alt={"Electro Element"} /></div>
+              <div>Electro</div>
+            </div>
+          </th>
+          <th>
+            <div className="flex flex-row items-center content-center">
+              <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Cryo} alt={"Cryo Element"} /></div>
+              <div>Cryo</div>
+            </div>
+          </th>
+          <th>
+            <div className="flex flex-row items-center content-center">
+              <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Hydro} alt={"Hydro Element"} /></div>
+              <div>Hydro</div>
+            </div>
+          </th>
+          <th>
+            <div className="flex flex-row items-center content-center">
+              <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Anemo} alt={"Anemo Element"} /></div>
+              <div>Anemo</div>
+            </div>
+          </th>
+          <th>
+            <div className="flex flex-row items-center content-center">
+              <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Geo} alt={"Geo Element"} /></div>
+              <div>Geo</div>
+            </div>
+          </th>
+          <th>Physical</th>
+          {resistance[0].length > 7 && <th>Note</th>}
+        </tr>
       </thead>
       <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
         {resistance
