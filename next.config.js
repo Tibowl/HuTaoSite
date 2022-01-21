@@ -14,7 +14,7 @@ module.exports = {
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=28800, s-max-age=604800",
+            value: "public, max-age=57600, s-max-age=604800",
           },
           {
             key: "Age",
@@ -28,7 +28,7 @@ module.exports = {
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=604800",
+            value: "public, max-age=604800, s-max-age=604800",
           },
           {
             key: "Age",
