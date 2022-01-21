@@ -87,7 +87,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
   if (!data || !guide || pageNumber === undefined || pageNumber === -1) {
     return {
       notFound: true,
-      revalidate: 5 * 60
+      revalidate: 15 * 60
     }
   }
 
@@ -96,7 +96,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
       guide, // TODO optimize
       pageNumber
     },
-    revalidate: 60 * 60
+    revalidate: 60 * 60 * 4
   }
 }
 

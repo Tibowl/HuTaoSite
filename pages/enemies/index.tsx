@@ -98,7 +98,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
   if (!data) {
     return {
       notFound: true,
-      revalidate: 5 * 60
+      revalidate: 15 * 60
     }
   }
 
@@ -108,6 +108,6 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
         .values(data)
         .map(w => createSmallEnemy(w))
     },
-    revalidate: 60 * 60
+    revalidate: 60 * 60 * 4
   }
 }

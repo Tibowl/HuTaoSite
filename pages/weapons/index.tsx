@@ -111,7 +111,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
   if (!data) {
     return {
       notFound: true,
-      revalidate: 5 * 60
+      revalidate: 15 * 60
     }
   }
 
@@ -122,6 +122,6 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
         .sort((a, b) => b.stars - a.stars || a.weaponType.localeCompare(b.weaponType) || a.name.localeCompare(b.name))
         .map(w => createSmallWeapon(w))
     },
-    revalidate: 60 * 60
+    revalidate: 60 * 60 * 4
   }
 }
