@@ -24,13 +24,15 @@ export default function Characters(props: Props & { location: string }) {
   const [elementFilter, setElementFilter] = useState(defaultElements)
   const [weaponFilter, setWeaponFilter] = useState(defaultWeapons)
 
+  const desc = `View talent/ascension material, constellations and more of the ${props.characters.length} different characters in Genshin Impact.`
   return (
     <Main>
       <Head>
         <title>Characters | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Characters | Hu Tao" />
-        <meta property="og:description" content={`View talent/ascension material, constellations and more of the ${props.characters.length} different characters in Genshin Impact.`} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
       </Head>
 
       <h1 className="text-5xl font-bold pb-2">

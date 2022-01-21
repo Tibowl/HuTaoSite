@@ -22,13 +22,15 @@ export default function Weapons(props: Props & { location: string }) {
   const [starFilter, setStarFilter] = useState(0)
   const [weaponFilter, setWeaponFilter] = useState(defaultWeapons)
 
+  const desc = `View stats, refinements and description of the ${props.weapons.length} different weapons in Genshin Impact.`
   return (
     <Main>
       <Head>
         <title>Weapons | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Weapons | Hu Tao" />
-        <meta property="og:description" content={`View stats, refinements and description of the ${props.weapons.length} different weapons in Genshin Impact.`} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
       </Head>
 
       <h1 className="text-5xl font-bold pb-2">

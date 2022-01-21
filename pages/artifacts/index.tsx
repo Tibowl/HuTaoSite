@@ -18,13 +18,15 @@ export default function Artifacts(props: Props & { location: string }) {
 
   const [starFilter, setStarFilter] = useState(0)
 
+  const desc = `View set bonuses and description of the ${props.artifacts.length} different artifact sets in Genshin Impact.`
   return (
     <Main>
       <Head>
         <title>Artifacts | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Artifacts | Hu Tao" />
-        <meta property="og:description" content={`View set bonuses and description of the ${props.artifacts.length} different artifact sets in Genshin Impact.`} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
       </Head>
 
       <h1 className="text-5xl font-bold pb-2">

@@ -34,13 +34,15 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
   if (usedBy.weaponAscension.length > 0)
     usedByDesc.push(`Used by ${joinMulti(usedBy.weaponAscension.map(x => x.name))} weapon ascensions.`)
 
+  const desc = `${mat.name} is a ${mat.stars ? `${mat.stars} star ` : ""}${mat.type}. \n${usedByDesc.join("\n")}\n${mat.desc ? clean(mat.desc ?? "") : ""}`.trim()
   return (
     <Main>
       <Head>
         <title>{mat.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${mat.name} | Hu Tao`} />
-        <meta property="og:description" content={`${mat.name} is a ${mat.stars ? `${mat.stars} star ` : ""}${mat.type}. \n${usedByDesc.join("\n")}\n${mat.desc ? clean(mat.desc ?? "") : ""}`.trim()} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
         {mat.icon && <meta property="og:image" content={getIconPath(mat.icon)} />}
       </Head>
       <h2 className="font-semibold">

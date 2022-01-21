@@ -3,13 +3,15 @@ import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
 
 export default function Tools({ location }: { location: string }) {
+  const desc = "Some tools for Genshin Impact."
   return (
     <Main>
       <Head>
         <title>Tools | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Tools | Hu Tao" />
-        <meta property="og:description" content="Some tools for Genshin Impact." />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
       </Head>
 
       <h1 className="text-5xl font-bold pb-2">

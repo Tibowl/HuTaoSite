@@ -11,13 +11,15 @@ import person from "../public/person.svg"
 import { weapons } from "../utils/utils"
 
 export default function Home({ location }: { location: string }) {
+  const desc = "Genshin Impact database and tools, available as a website and Discord bot."
   return (
     <main>
       <Head>
         <title>Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Hu Tao" />
-        <meta property="og:description" content="Genshin Impact database and tools, available as a website and Discord bot." />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
       </Head>
 
       <div className="flex flex-col items-center justify-center w-full flex-1 text-center">

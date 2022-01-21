@@ -11,13 +11,15 @@ interface Props {
 }
 
 export default function CategoryWebpage({ guide, location }: Props & { location: string }) {
+  const desc = `View ${guide.pages.length} ${guide.name} guides`
   return (
     <Main>
       <Head>
         <title>{guide.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${guide.name} | Hu Tao`} />
-        <meta property="og:description" content={`View ${guide.pages.length} ${guide.name} guides`} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
       </Head>
       <h2 className="font-semibold">
         <FormattedLink href="/guides/" location={location} className="font-semibold text-lg">

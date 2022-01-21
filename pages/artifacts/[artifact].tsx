@@ -16,6 +16,9 @@ interface Props {
 
 export default function ArtifactWebpage({ artifact, location, guides }: Props & { location: string }) {
   const color = getStarColor(Math.max(...(artifact.levels ?? [1])))
+  const desc = `The ${artifact.name} artifact set${artifact.artis?.length ?? 0 > 0 ?
+    ` consists of ${artifact.artis?.length} pieces and is available in ${joinMulti(artifact.levels?.map(l => `${l}`) ?? [])} star variants. \nIt also has` :
+    " has"} ${joinMulti(artifact.bonuses?.map(b => `a ${b.count} piece set bonus: "${clean(b.desc)}"`) ?? [])}.`
 
   return (
     <Main>
@@ -23,9 +26,8 @@ export default function ArtifactWebpage({ artifact, location, guides }: Props & 
         <title>{artifact.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${artifact.name} | Hu Tao`} />
-        <meta property="og:description" content={`The ${artifact.name} artifact set${artifact.artis?.length ?? 0 > 0 ?
-          ` consists of ${artifact.artis?.length} pieces and is available in ${joinMulti(artifact.levels?.map(l => `${l}`) ?? [])} star variants. \nIt also has` :
-          " has"} ${joinMulti(artifact.bonuses?.map(b => `a ${b.count} piece set bonus: "${clean(b.desc)}"`) ?? [])}.`} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
         {artifact.artis?.[0]?.icon && <meta property="og:image" content={getIconPath(artifact.artis[0].icon)} />}
       </Head>
       <h2 className="font-semibold">

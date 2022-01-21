@@ -49,13 +49,15 @@ export default function Materials(props: Props & { location: string }) {
   const [categoryFilter, setCategoryFilter] = useState(defaultCategories)
   const [typeFilter, setTypeFilter] = useState(defaultTypes)
 
+  const desc = `View uses, sources and description of the ${props.materials.length} different materials in Genshin Impact.`
   return (
     <Main>
       <Head>
         <title>Materials | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Materials | Hu Tao" />
-        <meta property="og:description" content={`View uses, sources and description of the ${props.materials.length} different materials in Genshin Impact.`} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
       </Head>
 
       <h1 className="text-5xl font-bold pb-2">

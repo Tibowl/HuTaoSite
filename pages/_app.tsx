@@ -33,6 +33,7 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
     <Head>
       <title>{router.pathname.substring(1).replace(/^\w/, w => w.toUpperCase())} | Hu Tao</title>
       <link rel="icon" href="/favicon.ico" />
+      <meta http-httpEquiv="content-language" content="en-us"></meta>
     </Head>
 
     <div className="w-full">

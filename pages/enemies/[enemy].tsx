@@ -19,13 +19,15 @@ interface Props {
 export default function EnemyWebpage({ enemy, location, guides }: Props & { location: string }) {
   const color = getStarColor(1)
 
+  const desc = `${enemy.name}${enemy.type ? ` (${enemy.type})` : ""}${enemy.kind ? ` is a ${enemy.kind}` : " is an enemy"} in Genshin Impact.${enemy.resistance ? " Click to find out their resistances!" : ""}`
   return (
     <Main>
       <Head>
         <title>{enemy.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${enemy.name} | Hu Tao`} />
-        <meta property="og:description" content={`${enemy.name}${enemy.type ? ` (${enemy.type})` : ""}${enemy.kind ? ` is a ${enemy.kind}` : " is an enemy"} in Genshin Impact.${enemy.resistance ? " Click to find out their resistances!" : ""}`} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
         {enemy.icon && <meta property="og:image" content={getIconPath(enemy.icon)} />}
       </Head>
       <h2 className="font-semibold">

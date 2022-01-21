@@ -66,13 +66,15 @@ export default class Reminders extends Component<Props, { reminders: Reminder[],
     const { user } = this.props
     const { reminders } = this.state
 
+    const desc = "Change, add and remove your Discord reminders."
     return (
       <Main>
         <Head>
           <title>Reminders | Hu Tao</title>
           <meta name="twitter:card" content="summary" />
           <meta property="og:title" content="Reminders | Hu Tao" />
-          <meta property="og:description" content="Change, add and remove your Discord reminders." />
+          <meta property="og:description" content={desc} />
+          <meta property="description" content={desc} />
         </Head>
         <h1 className="text-5xl font-bold">
           Reminders

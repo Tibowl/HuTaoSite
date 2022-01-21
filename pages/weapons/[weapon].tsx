@@ -25,13 +25,15 @@ export default function WeaponWebpage({ weapon, weaponCurves, costTemplates, loc
   const color = getStarColor(weapon.stars ?? 1)
 
 
+  const desc = getDescription(weapon, weaponCurves)
   return (
     <Main>
       <Head>
         <title>{weapon.name} | Hu Tao</title>
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${weapon.name} | Hu Tao`} />
-        <meta property="og:description" content={getDescription(weapon, weaponCurves)} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
         {weapon.icon && <meta property="og:image" content={getIconPath(weapon.icon)} />}
       </Head>
       <h2 className="font-semibold">

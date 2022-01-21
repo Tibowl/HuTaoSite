@@ -19,13 +19,15 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
   const nextPage = guide.pages[pageNumber + 1]
   const prevPage = guide.pages[pageNumber - 1]
 
+  const desc = `View ${removeBrackets(page.name)} guide by ${page.credits}${page.url && page.url.startsWith("https://youtu.be/") ? " (video available!)" : ""}. \n${page.desc ? clean(page.desc) : ""}`.trim()
   return (
     <Main>
       <Head>
         <title>{page.name} | Hu Tao</title>
         <meta name="twitter:card" content={page.img ? "summary_large_image" : "summary"} />
         <meta property="og:title" content={`${page.name} | Hu Tao`} />
-        <meta property="og:description" content={`View ${page.name} guide by ${page.credits}${page.url && page.url.startsWith("https://youtu.be/") ? " (video available!)" : ""}. \n${page.desc ? clean(page.desc) : ""}`.trim()} />
+        <meta property="og:description" content={desc} />
+        <meta property="description" content={desc} />
         {page.img && <meta property="og:image" content={getIconPath(page.img)} />}
       </Head>
       <h2 className="font-semibold">
