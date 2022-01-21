@@ -237,15 +237,20 @@ function calcSimsInt(starterSim: Sim, pulls: number, banner: Banner): ReducedSim
 
 function calcSimsExact(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8) {
   for (let i = 0; i < pulls; i++) {
-    const newSims: Sim[] = []
+    const newSims: Record<number, Sim> = {}
 
     const addOrMerge = (sim: Sim) => {
       if (sim.rate <= 0) return
 
-      const v = (((sim.const + 1) * (banner.maxPity + 5) + sim.pity) * 2 + (+sim.guaranteed)) * (banner.guaranteedPity ?? 1) + sim.guaranteedPity
+      const v = sim.pity + (banner.maxPity + 1) * ((sim.const + 1) + ((banner.maxConst + 2) * (+sim.guaranteed + (2 * sim.guaranteedPity))))
       const other = newSims[v]
 
       if (other) {
+        // if (other.const != sim.const) console.error("const", v, sim, other)
+        // if (other.guaranteed != sim.guaranteed) console.error("guaranteed", v, sim, other)
+        // if (other.guaranteedPity != sim.guaranteedPity) console.error("guaranteedPity", v, sim, other)
+        // if (other.pity != sim.pity) console.error("pity", v, sim, other)
+
         other.rate += sim.rate
         return
       }
@@ -303,7 +308,7 @@ function calcSimsExact(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8)
           addOrMerge({
             pity: 0,
             guaranteed: false,
-            guaranteedPity: sim.guaranteedPity + 1,
+            guaranteedPity: banner.guaranteedPity ? sim.guaranteedPity + 1 : 0,
             const: sim.const,
             rate: sim.rate * rate * bannerRate * (1 - banner.guaranteed)
           })
@@ -313,13 +318,13 @@ function calcSimsExact(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8)
         addOrMerge({
           pity: 0,
           guaranteed: true,
-          guaranteedPity: sim.guaranteedPity + 1,
+          guaranteedPity: banner.guaranteedPity ? sim.guaranteedPity + 1 : 0,
           const: sim.const,
           rate: sim.rate * rate * (1 - bannerRate)
         })
     }
 
-    sims = newSims
+    sims = Object.values(newSims)
   }
   return sims
 }
