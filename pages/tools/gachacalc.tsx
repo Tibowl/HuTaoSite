@@ -125,18 +125,20 @@ export default function GachaCalc({ location }: { location: string }) {
       {banner.guaranteedPity && <NumberInput label="Epitomized Path" set={setGuaranteedPity} value={guaranteedPity} min={0} max={banner.guaranteedPity - 1} />}
 
       <h3 className="text-lg font-bold pt-1" id="resistance">Results:</h3>
-      <table className={`table-auto w-64 ${styles.table} ${styles.stattable} mb-2 sm:text-base text-sm`}>
+      <table className={`table-auto w-80 ${styles.table} ${styles.stattable} mb-2 sm:text-base text-sm`}>
         <thead>
           <tr className="divide-x divide-gray-200 dark:divide-gray-500">
             <th>{banner.constName}</th>
             <th>Rate</th>
+            <th>Cumulative rate</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
           {calculated
-            .map((c) => <tr className={`pr-1 divide-x divide-gray-200 dark:divide-gray-500 ${c.rate < 0.0005 ? "opacity-60" : ""}`} key={c.const}>
+            .map((c, i, a) => <tr className={`pr-1 divide-x divide-gray-200 dark:divide-gray-500 ${c.rate < 0.0005 ? "opacity-60" : ""}`} key={c.const}>
               <td>{c.const == banner.minConst ? "Not owned" : `${banner.constFormat}${c.const}`}</td>
               <td>{(c.rate * 100).toFixed(3)}%</td>
+              <td>{(a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100).toFixed(2)}%</td>
             </tr>)}
         </tbody>
       </table>
