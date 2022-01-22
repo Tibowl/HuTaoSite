@@ -102,7 +102,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         <div className="clear-both" />
         {isFullCharacter(char) && characterCurves && <Stats char={char} curves={characterCurves} />}
         {char.ascensionCosts && costTemplates && <FullAscensionCosts template={char.ascensionCosts} costTemplates={costTemplates} />}
-        {char.meta && <Meta meta={char.meta} />}
+        {char.meta && <MetaSection meta={char.meta} />}
         {char.media.videos && <Videos videos={char.media.videos} />}
         {char.skills && costTemplates && <CharacterSkills skills={char.skills} costTemplates={costTemplates} />}
       </div>
@@ -241,7 +241,7 @@ function Stats({ char, curves }: { char: CharacterFull, curves: Record<CurveEnum
   </>
 }
 
-function Meta({ meta }: { meta: Meta }) {
+function MetaSection({ meta }: { meta: Meta }) {
   return <div>
     <h3 className="text-lg font-bold pt-1" id="meta">Meta:</h3>
     <table className={`table-auto ${styles.table} mb-2 w-full`}>
@@ -299,11 +299,11 @@ function CharacterSkills({ skills, costTemplates }: { skills: Skills[], costTemp
         </>}
         {skill.passive && <>
           <h3 className="text-lg font-bold pt-1" id={`passive${i > 0 ? `-${i}` : ""}`}>Passives:</h3>
-          {skill.passive.map(p => p && <Passive passive={p} key={p.name} />)}
+          {skill.passive.map(p => p && <PassiveSection passive={p} key={p.name} />)}
         </>}
         {skill.constellations && <>
           <h3 className="text-lg font-bold pt-1" id={`const${i > 0 ? `-${i}` : ""}`}>Constellations:</h3>
-          {skill.constellations.map(c => c && <Constellation c={c} key={c.name} />)}
+          {skill.constellations.map(c => c && <ConstellationSection c={c} key={c.name} />)}
         </>}
       </div>
     })}
@@ -324,7 +324,7 @@ function Talent({ talent, costTemplates }: { talent: Skill, costTemplates: CostT
         {talent.videomp4 ? <video src={talent.videomp4} autoPlay muted loop playsInline className="w-full" /> : <img src={talent.video} alt="Talent video" className="w-full" />}
       </div>}
     </div>
-    {talent.talentTable && <TalentTable table={talent.talentTable} />}
+    {talent.talentTable && <TalentTableSection table={talent.talentTable} />}
     {talent.costs && !Array.isArray(talent.costs) && <TalentCost template={talent.costs} costTemplates={costTemplates} />}
   </div>
 }
@@ -363,7 +363,7 @@ function TalentCost({ template, costTemplates }: { template: CostTemplate, costT
   </>
 }
 
-function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
+function TalentTableSection({ table }: { table: (TalentTable | TalentValue)[] }) {
   const maxLevel = table.reduce((p, c) => Math.max(p, isValueTable(c) ? c.values.length : 1), 1)
   const levels = []
   for (let i = 0; i < maxLevel; i++)
@@ -405,7 +405,7 @@ function TalentTable({ table }: { table: (TalentTable | TalentValue)[] }) {
   </div>
 }
 
-function Passive({ passive }: { passive: Passive }) {
+function PassiveSection({ passive }: { passive: Passive }) {
   return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
     <div className="flex flex-row items-center" id={urlify(passive.name, false)}>
       {passive.icon && <Icon icon={passive} className="rounded-full w-16 h-16 mr-2 bg-slate-600" />}
@@ -420,7 +420,7 @@ function Passive({ passive }: { passive: Passive }) {
   </div>
 }
 
-function Constellation({ c }: { c: Constellation }) {
+function ConstellationSection({ c }: { c: Constellation }) {
   return <div className="border p-1 rounded-xl mb-2 border-opacity-75">
     <div className="flex flex-row items-center" id={urlify(c.name, false)}>
       {c.icon && <Icon icon={c} className="rounded-full w-16 h-16 mr-2 bg-slate-600" />}
