@@ -26,6 +26,27 @@ th {
 thead {
     text-align: left;
 }
+.bi-alarm {
+    color: #d34f52;
+}
+.bi-book-half {
+    color: #3dcdd4;
+}
+.bi-calculator {
+    color: #56b84f;
+}
+.bi-person-circle {
+    color: #df9114;
+}
+.bi-newspaper {
+    color: #6b6b6b;
+}
+.bi-github {
+    color: #444444;
+}
+.bi-discord {
+    color: #6b72ce;
+}
 
 .fivestar {
     background-color: rgb(217 119 6);
@@ -68,4 +89,25 @@ thead {
         background-color: rgb(114, 119, 139);
     }
 
+    .bi-alarm {
+        color: #d89192;
+    }
+    .bi-book-half {
+        color: #91d5d8;
+    }
+    .bi-calculator {
+        color: #9be096;
+    }
+    .bi-person-circle {
+        color: #d0d891;
+    }
+    .bi-newspaper {
+        color: #b5b5b5;
+    }
+    .bi-github {
+        color: #E3FEFF;
+    }
+    .bi-discord {
+        color: #ABAFE9;
+    }
 }

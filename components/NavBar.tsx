@@ -8,15 +8,15 @@ export default function NavBar({ location }: {location: string}) {
   const navLinks = pages.map(page => <FormattedLink key={page} href={`/${page.toLowerCase()}`} location={location}>{page}</FormattedLink>)
 
   return (
-    <div className="text-xl bg-gradient-to-r from-blue-200 to-blue-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-between md:justify-start p-4 w-full top-0">
+    <div className="text-xl bg-gradient-to-r from-blue-200 to-blue-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-between lg:justify-start p-4 w-full top-0">
       <div className={`flex items-center pr-20 ${menuOpen ? "hidden": ""} sm:block`}>
         <Logo />
         <FormattedLink location={location} href="/" className="font-bold">Hu Tao</FormattedLink>
       </div>
-      <nav className="hidden md:block space-x-6">
+      <nav className="hidden lg:block space-x-6">
         {navLinks}
       </nav>
-      <div className={`flex flex-row items-start justify-between md:hidden ${menuOpen?"w-full":""}`}>
+      <div className={`flex flex-row items-start justify-between lg:hidden ${menuOpen?"w-full":""}`}>
         {menuOpen && <MobileMenu navLinks={navLinks} />}
         <button type="button" aria-label="Toggle mobile menu" onClick={() => setMenuOpen(!menuOpen)}>
           <MenuAlt4Svg menuOpen={menuOpen} />
@@ -28,7 +28,7 @@ export default function NavBar({ location }: {location: string}) {
 
 function MobileMenu({ navLinks }: {navLinks: JSX.Element[] }) {
   return (
-    <nav className="p-4 flex flex-col space-y-3 md:hidden">
+    <nav className="p-4 flex flex-col space-y-3 lg:hidden">
       {navLinks}
     </nav>
   )

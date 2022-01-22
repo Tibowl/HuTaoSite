@@ -150,7 +150,7 @@ function NumberInput({ value, set, label, min, max }: { value: number, set: (new
   return <div><label>
     {label}
     <input
-      className="bg-white dark:bg-slate-800 rounded-lg px-2 ml-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500"
+      className="bg-slate-200 w-32 dark:bg-slate-800 rounded-lg px-2 ml-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500"
       value={value}
       onChange={(e) => {
         const value = +e.target.value
@@ -168,7 +168,7 @@ function CheckboxInput({ value, set, label }: { value: boolean, set: (newValue: 
   return <div><label>
     {label}
     <input
-      className="bg-white dark:bg-slate-800 rounded-lg px-2 ml-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500"
+      className="bg-slate-200 dark:bg-slate-800 rounded-lg px-2 ml-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500"
       checked={value}
       onChange={(e) => set(e.target.checked)}
       type="checkbox"
@@ -183,7 +183,7 @@ function SelectInput({ value, set, label, options }: { value: string, set: (newV
     <select
       value={value}
       onChange={e => set(e.target.value)}
-      className="mt-1 ml-2 mb-2 py-0.5 px-2 border border-gray-300 bg-white dark:bg-slate-800 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+      className="mt-1 ml-2 mb-2 py-0.5 px-2 border border-gray-300 bg-slate-200 dark:bg-slate-800 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
     >
       {options.map(opt => <option key={opt}>{opt}</option>)}
     </select>
@@ -214,9 +214,9 @@ function calcSimsRegular(current: number, pity: number, pulls: number, guarantee
 }
 
 function calcSimsInt(starterSim: Sim, pulls: number, banner: Banner): ReducedSim[] {
-  console.time("Start")
+  console.time("calc")
   const sims: Sim[] = calcSimsExact([starterSim], pulls, banner, 0)
-  console.timeEnd("Start")
+  console.timeEnd("calc")
 
   // Reducing to simple sims with less information
   const reducedSims: ReducedSim[] = []
