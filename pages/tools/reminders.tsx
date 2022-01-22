@@ -36,8 +36,8 @@ const modalStyle: ReactModal.Styles = {
   }
 }
 
-export default class Reminders extends Component<Props, { reminders: Reminder[], createReminderOpen: boolean, disabledTest: boolean }> {
-  constructor(props: Props) {
+export default class Reminders extends Component<Props & { location: string }, { reminders: Reminder[], createReminderOpen: boolean, disabledTest: boolean }> {
+  constructor(props: Props & { location: string }) {
     super(props)
     this.state = {
       reminders: this.props.reminders,
@@ -62,7 +62,7 @@ export default class Reminders extends Component<Props, { reminders: Reminder[],
         </Head>
 
         <h2 className="font-semibold">
-          <FormattedLink href="/tools/" location={location} className="font-semibold text-lg">
+          <FormattedLink href="/tools/" location={this.props.location} className="font-semibold text-lg">
             Tools
           </FormattedLink>
         </h2>
