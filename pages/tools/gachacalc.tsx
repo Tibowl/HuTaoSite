@@ -2,8 +2,8 @@ import {
   BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Tooltip
 } from "chart.js"
 import Head from "next/head"
-import { DependencyList, EffectCallback, useEffect, useState } from "react"
-import { Chart } from "react-chartjs-2"
+import { EffectCallback, useEffect, useState } from "react"
+import { Bar, Line } from "react-chartjs-2"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
 import styles from "../style.module.css"
@@ -150,11 +150,10 @@ export default function GachaCalc({ location }: { location: string }) {
       <h3 className="text-lg font-bold pt-1" id="resistance">Results:</h3>
       <div className="columns-1 md:columns-2 mr-2">
         <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-1">
-          <Chart type="bar" data={({
+          <Bar data={({
             labels: calculated.filter(x => x).map(c => getName(c, banner)),
             datasets: [
               {
-                type: "bar" as const,
                 label: "Rate",
                 backgroundColor: "rgb(75, 192, 192)",
                 data: calculated.filter(x => x).map((c, i, a) => c.rate * 100),
@@ -183,11 +182,10 @@ export default function GachaCalc({ location }: { location: string }) {
             }
           })} /></div>
         <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-2">
-          <Chart type="bar" data={({
+          <Line data={({
             labels: calculated.filter(x => x).map(c => getName(c, banner)),
             datasets: [
               {
-                type: "line" as const,
                 label: "Cumulative rate",
                 borderColor: "rgb(255, 99, 132)",
                 borderWidth: 2,
