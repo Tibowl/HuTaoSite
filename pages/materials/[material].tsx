@@ -140,7 +140,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
   const matName = context.params?.material
   const data = await getMaterials()
 
-  const mat = Object.values(data ?? {}).find(g => urlify(g.name, false) == matName)
+  const mat = Object.values(data ?? {}).find(m => urlify(m.name, false) == matName)
   if (!data || !mat) {
     return {
       notFound: true,

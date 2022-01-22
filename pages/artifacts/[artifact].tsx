@@ -98,7 +98,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
   const artifactName = context.params?.artifact
   const data = await getArtifacts()
 
-  const artifact = Object.values(data ?? {}).find(g => urlify(g.name, false) == artifactName)
+  const artifact = Object.values(data ?? {}).find(a => urlify(a.name, false) == artifactName)
   if (!data || !artifact) {
     return {
       notFound: true,

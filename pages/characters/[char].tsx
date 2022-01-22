@@ -436,7 +436,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
   const charName = context.params?.char
   const data = await getCharacters()
 
-  const char = Object.values(data ?? {}).find(g => urlify(g.name, false) == charName)
+  const char = Object.values(data ?? {}).find(c => urlify(c.name, false) == charName)
   if (!data || !char) {
     return {
       notFound: true,
