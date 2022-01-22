@@ -1,8 +1,22 @@
+import {
+  BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Tooltip
+} from "chart.js"
 import Head from "next/head"
-import { useEffect, useState } from "react"
+import { DependencyList, EffectCallback, useEffect, useState } from "react"
+import { Chart } from "react-chartjs-2"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
 import styles from "../style.module.css"
+
+ChartJS.register(
+  LinearScale,
+  CategoryScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Legend,
+  Tooltip
+)
 
 function pityRate(baseRate: number, pityStart: number): (pity: number) => number {
   return (pity) => pity < pityStart ? baseRate : baseRate + baseRate * 10 * (pity - pityStart + 1)
@@ -69,6 +83,7 @@ type ReducedSim = {
   rate: number
 }
 
+
 export default function GachaCalc({ location }: { location: string }) {
   const [current, setCurrent] = useState(-1)
   const [pity, setPity] = useState(0)
@@ -82,10 +97,18 @@ export default function GachaCalc({ location }: { location: string }) {
 
   const banner = Object.values(gachas).find(x => x.bannerName == gachaName) ?? Object.values(gachas)[0]
 
-  if (pity >= banner.maxPity) setPity(banner.maxPity - 1)
-  if (banner.guaranteedPity && guaranteedPity >= banner.guaranteedPity) setGuaranteedPity(banner.guaranteedPity)
-  if (current > banner.maxConst) setCurrent(banner.maxConst)
-  if (current < banner.minConst) setCurrent(banner.minConst)
+  function delayed(f: EffectCallback) {
+    const timeout = setTimeout(() => {
+      f()
+    }, 3000)
+
+    return () => clearTimeout(timeout)
+  }
+
+  useEffect(() => delayed(() => { if (pity >= banner.maxPity) setPity(banner.maxPity - 1) }), [banner, pity])
+  useEffect(() => delayed(() => { if (banner.guaranteedPity && guaranteedPity >= banner.guaranteedPity) setGuaranteedPity(banner.guaranteedPity) }), [banner, guaranteedPity])
+  useEffect(() => delayed(() => { if (current > banner.maxConst) setCurrent(banner.maxConst) }), [banner, current])
+  useEffect(() => delayed(() => { if (current < banner.minConst) setCurrent(banner.minConst) }), [current, banner])
 
   useEffect(
     () => setCalculated(calcSimsRegular(current, pity, pulls, guaranteed, guaranteedPity, banner)),
@@ -115,7 +138,7 @@ export default function GachaCalc({ location }: { location: string }) {
 
       <SelectInput label="Banner type" set={(g) => {
         if (current == banner.minConst)
-          setCurrent(-5)
+          setCurrent((Object.values(gachas).find(x => x.bannerName == g) ?? Object.values(gachas)[0]).minConst)
         setGacha(g)
       }} value={gachaName} options={Object.values(gachas).map(g => g.bannerName)} />
       <NumberInput label="Pulls" set={setPulls} value={pulls} min={0} max={1260} />
@@ -125,7 +148,76 @@ export default function GachaCalc({ location }: { location: string }) {
       {banner.guaranteedPity && <NumberInput label="Epitomized Path" set={setGuaranteedPity} value={guaranteedPity} min={0} max={banner.guaranteedPity - 1} />}
 
       <h3 className="text-lg font-bold pt-1" id="resistance">Results:</h3>
-      <table className={`table-auto w-80 ${styles.table} ${styles.stattable} mb-2 sm:text-base text-sm`}>
+      <div className="columns-1 md:columns-2 mr-2">
+        <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-1">
+          <Chart type="bar" data={({
+            labels: calculated.filter(x => x).map(c => getName(c, banner)),
+            datasets: [
+              {
+                type: "bar" as const,
+                label: "Rate",
+                backgroundColor: "rgb(75, 192, 192)",
+                data: calculated.filter(x => x).map((c, i, a) => c.rate * 100),
+                borderColor: "white",
+                borderWidth: 2,
+                xAxisID: "xAxes"
+              },
+            ],
+          })} options={({
+            indexAxis: "y",
+            color: "white",
+            backgroundColor: "#333333",
+            scales: {
+              xAxes: {
+                min: 0,
+                ticks: {
+                  color: "white",
+                  callback: (v) => `${v}%`
+                }
+              },
+              yAxes: {
+                ticks: {
+                  color: "white"
+                }
+              }
+            }
+          })} /></div>
+        <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-2">
+          <Chart type="bar" data={({
+            labels: calculated.filter(x => x).map(c => getName(c, banner)),
+            datasets: [
+              {
+                type: "line" as const,
+                label: "Cumulative rate",
+                borderColor: "rgb(255, 99, 132)",
+                borderWidth: 2,
+                fill: false,
+                data: calculated.filter(x => x).map((c, i, a) => a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100),
+              },
+            ],
+          })} options={({
+            indexAxis: "y",
+            color: "white",
+            backgroundColor: "#333333",
+            scales: {
+              xAxes: {
+                max: 100,
+                min: 0,
+                ticks: {
+                  color: "white",
+                  callback: (v) => `${v}%`
+                }
+              },
+              yAxes: {
+                ticks: {
+                  color: "white"
+                }
+              }
+            }
+          })} />
+        </div>
+      </div>
+      <table className={`table-auto w-80 ${styles.table} ${styles.stattable} my-2 sm:text-base text-sm`}>
         <thead>
           <tr className="divide-x divide-gray-200 dark:divide-gray-500">
             <th>{banner.constName}</th>
@@ -134,9 +226,9 @@ export default function GachaCalc({ location }: { location: string }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
-          {calculated
+          {calculated.filter(x => x)
             .map((c, i, a) => <tr className={`pr-1 divide-x divide-gray-200 dark:divide-gray-500 ${c.rate < 0.0005 ? "opacity-60" : ""}`} key={c.const}>
-              <td>{c.const == banner.minConst ? "Not owned" : `${banner.constFormat}${c.const}`}</td>
+              <td>{getName(c, banner)}</td>
               <td>{(c.rate * 100).toFixed(3)}%</td>
               <td>{(a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100).toFixed(2)}%</td>
             </tr>)}
@@ -144,6 +236,10 @@ export default function GachaCalc({ location }: { location: string }) {
       </table>
     </Main>
   )
+}
+
+function getName(c: ReducedSim, banner: Banner) {
+  return c.const == banner.minConst ? "Not owned" : `${banner.constFormat}${c.const}`
 }
 
 function NumberInput({ value, set, label, min, max }: { value: number, set: (newValue: number) => unknown, label: string, min?: number, max?: number }) {

@@ -6,6 +6,7 @@ import ReactModal from "react-modal"
 import { toast } from "react-toastify"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
+import Toast from "../../components/Toasts"
 import { config } from "../../utils/config"
 import * as gtag from "../../utils/gtag"
 import { parseUser } from "../../utils/parse-user"
@@ -111,6 +112,7 @@ export default class Reminders extends Component<Props & { location: string }, {
             addReminder={(r) => this.setState({ reminders: [...reminders, r] })}
           />
         </div>
+        <Toast />
       </Main>
     )
   }
