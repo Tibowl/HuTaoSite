@@ -1,5 +1,5 @@
 import {
-  BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Tooltip
+  BarElement, CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip
 } from "chart.js"
 import Head from "next/head"
 import { EffectCallback, useEffect, useState } from "react"
@@ -14,6 +14,7 @@ ChartJS.register(
   BarElement,
   PointElement,
   LineElement,
+  Filler,
   Legend,
   Tooltip
 )
@@ -220,11 +221,15 @@ export default function GachaCalc({ location }: { location: string }) {
       <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-2">
         <Line data={({
           labels: calculated.map((_, i) => i + pity),
-          datasets: consts.filter(i => i >= 0).map(i => ({
+          datasets: consts.filter(i => i >= 0).map((i, x) => ({
             label: getName(i, banner),
-            backgroundColor: ["#c9c9c9", "#ff6363", "#ffd863", "#b1ff63", "#63ff8a", "#63ffff", "#638aff", "#b163ff", "#ff63d8"][i+1],
-            borderColor: ["#c9c9c9", "#ff6363", "#ffd863", "#b1ff63", "#63ff8a", "#63ffff", "#638aff", "#b163ff", "#ff63d8"][i+1],
-            fill: true,
+            backgroundColor: getColor(i, 1),
+            borderColor: getColor(i, 1),
+            fill: {
+              above: getColor(i, 0.15),
+              below: getColor(i, 0.1),
+              target: (i == banner.maxConst ? "start" : x + 1)
+            },
             data: calculated.map((c) => (c?.filter(x => x.const >= i)?.reduce((p, c) => p + c.rate, 0) * 100)),
             borderWidth: 2,
             xAxisID: "xAxes"
@@ -272,6 +277,19 @@ export default function GachaCalc({ location }: { location: string }) {
       </table>
     </Main>
   )
+}
+function getColor(i: number, alpha: number) {
+  return [
+    `rgba(201,201,201,${alpha})`,
+    `rgba(255,99,99,${alpha})`,
+    `rgba(255,216,99,${alpha})`,
+    `rgba(177,255,99,${alpha})`,
+    `rgba(99,255,138,${alpha})`,
+    `rgba(99,255,255,${alpha})`,
+    `rgba(99,138,255,${alpha})`,
+    `rgba(177,99,255,${alpha})`,
+    `rgba(255,99,216,${alpha})`
+  ][i + 1]
 }
 
 function getName(c: number, banner: Banner) {
