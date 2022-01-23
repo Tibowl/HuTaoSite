@@ -91,7 +91,7 @@ export default function GachaCalc({ location }: { location: string }) {
   const [guaranteed, setGuaranteed] = useState(false)
   const [guaranteedPity, setGuaranteedPity] = useState(0)
 
-  const [calculated, setCalculated] = useState([] as ReducedSim[])
+  const [calculated, setCalculated] = useState([[]] as ReducedSim[][])
 
   const [gachaName, setGacha] = useState(Object.values(gachas).map(g => g.bannerName)[0])
 
@@ -114,6 +114,9 @@ export default function GachaCalc({ location }: { location: string }) {
     () => setCalculated(calcSimsRegular(current, pity, pulls, guaranteed, guaranteedPity, banner)),
     [current, pity, pulls, guaranteed, guaranteedPity, banner]
   )
+  const consts = []
+  for (let i = current; i <= banner.maxConst; i++) consts.push(i)
+  console.log(calculated)
 
   const desc = "Gacha rate calculator for Genshin Impact."
   return (
@@ -135,7 +138,6 @@ export default function GachaCalc({ location }: { location: string }) {
       <h1 className="text-5xl font-bold pb-2">
         Gacha rate calculator
       </h1>
-
       <SelectInput label="Banner type" set={(g) => {
         if (current == banner.minConst)
           setCurrent((Object.values(gachas).find(x => x.bannerName == g) ?? Object.values(gachas)[0]).minConst)
@@ -148,15 +150,15 @@ export default function GachaCalc({ location }: { location: string }) {
       {banner.guaranteedPity && <NumberInput label="Epitomized Path" set={setGuaranteedPity} value={guaranteedPity} min={0} max={banner.guaranteedPity - 1} />}
 
       <h3 className="text-lg font-bold pt-1" id="resistance">Results:</h3>
-      <div className="columns-1 md:columns-2 mr-2">
+      <div className="columns-1 md:columns-2 mr-2 mb-2">
         <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-1">
           <Bar data={({
-            labels: calculated.filter(x => x).map(c => getName(c, banner)),
+            labels: calculated[calculated.length - 1].filter(x => x).map(c => getName(c.const, banner)),
             datasets: [
               {
                 label: "Rate",
                 backgroundColor: "rgb(75, 192, 192)",
-                data: calculated.filter(x => x).map((c, i, a) => c.rate * 100),
+                data: calculated[calculated.length - 1].filter(x => x).map((c, i, a) => c.rate * 100),
                 borderColor: "white",
                 borderWidth: 2,
                 xAxisID: "xAxes"
@@ -183,14 +185,14 @@ export default function GachaCalc({ location }: { location: string }) {
           })} /></div>
         <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-2">
           <Line data={({
-            labels: calculated.filter(x => x).map(c => getName(c, banner)),
+            labels: calculated[calculated.length - 1].filter(x => x).map(c => getName(c.const, banner)),
             datasets: [
               {
                 label: "Cumulative rate",
                 borderColor: "rgb(255, 99, 132)",
                 borderWidth: 2,
                 fill: false,
-                data: calculated.filter(x => x).map((c, i, a) => a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100),
+                data: calculated[calculated.length - 1].filter(x => x).map((c, i, a) => a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100),
               },
             ],
           })} options={({
@@ -215,6 +217,42 @@ export default function GachaCalc({ location }: { location: string }) {
           })} />
         </div>
       </div>
+      <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-2">
+        <Line data={({
+          labels: calculated.map((_, i) => i + pity),
+          datasets: consts.filter(i => i >= 0).map(i => ({
+            label: getName(i, banner),
+            backgroundColor: ["#c9c9c9", "#ff6363", "#ffd863", "#b1ff63", "#63ff8a", "#63ffff", "#638aff", "#b163ff", "#ff63d8"][i+1],
+            borderColor: ["#c9c9c9", "#ff6363", "#ffd863", "#b1ff63", "#63ff8a", "#63ffff", "#638aff", "#b163ff", "#ff63d8"][i+1],
+            fill: true,
+            data: calculated.map((c) => (c?.filter(x => x.const >= i)?.reduce((p, c) => p + c.rate, 0) * 100)),
+            borderWidth: 2,
+            xAxisID: "xAxes"
+          })),
+        })} options={({
+          color: "white",
+          backgroundColor: "#333333",
+          interaction: {
+            mode: "index",
+            intersect: false
+          },
+          scales: {
+            yAxes: {
+              max: 100,
+              min: 0,
+              ticks: {
+                color: "white",
+                callback: (v) => `${v}%`
+              }
+            },
+            xAxes: {
+              ticks: {
+                color: "white"
+              }
+            }
+          }
+        })} />
+      </div>
       <table className={`table-auto w-80 ${styles.table} ${styles.stattable} my-2 sm:text-base text-sm`}>
         <thead>
           <tr className="divide-x divide-gray-200 dark:divide-gray-500">
@@ -224,9 +262,9 @@ export default function GachaCalc({ location }: { location: string }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
-          {calculated.filter(x => x)
+          {calculated[calculated.length - 1].filter(x => x)
             .map((c, i, a) => <tr className={`pr-1 divide-x divide-gray-200 dark:divide-gray-500 ${c.rate < 0.0005 ? "opacity-60" : ""}`} key={c.const}>
-              <td>{getName(c, banner)}</td>
+              <td>{getName(c.const, banner)}</td>
               <td>{(c.rate * 100).toFixed(3)}%</td>
               <td>{(a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100).toFixed(2)}%</td>
             </tr>)}
@@ -236,8 +274,8 @@ export default function GachaCalc({ location }: { location: string }) {
   )
 }
 
-function getName(c: ReducedSim, banner: Banner) {
-  return c.const == banner.minConst ? "Not owned" : `${banner.constFormat}${c.const}`
+function getName(c: number, banner: Banner) {
+  return c == banner.minConst ? "Not owned" : `${banner.constFormat}${c}`
 }
 
 function NumberInput({ value, set, label, min, max }: { value: number, set: (newValue: number) => unknown, label: string, min?: number, max?: number }) {
@@ -284,20 +322,7 @@ function SelectInput({ value, set, label, options }: { value: string, set: (newV
   </label></div>
 }
 
-function calcSimsRegular(current: number, pity: number, pulls: number, guaranteed: boolean, guaranteedPity: number, banner: Banner): ReducedSim[] {
-  // Max pity / const
-  if (banner.guaranteed >= 1 && pulls + pity >= banner.maxPity * ((banner.maxConst + 1) * 2 - (guaranteed ? 1 : 0)))
-    return [{
-      const: banner.maxConst,
-      rate: 1
-    }]
-
-  if (banner.guaranteedPity && banner.guaranteedPity >= 1 && pulls + pity >= banner.maxPity * ((banner.maxConst + 1) * banner.guaranteedPity * 2 - (guaranteed ? 1 : 0)))
-    return [{
-      const: banner.maxConst,
-      rate: 1
-    }]
-
+function calcSimsRegular(current: number, pity: number, pulls: number, guaranteed: boolean, guaranteedPity: number, banner: Banner): ReducedSim[][] {
   return calcSimsInt({
     pity,
     guaranteed,
@@ -307,31 +332,34 @@ function calcSimsRegular(current: number, pity: number, pulls: number, guarantee
   }, pulls, banner)
 }
 
-function calcSimsInt(starterSim: Sim, pulls: number, banner: Banner): ReducedSim[] {
+function calcSimsInt(starterSim: Sim, pulls: number, banner: Banner): ReducedSim[][] {
   console.time("calc")
-  const sims: Sim[] = calcSimsExact([starterSim], pulls, banner, 0)
+  const sims: Sim[][] = calcSimsExact([starterSim], pulls, banner, 0)
   console.timeEnd("calc")
 
-  // Reducing to simple sims with less information
-  const reducedSims: ReducedSim[] = []
-  sims.forEach((sim: Sim) => {
-    if (sim.rate == 0) return
 
-    const other = reducedSims[sim.const + 1]
+  return sims.map(sim => {
+    // Reducing to simple sims with less information
+    const reducedSims: ReducedSim[] = []
+    sim.forEach((sim: Sim) => {
+      if (sim.rate == 0) return
 
-    if (other)
-      other.rate += sim.rate
-    else
-      reducedSims[sim.const + 1] = {
-        const: sim.const,
-        rate: sim.rate
-      }
+      const other = reducedSims[sim.const + 1]
+
+      if (other)
+        other.rate += sim.rate
+      else
+        reducedSims[sim.const + 1] = {
+          const: sim.const,
+          rate: sim.rate
+        }
+    })
+    return reducedSims
   })
-
-  return reducedSims
 }
 
 function calcSimsExact(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8) {
+  const allSims: Sim[][] = [sims]
   for (let i = 0; i < pulls; i++) {
     const newSims: Record<number, Sim> = {}
 
@@ -358,7 +386,7 @@ function calcSimsExact(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8)
       if (!sim) continue
       if (sim.rate <= prune) continue // Pruning
       if (sim.const >= banner.maxConst) { // Limited to C6
-        addOrMerge(sim)
+        addOrMerge({ ...sim })
         continue
       }
       const currentPity = sim.pity + 1
@@ -421,6 +449,7 @@ function calcSimsExact(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8)
     }
 
     sims = Object.values(newSims)
+    allSims.push(sims)
   }
-  return sims
+  return allSims
 }
