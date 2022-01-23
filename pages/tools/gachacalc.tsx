@@ -221,7 +221,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-2">
         <Line data={({
           labels: calculated.map((_, i) => i + pity),
-          datasets: consts.filter(i => i >= 0).map((i, x) => ({
+          datasets: consts.filter(i => i > banner.minConst).map((i, x) => ({
             label: getName(i, banner),
             backgroundColor: getColor(i, 1),
             borderColor: getColor(i, 1),
