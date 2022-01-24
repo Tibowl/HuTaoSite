@@ -479,7 +479,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
       costTemplates,
       guides
     },
-    revalidate: 60 * 60 * 4
+    revalidate: 60 * 60 * 8
   }
 }
 

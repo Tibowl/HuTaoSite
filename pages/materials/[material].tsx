@@ -190,7 +190,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
         weaponAscension: weaponAscension.sort((a, b) => (a.stars && b.stars && b.stars - a.stars) || (a.weapon && b.weapon && a.weapon.localeCompare(b.weapon)) || a.name.localeCompare(b.name))
       }
     },
-    revalidate: 60 * 60 * 4
+    revalidate: 60 * 60 * 16
   }
 }
 

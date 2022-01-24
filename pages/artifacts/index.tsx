@@ -92,6 +92,6 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
         .sort((a, b) => Math.max(...b.levels ?? [5]) - Math.max(...a.levels ?? [5]) || Math.min(...a.levels ?? [4]) - Math.min(...b.levels ?? [4]) || a.name.localeCompare(b.name))
         .map(w => createSmallArtifact(w))
     },
-    revalidate: 60 * 60 * 4
+    revalidate: 60 * 60 * 16
   }
 }
