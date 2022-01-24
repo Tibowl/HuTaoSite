@@ -25,34 +25,36 @@ const timezones: Record<Server, string> = {
 export default function Events(props: Props & { location: string }) {
   const [now, setNow] = useState(() => Date.now())
 
-  const [server, setServer] = useState(() => {
-    if (typeof window == "undefined") return "Europe"
-
-    let server = localStorage.getItem("server")
-
-    if (server && Object.keys(timezones).includes(server))
-      return server as Server
-
-    const clientOffset = -(new Date().getTimezoneOffset() / 60)
-
-    if (clientOffset > 5)
-      server = "Asia"
-    else if (clientOffset > -2 || clientOffset < -11)
-      server = "Europe"
-    else
-      server = "North America"
-
-    localStorage.setItem("server", server)
-    return server as Server
-  })
+  const [server, setServer] = useState(undefined as Server|undefined)
 
   const [serverTimezone, setServerTimezone] = useState("+08:00")
   const [showPast, setShowPast] = useState(false)
 
+  useEffect(() => {
+    if (typeof window == "undefined") return undefined
+
+    const server = localStorage.getItem("server")
+
+    if (server && Object.keys(timezones).includes(server)) {
+      setServer(server as Server)
+      return
+    }
+
+    const clientOffset = -(new Date().getTimezoneOffset() / 60)
+
+    if (clientOffset > 5)
+      setServer("Asia")
+    else if (clientOffset > -2 || clientOffset < -11)
+      setServer("Europe")
+    else
+      setServer("North America")
+  }, [])
 
   useEffect(() => {
-    setServerTimezone(timezones[server])
-    localStorage.setItem("server", server)
+    if (server) {
+      setServerTimezone(timezones[server])
+      localStorage.setItem("server", server)
+    }
   }, [server])
 
   useEffect(() => {
