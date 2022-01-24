@@ -33,7 +33,7 @@ export default function Events(props: Props & { location: string }) {
     if (server && Object.keys(timezones).includes(server))
       return server as Server
 
-    const clientOffset = new Date().getTimezoneOffset() / 60
+    const clientOffset = -(new Date().getTimezoneOffset() / 60)
 
     if (clientOffset > 5)
       server = "Asia"
