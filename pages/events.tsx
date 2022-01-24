@@ -25,26 +25,30 @@ const timezones: Record<Server, string> = {
 export default function Events(props: Props & { location: string }) {
   const [now, setNow] = useState(() => Date.now())
 
-  const [server, setServer] = useState("Europe" as Server)
-  const [serverTimezone, setServerTimezone] = useState("+08:00")
+  const [server, setServer] = useState(() => {
+    if (typeof window == "undefined") return "Europe"
 
-  const [showPast, setShowPast] = useState(false)
-
-  useEffect(() => {
-    const server = localStorage.getItem("server")
+    let server = localStorage.getItem("server")
 
     if (server && Object.keys(timezones).includes(server))
-      setServer(server as Server)
-    else {
-      const clientOffset = new Date().getTimezoneOffset() / 60
-      if (clientOffset > 5)
-          setServer("Asia")
-        else if (clientOffset > -2 || clientOffset < -11)
-          setServer("Europe")
-        else
-          setServer("North America")
-      }
-  }, [])
+      return server as Server
+
+    const clientOffset = new Date().getTimezoneOffset() / 60
+
+    if (clientOffset > 5)
+      server = "Asia"
+    else if (clientOffset > -2 || clientOffset < -11)
+      server = "Europe"
+    else
+      server = "North America"
+
+    localStorage.setItem("server", server)
+    return server as Server
+  })
+
+  const [serverTimezone, setServerTimezone] = useState("+08:00")
+  const [showPast, setShowPast] = useState(false)
+
 
   useEffect(() => {
     setServerTimezone(timezones[server])
@@ -66,10 +70,10 @@ export default function Events(props: Props & { location: string }) {
       const end = getEndTime(e, serverTimezone)
 
       return start && start.getTime() <= now &&
-      (
-        (end && end.getTime() >= now) ||
-        (!end && e.reminder == "daily")
-      )
+        (
+          (end && end.getTime() >= now) ||
+          (!end && e.reminder == "daily")
+        )
     }).sort((a, b) => {
       const endA = getEndTime(a, serverTimezone)
       const endB = getEndTime(b, serverTimezone)
@@ -158,7 +162,7 @@ export default function Events(props: Props & { location: string }) {
 function EventCard({ e, className, now, serverTimezone, hoverClass = "" }: { e: GenshinEvent, className: string, hoverClass?: string, now: number, serverTimezone: string }) {
   const start = getStartTime(e, serverTimezone)
   const end = getEndTime(e, serverTimezone)
-  const child = <div className={`text-center max-w-md w-full rounded-xl pb-1 ${className} ${e.link ? `${hoverClass} transition`:""}`}>
+  const child = <div className={`text-center max-w-md w-full rounded-xl pb-1 ${className} ${e.link ? `${hoverClass} transition` : ""}`}>
     <div className={`${styles.mask} w-full`}>
       <img loading="lazy" className="rounded-t-xl" src={e.img ?? "/img/Event_No_Img.png"} width={448} alt={e.name} />
     </div>
