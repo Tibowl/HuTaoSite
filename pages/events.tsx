@@ -143,7 +143,7 @@ export default function Events(props: Props & { location: string }) {
       <h3 className="text-xl mt-3">Ongoing event{ongoing.length == 1 ? "" : "s"}</h3>
       <div className="flex flex-row flex-wrap pt-2 gap-2">
         {ongoing
-          .map((event, i) => <EventCard key={i} e={event} now={now} serverTimezone={serverTimezone} hoverClass="hover:text-blue-800" className="bg-green-500 text-black" />)}
+          .map((event, i) => <EventCard key={i} e={event} now={now} serverTimezone={serverTimezone} hoverClass="hover:text-blue-800" className="dark:bg-green-500 bg-green-300 text-black" />)}
       </div>
 
       <h3 className="text-xl mt-3">Upcoming event{upcoming.length == 1 ? "" : "s"}</h3>
@@ -155,7 +155,7 @@ export default function Events(props: Props & { location: string }) {
       <h3 className="text-xl mt-3">Past event{past.length == 1 ? "" : "s"}</h3>
       {showPast ? <div className="flex flex-row flex-wrap pt-2 gap-2">
         {past
-          .map((event, i) => <EventCard key={i} e={event} now={now} serverTimezone={serverTimezone} hoverClass="hover:text-blue-800" className="bg-red-400 text-black" />)}
+          .map((event, i) => <EventCard key={i} e={event} now={now} serverTimezone={serverTimezone} hoverClass="hover:text-blue-800" className="dark:bg-red-400 bg-red-300 text-black" />)}
       </div> : <span className="bg-blue-500 text-slate-50 text-center rounded-lg mr-2 mt-1 px-1 py-0.5 cursor-pointer" onClick={() => setShowPast(true)}>Show past events</span>}
     </Main>
   )

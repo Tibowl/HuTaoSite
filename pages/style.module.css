@@ -48,11 +48,11 @@
     }
 }
 
+
 .mask {
-  --mask-height: 16px;
+  --mask-height: 12px;
+  max-height: 10rem;
   overflow-y: hidden;
-  height: 10rem;
-  padding-bottom: var(--mask-height);
   --mask-image-content: linear-gradient(
     to bottom,
     black calc(100% - var(--mask-height)),
