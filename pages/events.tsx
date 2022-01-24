@@ -169,7 +169,7 @@ function EventCard({ e, className, now, serverTimezone, hoverClass = "" }: { e: 
 
     </div>
   </div>
-  return e.link ? <FormattedLink href={e.link} className="font-normal">{child}</FormattedLink> : child
+  return e.link ? <FormattedLink href={e.link} target={"htb-event"} className="font-normal">{child}</FormattedLink> : child
 }
 
 function getStartTime(event: GenshinEvent, serverTimezone: string) {
