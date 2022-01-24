@@ -47,3 +47,20 @@
         min-height: 3rem;
     }
 }
+
+.mask {
+  --mask-height: 16px;
+  overflow-y: hidden;
+  height: 10rem;
+  padding-bottom: var(--mask-height);
+  --mask-image-content: linear-gradient(
+    to bottom,
+    black calc(100% - var(--mask-height)),
+    transparent
+  );
+  --mask-size-content: 100% 100%;
+  mask-image: var(--mask-image-content);
+  mask-size: var(--mask-size-content);
+  mask-position: 0 0, 100% 0;
+  mask-repeat: no-repeat, no-repeat;
+}

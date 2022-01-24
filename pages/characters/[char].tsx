@@ -371,7 +371,7 @@ function TalentTableSection({ table }: { table: (TalentTable | TalentValue)[] })
 
   function hint(input: string): ReactElement {
     return <>
-      {input.split("").map(x => <span key={x}>{x}{x.match(/[+/%]/) && <wbr />}</span>)}
+      {input.split("").map((x, i) => <span key={i}>{x}{x.match(/[+/%]/) && <wbr />}</span>)}
     </>
   }
   function countUp<T>(arr: T[], v: T, i: number): number {

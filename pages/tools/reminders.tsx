@@ -11,7 +11,7 @@ import { config } from "../../utils/config"
 import * as gtag from "../../utils/gtag"
 import { parseUser } from "../../utils/parse-user"
 import { DiscordUser, Reminder } from "../../utils/types"
-import { parseDuration, send, timeLeft } from "../../utils/utils"
+import { formatTime, parseDuration, send, timeLeft } from "../../utils/utils"
 
 interface Props {
   user: DiscordUser
@@ -72,7 +72,7 @@ export default class Reminders extends Component<Props & { location: string }, {
           Reminders
         </h1>
         <div className="text-base">Logged in as: <DiscordAvatar user={user} /> {user.username}<span className="text-xs">#{user.discriminator}</span></div>
-        <div className="text-xl mt-3">{reminders.length} reminder{reminders.length == 1 ? "" : "s"}</div>
+        <h3 className="text-xl mt-3">{reminders.length} reminder{reminders.length == 1 ? "" : "s"}</h3>
         {reminders.map(r => <ReminderCard
           r={r}
           key={r.id}
@@ -179,7 +179,7 @@ function CreateReminder({ isOpen, requestClose, addReminder }: { isOpen: boolean
       }}>
         <TextInput value={name} set={setName} placeholder="Enter a name" maxLength={128} label="Name:" />
         <TextInput value={duration} set={setDuration} placeholder="Enter a duration (ex. 10 hours 2 resin 5s)" maxLength={128} label="Duration:" />
-        <div>Will trigger {parseDuration(duration) > 0 && <>in <span className="text-slate-100">{timeLeft(formatDuration(parseDuration(duration)), true)}</span></>} on <span className="text-slate-100">{target}</span></div>
+        <div>Will trigger {parseDuration(duration) > 0 && <span className="text-slate-100">{timeLeft(parseDuration(duration), true)}</span>} on <span className="text-slate-100">{target}</span></div>
         <button
           className="bg-green-600 disabled:bg-slate-900 text-slate-50 disabled:text-slate-400 w-fit px-3 py-1 text-center rounded-lg mt-2 cursor-pointer"
           formAction="submit"
@@ -220,14 +220,6 @@ function TextInput({ value, set, maxLength, placeholder, label }: { value: strin
       maxLength={maxLength}
     />
   </label></div>
-}
-
-function formatTime(date: Date) {
-  return date.toLocaleString(undefined, { day: "numeric", year: "numeric", month: "short", hour: "2-digit", minute: "2-digit", second: "2-digit" })
-}
-
-function formatDuration(duration: number) {
-  return duration
 }
 
 function ReminderCard({ r, onDelete }: { r: Reminder, onDelete: () => void }) {

@@ -1,4 +1,4 @@
-import { Artifact, Character, Cost, CurveEnum, Enemy, Guide, Material, Weapon, WeaponCurveName } from "./types"
+import { Artifact, Character, Cost, CurveEnum, Enemy, Event, Guide, Material, Weapon, WeaponCurveName } from "./types"
 
 const baseURL = "https://raw.githubusercontent.com/Tibowl/HuTao/master/src/data"
 
@@ -19,6 +19,8 @@ export type WeaponCurves = Record<WeaponCurveName, number[]>
 
 type Enemies = Record<string, Enemy>
 
+type Events = Event[]
+
 
 type Cache = {
     artifacts: Cacher<Artifacts>
@@ -31,6 +33,7 @@ type Cache = {
     weapons: Cacher<Weapons>
     weaponCurves: Cacher<WeaponCurves>
     enemies: Cacher<Enemies>
+    events: Cacher<Events>
 }
 
 interface Cacher<T> {
@@ -41,6 +44,8 @@ interface Cacher<T> {
 const cached: Partial<Cache> = {}
 
 export const getGuides: (() => Promise<Guides | undefined>) = createGetCacheable("guides")
+export const getEvents: (() => Promise<Events | undefined>) = createGetCacheable("events")
+
 export const getCostTemplates: (() => Promise<CostTemplates | undefined>) = createGetCacheable("costTemplates", "gamedata/cost_templates")
 
 export const getArtifacts: (() => Promise<Artifacts | undefined>) = createGetCacheable("artifacts", "gamedata/artifacts")

@@ -12,6 +12,36 @@ export interface DiscordUser {
   premium_type:  number
 }
 
+// Events
+export interface Event {
+    name:          string
+    type:          EventType
+    prediction?:   boolean
+    link?:         string
+    img?:          string
+    start?:        string
+    start_server?: boolean
+    end?:          string
+    end_server?:   boolean
+    timezone?:     string
+    reminder?:     EventReminderType
+    remindtime?:   string
+}
+
+export enum EventType {
+    Web = "Web",
+    InGame = "In-game",
+    Maintenance = "Maintenance",
+    Stream = "Stream",
+    Unlock = "Unlock",
+    Banner = "Banner"
+}
+export enum EventReminderType {
+    Daily = "daily",
+    End = "end"
+}
+
+
 // Reminders
 export interface Reminder {
   id: number

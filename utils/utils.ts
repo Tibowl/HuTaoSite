@@ -65,6 +65,12 @@ export function getWeaponStatsAt(weapon: Weapon, level: number, ascension: numbe
     return stats
 }
 
+export function getDate(timestamp: string, timezone = "+08:00"): Date {
+    timestamp = timestamp.replace(" ", "T")
+    if (!timestamp.includes("T")) timestamp += "T23:59:59"
+    return new Date(`${timestamp}${timezone}`)
+}
+
 export function stat(name: string, value: number): string {
     switch (name) {
         case "HP%":
@@ -256,5 +262,9 @@ export function timeLeft(diff: number, full = false, short = true): string {
         result.push(seconds + (short ? "s" : (seconds == 1 ? " second" : " seconds")))
     }
 
-    return result.join(", ") + (ago ? " ago" : "")
+    return (ago ? `${result.join(", ")} ago` : `in ${result.join(", ")}`)
+}
+
+export function formatTime(date: Date) {
+    return date.toLocaleString(undefined, { day: "numeric", year: "numeric", month: "short", hour: "2-digit", minute: "2-digit", second: "2-digit" })
 }

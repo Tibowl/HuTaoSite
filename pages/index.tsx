@@ -80,7 +80,7 @@ export default function Home({ location }: { location: string }) {
 
         <div className="md:flex md:flex-row items-center max-w-4xl">
           <Card href="/weapons" title="Weapon Information &rarr;" desc="Check which weapon ascension material you need to level that shiny new weapon or which refinements/sub-stat it has" location={location} src={weapons.Sword} alsoSite />
-          <Card title="Events" desc="Get reminded when new events come out" location={location} icon={<Alarm />} />
+          <Card href="/events" title="Events &rarr;" desc="Get reminded when new events come out" location={location} icon={<Alarm />} alsoSite="List of events is available on site" />
         </div>
 
         <div className="md:flex md:flex-row items-center max-w-4xl">
