@@ -31,7 +31,7 @@ const gachas: Record<string, Banner> = {
     minConst: -1,
     maxConst: 6,
     constFormat: "C",
-    constName: "Constellations",
+    constName: "Constellation",
     maxPity: 90,
     rate: pityRate(0.6, 74)
   },
@@ -42,7 +42,7 @@ const gachas: Record<string, Banner> = {
     minConst: -1,
     maxConst: 6,
     constFormat: "C",
-    constName: "Constellations",
+    constName: "Constellation",
     maxPity: 10,
     rate: pityRate(5.1, 9)
   },
@@ -54,7 +54,7 @@ const gachas: Record<string, Banner> = {
     minConst: 0,
     maxConst: 5,
     constFormat: "R",
-    constName: "Refinements",
+    constName: "Refinement",
     maxPity: 80,
     rate: pityRate(0.7, 63)
   }
@@ -145,7 +145,7 @@ export default function GachaCalc({ location }: { location: string }) {
         setGacha(g)
       }} value={gachaName} options={Object.values(gachas).map(g => g.bannerName)} />
       <NumberInput label="Pulls" set={setPulls} value={pulls} min={0} max={1260} />
-      <NumberInput label={`Current ${banner.constFormat}`} set={setCurrent} value={current} min={banner.minConst} max={banner.maxConst} />
+      <NumberInput label={`Current ${banner.constName.toLowerCase()}`} set={setCurrent} value={current} min={banner.minConst} max={banner.maxConst} />
       <NumberInput label="Current pity" set={setPity} value={pity} min={0} max={banner.maxPity - 1} />
       <CheckboxInput label="Next is guaranteed" set={setGuaranteed} value={guaranteed} />
       {banner.guaranteedPity && <NumberInput label="Epitomized Path" set={setGuaranteedPity} value={guaranteedPity} min={0} max={banner.guaranteedPity - 1} />}

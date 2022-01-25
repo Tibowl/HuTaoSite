@@ -60,7 +60,7 @@ export default function Events(props: Props & { location: string }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setNow(Date.now())
-    }, 10050 - (Date.now() % 10000))
+    }, 1010 - (Date.now() % 1000))
 
     return () => clearTimeout(timer)
   }, [now])
