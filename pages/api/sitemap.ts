@@ -31,10 +31,6 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
   for (const material of Object.values((await getMaterials()) ?? {}))
     urls.push(`${config.appUri}/materials/${urlify(material.name, false)}`)
 
-  urls.push(`${config.appUri}/materials`)
-  for (const material of Object.values((await getMaterials()) ?? {}))
-    urls.push(`${config.appUri}/materials/${urlify(material.name, false)}`)
-
   urls.push(`${config.appUri}/weapons`)
   for (const weapon of Object.values((await getWeapons()) ?? {}))
     urls.push(`${config.appUri}/weapons/${urlify(weapon.name, false)}`)

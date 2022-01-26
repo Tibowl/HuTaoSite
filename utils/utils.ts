@@ -10,7 +10,7 @@ import Catalyst from "../public/img/weapon_types/Catalyst.png"
 import Claymore from "../public/img/weapon_types/Claymore.png"
 import Polearm from "../public/img/weapon_types/Polearm.png"
 import Sword from "../public/img/weapon_types/Sword.png"
-import { getGuides } from "./data-cache"
+import { CostTemplates, getGuides } from "./data-cache"
 import { Artifact, Character, CharacterFull, Cost, CostTemplate, CurveEnum, Enemy, Guide, GuidePage, SmallArtifact, SmallChar, SmallEnemy, SmallWeapon, TalentTable, TalentValue, Weapon, WeaponCurveName, WeaponType } from "./types"
 
 export const elements = {
@@ -105,7 +105,18 @@ export function stat(name: string, value: number): string {
     }
 }
 
-export function image(type: string, name: string, ext="png"): string {
+export function isInCosts(template: CostTemplate | Cost[], costTemplates: CostTemplates, name: string): boolean {
+    const costs = Array.isArray(template) ? template : getCostsFromTemplate(template, costTemplates)
+
+    for (const c of costs)
+        if (c.items.some(i => i.name == name))
+            return true
+
+    return false
+}
+
+
+export function image(type: string, name: string, ext = "png"): string {
     return `/img/${type}/${name.replace(/[:\-,'"]/g, "").replace(/ +/g, "_")}.${ext}`
 }
 
@@ -120,18 +131,18 @@ export function getCostsFromTemplate(costTemplate: CostTemplate, costTemplates: 
         mora: c.mora,
         items: c.items.map(i => ({
             count: i.count,
-            name:  i.name.replace(/<(.*?)>/g, (_, x) => costTemplate.mapping[x])
+            name: i.name.replace(/<(.*?)>/g, (_, x) => costTemplate.mapping[x])
         }))
     }))
 }
 
 export async function getGuidesFor(type: "enemy" | "character" | "material" | "weapon" | "artifact", name: string): Promise<{ guide: Guide, page: GuidePage }[]> {
     return (await getGuides())?.flatMap(guide => guide.pages
-            .filter(page => page.links?.[type]?.includes(name))
-            .map(page => ({
-                guide, page
-            }))
-        ) ?? []
+        .filter(page => page.links?.[type]?.includes(name))
+        .map(page => ({
+            guide, page
+        }))
+    ) ?? []
 }
 
 export function isValueTable(talent: TalentTable | TalentValue): talent is TalentTable {
@@ -201,7 +212,7 @@ export function createSmallEnemy(enemy: Enemy): SmallEnemy {
 export function joinMulti(input: string[]): string {
     if (input.length <= 1) return input[0]
 
-    const last = input[input.length-1]
+    const last = input[input.length - 1]
     return `${input.slice(0, -1).join(", ")} and ${last}`
 }
 
@@ -210,7 +221,7 @@ export async function send(api: string, object: unknown) {
         body: JSON.stringify(object),
         headers: { "Content-Type": "application/json" },
         method: "POST"
-      })
+    })
 }
 
 const minutes_per_resin = 8
@@ -220,13 +231,13 @@ export function parseDuration(time: string): number {
 
     for (const time of times) {
         const name = time[3].toLowerCase(), amount = parseInt(time[2])
-        if      (name.startsWith("mo")) duration += amount * 30 * 24 * 60 * 60 * 1000
-        else if (name.startsWith("w"))  duration += amount *  7 * 24 * 60 * 60 * 1000
-        else if (name.startsWith("d"))  duration += amount * 24 * 60 * 60 * 1000
-        else if (name.startsWith("h"))  duration += amount * 60 * 60 * 1000
-        else if (name.startsWith("m"))  duration += amount * 60 * 1000
-        else if (name.startsWith("s"))  duration += amount * 1000
-        else if (name.startsWith("r"))  duration += amount * minutes_per_resin * 60 * 1000
+        if (name.startsWith("mo")) duration += amount * 30 * 24 * 60 * 60 * 1000
+        else if (name.startsWith("w")) duration += amount * 7 * 24 * 60 * 60 * 1000
+        else if (name.startsWith("d")) duration += amount * 24 * 60 * 60 * 1000
+        else if (name.startsWith("h")) duration += amount * 60 * 60 * 1000
+        else if (name.startsWith("m")) duration += amount * 60 * 1000
+        else if (name.startsWith("s")) duration += amount * 1000
+        else if (name.startsWith("r")) duration += amount * minutes_per_resin * 60 * 1000
     }
 
     return duration
@@ -239,25 +250,25 @@ export function timeLeft(diff: number, full = false, short = true): string {
     const result = [], originalTime = diff / 1000
 
     diff /= 1000 // convert to s
-    if (diff >= 24*60*60) {
+    if (diff >= 24 * 60 * 60) {
         const days = Math.floor(diff / 24 / 60 / 60)
         result.push(days + (short ? "d" : (days == 1 ? " day" : " days")))
         diff -= days * 24 * 60 * 60
     }
 
-    if (diff >= 60*60) {
+    if (diff >= 60 * 60) {
         const hours = Math.floor(diff / 60 / 60)
         result.push(hours + (short ? "h" : (hours == 1 ? " hour" : " hours")))
         diff -= hours * 60 * 60
     }
 
-    if (diff >= 60 && (originalTime < 24*60*60 || full)) {
+    if (diff >= 60 && (originalTime < 24 * 60 * 60 || full)) {
         const minutes = Math.floor(diff / 60)
         result.push(minutes + (short ? "m" : (minutes == 1 ? " minute" : " minutes")))
         diff -= minutes * 60
     }
 
-    if (diff > 0  && (originalTime < 60*60 || full)) {
+    if (diff > 0 && (originalTime < 60 * 60 || full)) {
         const seconds = Math.floor(diff)
         result.push(seconds + (short ? "s" : (seconds == 1 ? " second" : " seconds")))
     }

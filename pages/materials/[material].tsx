@@ -8,7 +8,7 @@ import Icon, { SmallIcon } from "../../components/Icon"
 import Main from "../../components/Main"
 import { CostTemplates, getCharacters, getCostTemplates, getMaterials, getWeapons } from "../../utils/data-cache"
 import { Cost, CostTemplate, Material, SmallChar, SmallWeapon } from "../../utils/types"
-import { clean, createSmallChar, createSmallWeapon, getCostsFromTemplate, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, joinMulti, urlify } from "../../utils/utils"
+import { clean, createSmallChar, createSmallWeapon, getCostsFromTemplate, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, isInCosts, joinMulti, urlify } from "../../utils/utils"
 
 interface Props {
   mat: Material,
@@ -24,15 +24,23 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
   const color = getStarColor(mat.stars ?? 1)
   const usedByDesc = []
 
-  if (usedBy.charTalents.length > 0 && usedBy.charAscension.length > 0)
-    usedByDesc.push(`Used by ${joinMulti([...usedBy.charTalents, ...usedBy.charAscension].map(x => x.name).filter((v, i, a) => a.indexOf(v) == i))} character talents/ascensions.`)
-  else if (usedBy.charTalents.length > 0)
-    usedByDesc.push(`Used by ${joinMulti(usedBy.charTalents.map(x => x.name))} character talents.`)
-  else if (usedBy.charAscension.length > 0)
-    usedByDesc.push(`Used by ${joinMulti(usedBy.charAscension.map(x => x.name))} character ascensions.`)
+  const { charTalents, charAscension, weaponAscension } = usedBy
 
-  if (usedBy.weaponAscension.length > 0)
-    usedByDesc.push(`Used by ${joinMulti(usedBy.weaponAscension.map(x => x.name))} weapon ascensions.`)
+  const overlap = charTalents.filter(x => charAscension.some(y => x.name == y.name))
+  const uniqueTalents = charTalents.filter(x => !charAscension.some(y => x.name == y.name))
+  const uniqueAscension = charAscension.filter(x => !charTalents.some(y => x.name == y.name))
+
+  if (overlap.length > 0)
+    usedByDesc.push(`Used by ${joinMulti(overlap.map(x => x.name).filter((v, i, a) => a.indexOf(v) == i))} character talents and ascensions.`)
+
+  if (uniqueTalents.length > 0)
+    usedByDesc.push(`Used by ${joinMulti(uniqueTalents.map(x => x.name))} character talents.`)
+
+  if (uniqueAscension.length > 0)
+    usedByDesc.push(`Used by ${joinMulti(uniqueAscension.map(x => x.name))} character ascensions.`)
+
+  if (weaponAscension.length > 0)
+    usedByDesc.push(`Used by ${joinMulti(weaponAscension.map(x => x.name))} weapon ascensions.`)
 
   const desc = `${mat.name} is a ${mat.stars ? `${mat.stars} star ` : ""}${mat.type}. \n${usedByDesc.join("\n")}\n${mat.desc ? clean(mat.desc ?? "") : ""}`.trim()
   return (
@@ -93,24 +101,31 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
           {mat.sources.map(s => <div key={s}>{s}</div>)}
         </>}
 
-        {usedBy.charTalents.length > 0 && <>
+        {overlap.length > 0 && <>
+          <h3 className="text-lg font-bold pt-1" id="chartalents">Used by character ascensions and talents:</h3>
+          <div className="flex flex-wrap justify-start text-center mt-2">
+            {overlap.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
+          </div>
+        </>}
+
+        {uniqueTalents.length > 0 && <>
           <h3 className="text-lg font-bold pt-1" id="chartalents">Used by character talents:</h3>
           <div className="flex flex-wrap justify-start text-center mt-2">
-            {usedBy.charTalents.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
+            {uniqueTalents.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
           </div>
         </>}
 
-        {usedBy.charAscension.length > 0 && <>
+        {uniqueAscension.length > 0 && <>
           <h3 className="text-lg font-bold pt-1" id="charascension">Used by character ascensions:</h3>
           <div className="flex flex-wrap justify-start text-center mt-2">
-            {usedBy.charAscension.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
+            {uniqueAscension.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
           </div>
         </>}
 
-        {usedBy.weaponAscension.length > 0 && <>
+        {weaponAscension.length > 0 && <>
           <h3 className="text-lg font-bold pt-1" id="weaponascension">Used by weapon ascensions:</h3>
           <div className="flex flex-wrap justify-start text-center mt-2">
-            {usedBy.weaponAscension.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
+            {weaponAscension.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
           </div>
         </>}
 
@@ -123,17 +138,6 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
       </div>
     </Main>
   )
-}
-
-
-function isInCosts(template: CostTemplate | Cost[], costTemplates: CostTemplates, name: string): boolean {
-  const costs = Array.isArray(template) ? template : getCostsFromTemplate(template, costTemplates)
-
-  for (const c of costs)
-    if (c.items.some(i => i.name == name))
-      return true
-
-  return false
 }
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {

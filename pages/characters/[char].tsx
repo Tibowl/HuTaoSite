@@ -13,7 +13,7 @@ import { FullAscensionCosts } from "../../components/Tables"
 import YouTube from "../../components/YouTube"
 import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates } from "../../utils/data-cache"
 import { Character, CharacterFull, Constellation, CostTemplate, CurveEnum, Meta, Passive, Skill, Skills, TalentTable, TalentValue } from "../../utils/types"
-import { clean, elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, image, isFullCharacter, isValueTable, joinMulti, stat, urlify, weapons } from "../../utils/utils"
+import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, isFullCharacter, isValueTable, joinMulti, stat, urlify, weapons } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
