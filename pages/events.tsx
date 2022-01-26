@@ -180,14 +180,14 @@ function EventCard({ e, className, now, serverTimezone, hoverClass = "" }: { e: 
 
 function getStartTime(event: GenshinEvent, serverTimezone: string) {
   const serverTimeStart = event.start_server ?? (event.type == EventType.Banner || event.type == EventType.InGame || event.type == EventType.Unlock)
-  const startTime = event.start != undefined && getDate(event.start, event.timezone ?? serverTimeStart ? serverTimezone : undefined)
+  const startTime = event.start != undefined && getDate(event.start, event.timezone ?? (serverTimeStart ? serverTimezone : undefined))
 
   return startTime
 }
 
 function getEndTime(event: GenshinEvent, serverTimezone: string) {
   const serverTimeEnd = event.end_server ?? (event.type == EventType.Banner || event.type == EventType.InGame || event.type == EventType.Web)
-  const endTime = event.end != undefined && getDate(event.end, event.timezone ?? serverTimeEnd ? serverTimezone : undefined)
+  const endTime = event.end != undefined && getDate(event.end, event.timezone ?? (serverTimeEnd ? serverTimezone : undefined))
 
   return endTime
 }
