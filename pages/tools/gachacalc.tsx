@@ -117,7 +117,6 @@ export default function GachaCalc({ location }: { location: string }) {
   )
   const consts = []
   for (let i = current; i <= banner.maxConst; i++) consts.push(i)
-  console.log(calculated)
 
   const desc = "Gacha rate calculator for Genshin Impact."
   return (
@@ -139,6 +138,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <h1 className="text-5xl font-bold pb-2">
         Gacha rate calculator
       </h1>
+
       <SelectInput label="Banner type" set={(g) => {
         if (current == banner.minConst)
           setCurrent((Object.values(gachas).find(x => x.bannerName == g) ?? Object.values(gachas)[0]).minConst)
@@ -150,7 +150,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <CheckboxInput label="Next is guaranteed" set={setGuaranteed} value={guaranteed} />
       {banner.guaranteedPity && <NumberInput label="Epitomized Path" set={setGuaranteedPity} value={guaranteedPity} min={0} max={banner.guaranteedPity - 1} />}
 
-      <h3 className="text-lg font-bold pt-1" id="resistance">Results:</h3>
+      <h3 className="text-lg font-bold pt-1" id="results">Results</h3>
       <div className="columns-1 md:columns-2 mr-2 mb-2">
         <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-1">
           <Bar data={({
@@ -220,8 +220,8 @@ export default function GachaCalc({ location }: { location: string }) {
       </div>
       <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-2">
         <Line data={({
-          labels: calculated.map((_, i) => i + pity),
-          datasets: consts.filter(i => i > banner.minConst).map((i, x) => ({
+          labels: calculated.map((_, i) => i),
+          datasets: consts.filter(i => i > current).map((i, x) => ({
             label: getName(i, banner),
             backgroundColor: getColor(i, 1),
             borderColor: getColor(i, 1),
@@ -258,6 +258,7 @@ export default function GachaCalc({ location }: { location: string }) {
           }
         })} />
       </div>
+      <h3 className="text-lg font-bold pt-1" id="table">Rate Table</h3>
       <table className={`table-auto w-80 ${styles.table} ${styles.stattable} my-2 sm:text-base text-sm`}>
         <thead>
           <tr className="divide-x divide-gray-200 dark:divide-gray-500">
@@ -275,6 +276,12 @@ export default function GachaCalc({ location }: { location: string }) {
             </tr>)}
         </tbody>
       </table>
+      <h3 className="text-lg font-bold pt-1" id="disclaimer">Disclaimer</h3>
+      <p>The calculator uses the statistical model for drop-rates of Cgg/<FormattedLink href="https://genshin-wishes.com/" target="_blank">genshin-wishes.com</FormattedLink>.
+        For more information about drop rates, please refer to <FormattedLink href="https://www.hoyolab.com/article/497840" target="_blank"> their HoYoLAB post</FormattedLink>.</p>
+      <p><i><b>NOTE</b>: To reduce the amount of calculations, the 4-star character banner calculator will assume there are no 5-stars being dropped.
+        These can prevent a 4 star from dropping, but they still increase the pity counter. It is possible (in-game) to not get a 4-star within 10 pity,
+        but the next pull is guaranteed to be a 4-star if it&apos;s not a 5-star.</i></p>
     </Main>
   )
 }
@@ -300,7 +307,7 @@ function NumberInput({ value, set, label, min, max }: { value: number, set: (new
   return <div><label>
     {label}
     <input
-      className="bg-slate-200 w-32 dark:bg-slate-800 rounded-lg px-2 ml-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500"
+      className="bg-slate-200 sm:w-32 w-24 dark:bg-slate-800 rounded-lg px-2 ml-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500"
       value={value}
       onChange={(e) => {
         const value = +e.target.value
@@ -310,6 +317,9 @@ function NumberInput({ value, set, label, min, max }: { value: number, set: (new
       max={max}
       type="number"
     />
+    <button className={`${value == min ? "bg-slate-800 text-slate-50": "bg-red-500 text-slate-50 cursor-pointer"} text-center rounded-lg px-1 inline-block ml-2 md:sr-only`} onClick={() => (min == undefined || value > min) ? set(value - 1) : void 0}>Subtract 1</button>
+    <button className={`${value == max ? "bg-slate-800 text-slate-50": "bg-green-500 text-slate-50 cursor-pointer"} text-center rounded-lg px-1 inline-block ml-2 md:sr-only`} onClick={() => (max == undefined || value < max) ? set(value + 1) : void 0}>Add 1</button>
+
   </label></div>
 }
 
@@ -333,7 +343,7 @@ function SelectInput({ value, set, label, options }: { value: string, set: (newV
     <select
       value={value}
       onChange={e => set(e.target.value)}
-      className="mt-1 ml-2 mb-2 py-0.5 px-2 border border-gray-300 bg-slate-200 dark:bg-slate-800 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+      className="mt-1 ml-2 mb-2 py-0.5 px-2 border border-gray-300 bg-slate-200 dark:bg-slate-800 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
     >
       {options.map(opt => <option key={opt}>{opt}</option>)}
     </select>
