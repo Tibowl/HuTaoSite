@@ -32,6 +32,7 @@ export default function Materials(props: Props & { location: string }) {
     "Local Specialty (Inazuma)",
     "Material",
     "Forging Ore",
+    "Bait",
     "Cooking Ingredient",
     "Food",
     "Potion",
