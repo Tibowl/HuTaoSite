@@ -171,7 +171,7 @@ function EventCard({ e, className, now, serverTimezone, hoverClass = "" }: { e: 
     <div>
       <h3 className="font-semibold">{e.name}</h3>
       {start && <div className={e.prediction ? "opacity-60" : ""}>{e.prediction && <span className="font-bold cursor-help" title="Predicted based on past events like this">Predicted</span>} {e.type == EventType.Unlock ? "Unlock Time" : "Start Time"}: {formatTime(start)} ({timeLeft(start.getTime() - now)})</div>}
-      {end && <div className={e.prediction ? "opacity-60" : ""}>{e.prediction && <span className="font-bold cursor-help" title="Predicted based on past events like this">Predicted</span>} End Time {formatTime(end)} ({timeLeft(end.getTime() - now)})</div>}
+      {end && <div className={e.prediction ? "opacity-60" : ""}>{e.prediction && <span className="font-bold cursor-help" title="Predicted based on past events like this">Predicted</span>} End Time: {formatTime(end)} ({timeLeft(end.getTime() - now)})</div>}
 
     </div>
   </div>
