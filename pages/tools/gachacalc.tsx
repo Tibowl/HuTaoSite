@@ -317,8 +317,8 @@ function NumberInput({ value, set, label, min, max }: { value: number, set: (new
       max={max}
       type="number"
     />
-    <button className={`${value == min ? "bg-slate-800 text-slate-50": "bg-red-500 text-slate-50 cursor-pointer"} text-center rounded-lg px-1 inline-block ml-2 md:sr-only`} onClick={() => (min == undefined || value > min) ? set(value - 1) : void 0}>Subtract 1</button>
-    <button className={`${value == max ? "bg-slate-800 text-slate-50": "bg-green-500 text-slate-50 cursor-pointer"} text-center rounded-lg px-1 inline-block ml-2 md:sr-only`} onClick={() => (max == undefined || value < max) ? set(value + 1) : void 0}>Add 1</button>
+    <button className={`${value == min ? "bg-slate-800 text-slate-50": "bg-red-500 text-slate-50 cursor-pointer"} text-center rounded-lg px-1 inline-block ml-2 md:sr-only`} tabIndex={-1}  onClick={() => (min == undefined || value > min) ? set(value - 1) : void 0}>Subtract 1</button>
+    <button className={`${value == max ? "bg-slate-800 text-slate-50": "bg-green-500 text-slate-50 cursor-pointer"} text-center rounded-lg px-1 inline-block ml-2 md:sr-only`}  tabIndex={-1}  onClick={() => (max == undefined || value < max) ? set(value + 1) : void 0}>Add 1</button>
 
   </label></div>
 }
