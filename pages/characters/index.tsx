@@ -143,6 +143,6 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
         })
         .map(c => createSmallChar(c))
     },
-    revalidate: 60 * 60 * 16
+    revalidate: 60 * 60 * 2
   }
 }

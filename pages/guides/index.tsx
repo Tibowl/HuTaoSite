@@ -53,6 +53,6 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     props: {
       guides: data.map(g => g.name)
     },
-    revalidate: 60 * 60 * 4
+    revalidate: 60 * 60 * 1
   }
 }

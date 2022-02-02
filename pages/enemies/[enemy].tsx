@@ -162,7 +162,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
       enemy,
       guides,
     },
-    revalidate: 60 * 60 * 8
+    revalidate: 60 * 60 * 1
   }
 }
 

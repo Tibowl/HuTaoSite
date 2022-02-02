@@ -122,6 +122,6 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
         .sort((a, b) => b.stars - a.stars || a.weaponType.localeCompare(b.weaponType) || a.name.localeCompare(b.name))
         .map(w => createSmallWeapon(w))
     },
-    revalidate: 60 * 60 * 16
+    revalidate: 60 * 60 * 2
   }
 }

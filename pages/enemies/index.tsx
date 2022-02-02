@@ -108,6 +108,6 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
         .values(data)
         .map(w => createSmallEnemy(w))
     },
-    revalidate: 60 * 60 * 16
+    revalidate: 60 * 60 * 2
   }
 }

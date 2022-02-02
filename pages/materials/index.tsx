@@ -184,6 +184,6 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
           return mat
         })
     },
-    revalidate: 60 * 60 * 16
+    revalidate: 60 * 60 * 2
   }
 }

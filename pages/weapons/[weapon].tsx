@@ -272,7 +272,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
       weaponCurves,
       costTemplates
     },
-    revalidate: 60 * 60 * 8
+    revalidate: 60 * 60 * 1
   }
 }
 
