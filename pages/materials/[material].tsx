@@ -18,6 +18,7 @@ interface Props {
   mat: Material,
   guides?: string[][],
   specialty: SpecialtyItem | null,
+  effects: string | Record<string, string> | null,
   usedBy: {
     charTalents: SmallChar[]
     charAscension: SmallChar[]
@@ -26,7 +27,7 @@ interface Props {
   }
 }
 
-export default function MaterialWebpage({ mat, location, guides, specialty, usedBy }: Props & { location: string }) {
+export default function MaterialWebpage({ mat, location, guides, specialty, effects, usedBy }: Props & { location: string }) {
   const color = getStarColor(mat.stars ?? 1)
   const usedByDesc = []
 
@@ -123,21 +124,21 @@ export default function MaterialWebpage({ mat, location, guides, specialty, used
           </table>
         </>}
 
-        {mat.effect && (typeof mat.effect == "string" ? <>
+        {effects && (typeof effects == "string" ? <>
           <h3 className="text-lg font-bold pt-1" id="effect">Effect:</h3>
-          <div>{mat.effect}</div>
+          <div>{effects}</div>
         </>
           : <>
             <h3 className="text-lg font-bold pt-1" id="effect">Effects:</h3>
             <table className={`table-auto w-full ${styles.table} mb-2 sm:text-sm md:text-base text-xs`}>
               <thead>
                 <tr className="divide-x divide-gray-200 dark:divide-gray-500">
-                  <th>Food</th>
+                  <th>Variant</th>
                   <th>Effect</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
-                {Object.entries(mat.effect).map(([name, effect]) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={name} >
+                {Object.entries(effects).map(([name, effect]) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={name} >
                   <td>{name}</td>
                   <td>{effect}</td>
                 </tr>)}
@@ -247,19 +248,28 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
       food.push(createSmallMaterial(material))
   }
 
+  let effects: string | Record<string, string> | null = mat.effect ?? null
+
   let specialty: SpecialtyItem | null = null
   if (mat.specialty && chars && data) {
     const char = Object.values(chars).find(c => c.name == mat.specialty?.char)
     const recipe = Object.values(data).find(m => m.name == mat.specialty?.recipe)
-    if (char && recipe)
+    if (char && recipe) {
+      if (effects && typeof effects == "string" && typeof recipe.effect == "object")
+        effects = Object.assign({}, recipe.effect, { [mat.name]: effects })
+
       specialty = {
         special: createSmallMaterial(mat),
         char: createSmallChar(char),
         recipe: createSmallMaterial(recipe)
       }
+    }
   } else if (chars && data) {
     const special = Object.values(data).find(m => mat.name == m.specialty?.recipe)
     if (special) {
+      if (effects && typeof effects == "object" && typeof special.effect == "string")
+        effects = Object.assign({}, effects, { [special.name]: special.effect })
+
       const char = Object.values(chars).find(c => c.name == special.specialty?.char)
 
       if (char)
@@ -276,6 +286,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
       mat,
       guides,
       specialty,
+      effects,
       usedBy: {
         charAscension,
         charTalents,
