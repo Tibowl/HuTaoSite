@@ -320,6 +320,7 @@ export interface Material {
     sources?:   string[]
     specialty?: { char: string, recipe: string }
     recipe?:    Item[]
+    effect?:    string | Record<string, string>
 }
 
 

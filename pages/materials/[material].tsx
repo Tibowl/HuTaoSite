@@ -123,6 +123,28 @@ export default function MaterialWebpage({ mat, location, guides, specialty, used
           </table>
         </>}
 
+        {mat.effect && (typeof mat.effect == "string" ? <>
+          <h3 className="text-lg font-bold pt-1" id="effect">Effect:</h3>
+          <div>{mat.effect}</div>
+        </>
+          : <>
+            <h3 className="text-lg font-bold pt-1" id="effect">Effects:</h3>
+            <table className={`table-auto w-full ${styles.table} mb-2 sm:text-sm md:text-base text-xs`}>
+              <thead>
+                <tr className="divide-x divide-gray-200 dark:divide-gray-500">
+                  <th>Food</th>
+                  <th>Effect</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
+                {Object.entries(mat.effect).map(([name, effect]) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={name} >
+                  <td>{name}</td>
+                  <td>{effect}</td>
+                </tr>)}
+              </tbody>
+            </table>
+          </>)}
+
         {specialty && <>
           <h3 className="text-lg font-bold pt-1" id="specialty">Specialty:</h3>
           <Specialty specialty={specialty} location={location} />
