@@ -28,12 +28,12 @@ export function SmallIcon({ thing, location, sizeSet = "m", children }: { thing:
   const color = getStarColor((hasStars(thing) ? thing.stars : 0) ?? 0)
   const sizes = {
     m: "w-24 sm:w-28 lg:w-32",
-    s: "w-10 sm:w-12 lg:w-14"
+    s: "w-5 sm:w-6 lg:w-7"
   }
 
-  return <><FormattedLink key={thing.name} location={location} href={`/${thing.urlpath}/${urlify(thing.name, false)}`} className={`bg-slate-300 dark:bg-slate-800 ${sizes[sizeSet]} m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm`} >
-    <div className={`${color} rounded-xl ${sizes[sizeSet]}`}>
-      <Icon icon={thing} className={`${sizeSet == "s" ? "rounded-xl" : "rounded-t-xl"} m-0 p-0`} />
+  return <><FormattedLink key={thing.name} location={location} href={`/${thing.urlpath}/${urlify(thing.name, false)}`} className={`bg-slate-300 dark:bg-slate-800 ${sizes[sizeSet]} relative ${sizeSet == "s" ? "rounded-lg m-0.5 outline-1" : "rounded-xl m-1 outline-3"} transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm`} >
+    <div className={`${color} ${sizeSet == "s" ? "rounded-lg" : "rounded-t-xl"} ${sizes[sizeSet]}`}>
+      <Icon icon={thing} className={`${sizeSet == "s" ? "rounded-lg" : "rounded-t-xl"} m-0 p-0`} />
       {hasElement(thing) && thing.element && sizeSet != "s" && <span className="absolute block p-0.5 top-0 w-full">
         <div className="flex flex-col">
           {thing.element.map(e => <div key={e} className="w-6 md:w-8">
