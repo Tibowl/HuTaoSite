@@ -27,7 +27,7 @@ export default function EnemyWebpage({ enemy, location, guides }: Props & { loca
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${enemy.name} | Hu Tao`} />
         <meta property="og:description" content={desc} />
-        <meta property="description" content={desc} />
+        <meta name="description" content={desc} />
         {enemy.icon && <meta property="og:image" content={getIconPath(enemy.icon)} />}
       </Head>
       <h2 className="font-semibold">

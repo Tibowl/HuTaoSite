@@ -35,7 +35,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${char.name} | Hu Tao`} />
         <meta property="og:description" content={getDescription(char, charElems, characterCurves)} />
-        <meta property="description" content={getDescription(char, charElems, characterCurves)} />
+        <meta name="description" content={getDescription(char, charElems, characterCurves)} />
         {char.icon && <meta property="og:image" content={getIconPath(char.icon)} />}
       </Head>
       <h2 className="font-semibold">

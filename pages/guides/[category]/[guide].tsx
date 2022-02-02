@@ -27,7 +27,7 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
         <meta name="twitter:card" content={page.img ? "summary_large_image" : "summary"} />
         <meta property="og:title" content={`${page.name} | Hu Tao`} />
         <meta property="og:description" content={desc} />
-        <meta property="description" content={desc} />
+        <meta name="description" content={desc} />
         {page.img && <meta property="og:image" content={getIconPath(page.img)} />}
       </Head>
       <h2 className="font-semibold">

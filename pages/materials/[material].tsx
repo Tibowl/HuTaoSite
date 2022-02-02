@@ -50,7 +50,7 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${mat.name} | Hu Tao`} />
         <meta property="og:description" content={desc} />
-        <meta property="description" content={desc} />
+        <meta name="description" content={desc} />
         {mat.icon && <meta property="og:image" content={getIconPath(mat.icon)} />}
       </Head>
       <h2 className="font-semibold">

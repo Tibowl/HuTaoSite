@@ -33,7 +33,7 @@ export default function WeaponWebpage({ weapon, weaponCurves, costTemplates, loc
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${weapon.name} | Hu Tao`} />
         <meta property="og:description" content={desc} />
-        <meta property="description" content={desc} />
+        <meta name="description" content={desc} />
         {weapon.icon && <meta property="og:image" content={getIconPath(weapon.icon)} />}
       </Head>
       <h2 className="font-semibold">

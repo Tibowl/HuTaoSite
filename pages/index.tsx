@@ -19,7 +19,7 @@ export default function Home({ location }: { location: string }) {
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Hu Tao" />
         <meta property="og:description" content={desc} />
-        <meta property="description" content={desc} />
+        <meta name="description" content={desc} />
       </Head>
 
       <div className="flex flex-col items-center justify-center w-full flex-1 text-center">

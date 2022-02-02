@@ -27,7 +27,7 @@ export default function ArtifactWebpage({ artifact, location, guides }: Props & 
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content={`${artifact.name} | Hu Tao`} />
         <meta property="og:description" content={desc} />
-        <meta property="description" content={desc} />
+        <meta name="description" content={desc} />
         {artifact.artis?.[0]?.icon && <meta property="og:image" content={getIconPath(artifact.artis[0].icon)} />}
       </Head>
       <h2 className="font-semibold">

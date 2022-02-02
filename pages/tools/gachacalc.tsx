@@ -126,7 +126,7 @@ export default function GachaCalc({ location }: { location: string }) {
         <meta name="twitter:card" content="summary" />
         <meta property="og:title" content="Gacha Rate Calculator | Hu Tao" />
         <meta property="og:description" content={desc} />
-        <meta property="description" content={desc} />
+        <meta name="description" content={desc} />
       </Head>
 
       <h2 className="font-semibold">
