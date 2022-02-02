@@ -9,21 +9,23 @@ import Guides from "../../components/Guides"
 import Icon from "../../components/Icon"
 import Main from "../../components/Main"
 import { MaterialCost, MaterialImage } from "../../components/Material"
+import { Specialty, SpecialtyItem } from "../../components/Specialty"
 import { FullAscensionCosts } from "../../components/Tables"
 import YouTube from "../../components/YouTube"
-import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates } from "../../utils/data-cache"
+import { CharacterCurves, CostTemplates, getCharacterCurves, getCharacters, getCostTemplates, getMaterials } from "../../utils/data-cache"
 import { Character, CharacterFull, Constellation, CostTemplate, CurveEnum, Meta, Passive, Skill, Skills, TalentTable, TalentValue } from "../../utils/types"
-import { elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, isFullCharacter, isValueTable, joinMulti, stat, urlify, weapons } from "../../utils/utils"
+import { createSmallChar, createSmallMaterial, elements, ElementType, getCharStatsAt, getCostsFromTemplate, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, isFullCharacter, isValueTable, joinMulti, stat, urlify, weapons } from "../../utils/utils"
 import styles from "../style.module.css"
 
 interface Props {
   char: Character,
   characterCurves: CharacterCurves | null
   costTemplates: CostTemplates | null
+  specialty: SpecialtyItem | null
   guides?: string[][]
 }
 
-export default function CharacterWebpage({ char, location, characterCurves, costTemplates, guides }: Props & { location: string }) {
+export default function CharacterWebpage({ char, location, characterCurves, costTemplates, guides, specialty }: Props & { location: string }) {
   const charElems = char.skills?.map(skill => skill.ult?.type).filter(x => x) as ElementType[] ?? [char.meta.element]
   const multiskill = (char.skills?.length ?? 0) > 1
   const color = getStarColor(char.star ?? 0)
@@ -103,6 +105,10 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
         {isFullCharacter(char) && characterCurves && <Stats char={char} curves={characterCurves} />}
         {char.ascensionCosts && costTemplates && <FullAscensionCosts template={char.ascensionCosts} costTemplates={costTemplates} />}
         {char.meta && <MetaSection meta={char.meta} />}
+        {specialty && <>
+          <h3 className="text-lg font-bold pt-1" id="specialty">Specialty:</h3>
+          <Specialty specialty={specialty} location={location} />
+        </>}
         {char.media.videos && <Videos videos={char.media.videos} />}
         {char.skills && costTemplates && <CharacterSkills skills={char.skills} costTemplates={costTemplates} />}
       </div>
@@ -472,9 +478,26 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 
   const guides = (await getGuidesFor("character", char.name))?.map(({ guide, page }) => [page.name, getLinkToGuide(guide, page)])
 
+  let specialty: SpecialtyItem | null = null
+
+  const mats = await getMaterials()
+  const special = Object.values(mats ?? {}).find(m => m.specialty?.char == char.name)
+  if (special) {
+    const recipe = Object.values(mats ?? {}).find(m => m.name == special.specialty?.recipe)
+
+    if (recipe)
+      specialty = {
+        special: createSmallMaterial(special),
+        char: createSmallChar(char),
+        recipe: createSmallMaterial(recipe)
+      }
+  }
+
+
   return {
     props: {
       char,
+      specialty,
       characterCurves,
       costTemplates,
       guides

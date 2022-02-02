@@ -11,7 +11,7 @@ import Claymore from "../public/img/weapon_types/Claymore.png"
 import Polearm from "../public/img/weapon_types/Polearm.png"
 import Sword from "../public/img/weapon_types/Sword.png"
 import { CostTemplates, getGuides } from "./data-cache"
-import { Artifact, Character, CharacterFull, Cost, CostTemplate, CurveEnum, Enemy, Guide, GuidePage, SmallArtifact, SmallChar, SmallEnemy, SmallWeapon, TalentTable, TalentValue, Weapon, WeaponCurveName, WeaponType } from "./types"
+import { Artifact, Character, CharacterFull, Cost, CostTemplate, CurveEnum, Enemy, Guide, GuidePage, Material, SmallArtifact, SmallChar, SmallEnemy, SmallMaterial, SmallWeapon, TalentTable, TalentValue, Weapon, WeaponCurveName, WeaponType } from "./types"
 
 export const elements = {
     Pyro, Electro, Cryo, Hydro, Anemo, Geo, Dendro
@@ -207,6 +207,13 @@ export function createSmallEnemy(enemy: Enemy): SmallEnemy {
     if (enemy.type) e.type = enemy.type
     if (enemy.icon) e.icon = enemy.icon
     return e
+}
+
+export function createSmallMaterial(material: Material): SmallMaterial {
+    const m: SmallMaterial = { name: material.name, urlpath: "materials" }
+    if (material.stars) m.stars = material.stars
+    if (material.icon) m.icon = material.icon
+    return m
 }
 
 export function joinMulti(input: string[]): string {

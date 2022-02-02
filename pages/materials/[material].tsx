@@ -6,25 +6,31 @@ import FormattedLink from "../../components/FormattedLink"
 import Guides from "../../components/Guides"
 import Icon, { SmallIcon } from "../../components/Icon"
 import Main from "../../components/Main"
-import { CostTemplates, getCharacters, getCostTemplates, getMaterials, getWeapons } from "../../utils/data-cache"
-import { Cost, CostTemplate, Material, SmallChar, SmallWeapon } from "../../utils/types"
-import { clean, createSmallChar, createSmallWeapon, getCostsFromTemplate, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, isInCosts, joinMulti, urlify } from "../../utils/utils"
+import { MaterialCost } from "../../components/Material"
+import { Specialty, SpecialtyItem } from "../../components/Specialty"
+import { getCharacters, getCostTemplates, getMaterials, getWeapons } from "../../utils/data-cache"
+import { Material, SmallChar, SmallMaterial, SmallWeapon } from "../../utils/types"
+import { clean, createSmallChar, createSmallMaterial, createSmallWeapon, getGuidesFor, getIconPath, getLinkToGuide, getStarColor, isInCosts, joinMulti, urlify } from "../../utils/utils"
+import styles from "../style.module.css"
+
 
 interface Props {
   mat: Material,
   guides?: string[][],
+  specialty: SpecialtyItem | null,
   usedBy: {
     charTalents: SmallChar[]
     charAscension: SmallChar[]
     weaponAscension: SmallWeapon[]
+    food: SmallMaterial[]
   }
 }
 
-export default function MaterialWebpage({ mat, location, guides, usedBy }: Props & { location: string }) {
+export default function MaterialWebpage({ mat, location, guides, specialty, usedBy }: Props & { location: string }) {
   const color = getStarColor(mat.stars ?? 1)
   const usedByDesc = []
 
-  const { charTalents, charAscension, weaponAscension } = usedBy
+  const { charTalents, charAscension, weaponAscension, food } = usedBy
 
   const overlap = charTalents.filter(x => charAscension.some(y => x.name == y.name))
   const uniqueTalents = charTalents.filter(x => !charAscension.some(y => x.name == y.name))
@@ -101,6 +107,27 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
           {mat.sources.map(s => <div key={s}>{s}</div>)}
         </>}
 
+        {mat.recipe && <>
+          <h3 className="text-lg font-bold pt-1" id="recipe">Recipe:</h3>
+          <table className={`table-auto ${styles.table} mb-2 sm:text-sm md:text-base text-xs`}>
+            <thead>
+              <tr className="divide-x divide-gray-200 dark:divide-gray-500">
+                <th>Items</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
+              {mat.recipe.map(({ name, count }) => <tr className="pr-1 divide-x divide-gray-200 dark:divide-gray-500" key={name} >
+                <td><MaterialCost name={name} count={count} /></td>
+              </tr>)}
+            </tbody>
+          </table>
+        </>}
+
+        {specialty && <>
+          <h3 className="text-lg font-bold pt-1" id="specialty">Specialty:</h3>
+          <Specialty specialty={specialty} location={location} />
+        </>}
+
         {overlap.length > 0 && <>
           <h3 className="text-lg font-bold pt-1" id="chartalents">Used by character ascensions and talents:</h3>
           <div className="flex flex-wrap justify-start text-center mt-2">
@@ -129,6 +156,13 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
           </div>
         </>}
 
+        {food.length > 0 && <>
+          <h3 className="text-lg font-bold pt-1" id="food">Used by food:</h3>
+          <div className="flex flex-wrap justify-start text-center mt-2">
+            {food.map(c => <SmallIcon key={c.name} thing={c} location={location} />)}
+          </div>
+        </>}
+
         {mat.longDesc && <>
           <h3 className="text-lg font-bold pt-1" id="longdesc">Description:</h3>
           <blockquote className="pl-5 mb-2 border-l-2">
@@ -139,6 +173,7 @@ export default function MaterialWebpage({ mat, location, guides, usedBy }: Props
     </Main>
   )
 }
+
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
   const matName = context.params?.material
@@ -154,13 +189,13 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 
   const guides = (await getGuidesFor("material", mat.name))?.map(({ guide, page }) => [page.name, getLinkToGuide(guide, page)])
 
-  const char = await getCharacters()
+  const chars = await getCharacters()
   const costTemplates = await getCostTemplates()
   const charAscension: SmallChar[] = []
   const charTalents: SmallChar[] = []
 
-  if (char && costTemplates) {
-    for (const c of Object.values(char)) {
+  if (chars && costTemplates) {
+    for (const c of Object.values(chars)) {
       if (c.ascensionCosts && isInCosts(c.ascensionCosts, costTemplates, mat.name))
         charAscension.push(createSmallChar(c))
 
@@ -184,14 +219,46 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     }
   }
 
+  const food: SmallMaterial[] = []
+  for (const material of Object.values(data ?? {})) {
+    if (material.recipe && material.recipe.some(x => x.name == mat.name))
+      food.push(createSmallMaterial(material))
+  }
+
+  let specialty: SpecialtyItem | null = null
+  if (mat.specialty && chars && data) {
+    const char = Object.values(chars).find(c => c.name == mat.specialty?.char)
+    const recipe = Object.values(data).find(m => m.name == mat.specialty?.recipe)
+    if (char && recipe)
+      specialty = {
+        special: createSmallMaterial(mat),
+        char: createSmallChar(char),
+        recipe: createSmallMaterial(recipe)
+      }
+  } else if (chars && data) {
+    const special = Object.values(data).find(m => mat.name == m.specialty?.recipe)
+    if (special) {
+      const char = Object.values(chars).find(c => c.name == special.specialty?.char)
+
+      if (char)
+        specialty = {
+          special: createSmallMaterial(special),
+          char: createSmallChar(char),
+          recipe: createSmallMaterial(mat)
+        }
+    }
+  }
+
   return {
     props: {
       mat,
       guides,
+      specialty,
       usedBy: {
         charAscension,
         charTalents,
-        weaponAscension: weaponAscension.sort((a, b) => (a.stars && b.stars && b.stars - a.stars) || (a.weapon && b.weapon && a.weapon.localeCompare(b.weapon)) || a.name.localeCompare(b.name))
+        weaponAscension: weaponAscension.sort((a, b) => (a.stars && b.stars && b.stars - a.stars) || (a.weapon && b.weapon && a.weapon.localeCompare(b.weapon)) || a.name.localeCompare(b.name)),
+        food
       }
     },
     revalidate: 60 * 60 * 2

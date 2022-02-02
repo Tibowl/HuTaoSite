@@ -310,14 +310,16 @@ export interface Enemy {
 }
 
 export interface Material {
-    name:      string
-    desc:      string
-    longDesc?: string
-    stars?:    number
-    type:      string
-    category:  string
-    icon:      string
-    sources?:  string[]
+    name:       string
+    desc:       string
+    longDesc?:  string
+    stars?:     number
+    type:       string
+    category:   string
+    icon:       string
+    sources?:   string[]
+    specialty?: { char: string, recipe: string }
+    recipe?:    Item[]
 }
 
 
@@ -367,4 +369,8 @@ export interface SmallEnemy extends SmallThing {
     type?: string
     kind?: string
     urlpath: "enemies"
+}
+
+export interface SmallMaterial extends SmallThing {
+    urlpath: "materials"
 }

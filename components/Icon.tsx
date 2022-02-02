@@ -24,31 +24,37 @@ export function IconName({ name, type, urltype, loading = "lazy" }: { name: stri
   </FormattedLink>
 }
 
-export function SmallIcon({ thing, location }: { thing: SmallThing, location: string }) {
+export function SmallIcon({ thing, location, sizeSet = "m", children }: { thing: SmallThing, location: string, sizeSet?: "m" | "s", children?: any }) {
   const color = getStarColor((hasStars(thing) ? thing.stars : 0) ?? 0)
+  const sizes = {
+    m: "w-24 sm:w-28 lg:w-32",
+    s: "w-10 sm:w-12 lg:w-14"
+  }
 
-  return <FormattedLink key={thing.name} location={location} href={`/${thing.urlpath}/${urlify(thing.name, false)}`} className="bg-slate-300 dark:bg-slate-800 w-24 sm:w-28 lg:w-32 m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm" >
-    <div className={`${color} rounded-t-xl h-24 sm:h-28 lg:h-32`}>
-      <Icon icon={thing} className="rounded-t-xl m-0 p-0" />
-      <span className="absolute block p-0.5 top-0 w-full">
+  return <><FormattedLink key={thing.name} location={location} href={`/${thing.urlpath}/${urlify(thing.name, false)}`} className={`bg-slate-300 dark:bg-slate-800 ${sizes[sizeSet]} m-1 relative rounded-xl transition-all duration-100 hover:outline outline-slate-800 dark:outline-slate-300 font-bold text-sm`} >
+    <div className={`${color} rounded-xl ${sizes[sizeSet]}`}>
+      <Icon icon={thing} className={`${sizeSet == "s" ? "rounded-xl" : "rounded-t-xl"} m-0 p-0`} />
+      {hasElement(thing) && thing.element && sizeSet != "s" && <span className="absolute block p-0.5 top-0 w-full">
         <div className="flex flex-col">
-          {hasElement(thing) && thing.element && thing.element.map(e => <div key={e} className="w-6 md:w-8">
+          {thing.element.map(e => <div key={e} className="w-6 md:w-8">
             <Image src={elements[e]} alt={`${e} Element`} loading="eager" />
           </div>)}
         </div>
-      </span>
-      <span className="absolute block p-0.5 top-0 w-full">
+      </span>}
+      {hasWeapon(thing) && thing.weapon && sizeSet != "s" && <span className="absolute block p-0.5 top-0 w-full">
         <div className="flex flex-col float-right">
-          {hasWeapon(thing) && thing.weapon && <div className="w-6 md:w-8">
+          <div className="w-6 md:w-8">
             <Image src={weapons[thing.weapon]} alt={thing.weapon} loading="eager" />
-          </div>}
+          </div>
         </div>
-      </span>
+      </span>}
     </div>
-    <span className={`flex justify-center items-center m-0 p-0 px-1 ${thing.name.length > 27 ? "text-xs md:text-xs" : thing.name.length > 20 ? "text-sm md:text-sm" : ""} duration-200 md:text-base ${styles.iconHeight}`}>
+    {sizeSet != "s" && <span className={`flex justify-center items-center m-0 p-0 px-1 ${thing.name.length > 27 ? "text-xs md:text-xs" : thing.name.length > 20 ? "text-sm md:text-sm" : ""} duration-200 md:text-base ${styles.iconHeight}`}>
       {thing.name}
-    </span>
+    </span>}
   </FormattedLink>
+  {children && <FormattedLink location={location} href={`/${thing.urlpath}/${urlify(thing.name, false)}`}>{children}</FormattedLink>}
+  </>
 }
 
 function hasElement(char: SmallThing): char is SmallChar {
