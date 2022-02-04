@@ -20,7 +20,7 @@ import styles from "../style.module.css"
 interface Props {
   char: Character,
   characterCurves: CharacterCurves | null
-  costTemplates: CostTemplates | null
+  costTemplates: CostTemplates
   specialty: SpecialtyItem | null
   guides?: string[][]
 }
@@ -99,7 +99,7 @@ export default function CharacterWebpage({ char, location, characterCurves, cost
 
       <div id="details">
         {char.ascensionCosts && <AscensionCosts costs={char.ascensionCosts} />}
-        {char.skills && <TalentCosts skills={char.skills} />}
+        {char.skills && getTalentCosts(char.skills).length > 0 && <TalentCosts talentCosts={getTalentCosts(char.skills)} />}
         {guides && guides.length > 0 && <Guides guides={guides} />}
         <div className="clear-both" />
         {isFullCharacter(char) && characterCurves && <Stats char={char} curves={characterCurves} />}
@@ -199,10 +199,10 @@ function getTalentCosts(skills: Skills[]): string[] {
   return [...books, ...mats, ...drops] as string[]
 }
 
-function TalentCosts({ skills }: { skills: Skills[] }) {
+function TalentCosts({ talentCosts }: { talentCosts: string[] }) {
   return <div className="flex flex-wrap items-center">
     <div className="text-base font-semibold pt-1 inline-block pr-1 h-9">Talent materials:</div>
-    {getTalentCosts(skills).map(e => <MaterialImage key={e} name={e} />)}
+    {talentCosts.map(e => <MaterialImage key={e} name={e} />)}
   </div>
 }
 
@@ -465,7 +465,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     }))
   }
 
-  let costTemplates = null
+  let costTemplates = {}
   if (char.ascensionCosts) {
     neededTemplates.push(char.ascensionCosts.template)
   }
