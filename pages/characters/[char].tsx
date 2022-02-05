@@ -322,12 +322,12 @@ function Talent({ talent, costTemplates }: { talent: Skill, costTemplates: CostT
       {talent.icon && <Icon icon={talent} className="rounded-full w-16 h-16 mr-2 bg-slate-600" />}
       <div className="font-bold">{talent.name}</div>
     </div>
-    <div className="flex flex-wrap md:flex-nowrap md:flex-row pb-1">
+    <div className="flex flex-wrap sm:flex-nowrap sm:flex-row pb-1">
       <div className={(talent.video || talent.videomp4) ? "max-w-2xl w-2xl pl-1" : "pl-1"}>
         <ReactMarkdown>{(talent.desc?.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
       </div>
-      {(talent.video || talent.videomp4) && <div className="p-2 flex flex-col justify-around items-center w-full ">
-        {talent.videomp4 ? <video src={talent.videomp4} autoPlay muted loop playsInline className="w-full" /> : <img src={talent.video} alt="Talent video" className="w-full" />}
+      {(talent.video || talent.videomp4) && <div className="p-2 flex flex-col justify-around items-center sm:items-end w-full sm:min-w-min">
+        {talent.videomp4 ? <video src={talent.videomp4} autoPlay muted loop playsInline className="w-fit" /> : <img src={talent.video} alt="Talent video" className="w-full" />}
       </div>}
     </div>
     {talent.talentTable && <TalentTableSection table={talent.talentTable} />}
