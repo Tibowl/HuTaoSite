@@ -186,7 +186,7 @@ function getStartTime(event: GenshinEvent, serverTimezone: string) {
 }
 
 function getEndTime(event: GenshinEvent, serverTimezone: string) {
-  const serverTimeEnd = event.end_server ?? (event.type == EventType.Banner || event.type == EventType.InGame || event.type == EventType.Web)
+  const serverTimeEnd = event.end_server ?? (event.type == EventType.Banner || event.type == EventType.InGame || event.type == EventType.Quiz)
   const endTime = event.end != undefined && getDate(event.end, event.timezone ?? (serverTimeEnd ? serverTimezone : undefined))
 
   return endTime
