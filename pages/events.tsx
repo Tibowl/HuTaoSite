@@ -80,6 +80,7 @@ export default function Events(props: Props & { location: string }) {
       const endA = getEndTime(a, serverTimezone)
       const endB = getEndTime(b, serverTimezone)
 
+      if (!endA && !endB) return 0
       if (!endA) return 1
       if (!endB) return -1
 
@@ -95,6 +96,7 @@ export default function Events(props: Props & { location: string }) {
       const startA = getStartTime(a, serverTimezone)
       const startB = getStartTime(b, serverTimezone)
 
+      if (!startA && !startB) return 0
       if (!startA) return 1
       if (!startB) return -1
 
@@ -107,6 +109,7 @@ export default function Events(props: Props & { location: string }) {
       const startA = getStartTime(a, serverTimezone)
       const startB = getStartTime(b, serverTimezone)
 
+      if (!startA && !startB) return 0
       if (!startA) return -1
       if (!startB) return 1
 
@@ -143,19 +146,19 @@ export default function Events(props: Props & { location: string }) {
       <h3 className="text-xl mt-3">Ongoing event{ongoing.length == 1 ? "" : "s"}</h3>
       <div className="flex flex-row flex-wrap pt-2 gap-2">
         {ongoing
-          .map((event, i) => <EventCard key={i} e={event} now={now} serverTimezone={serverTimezone} hoverClass="hover:text-blue-800" className="dark:bg-green-500 bg-green-300 text-black" />)}
+          .map((event, i) => <EventCard key={"ongoing"+i} e={event} now={now} serverTimezone={serverTimezone} hoverClass="hover:text-blue-800" className="dark:bg-green-500 bg-green-300 text-black" />)}
       </div>
 
       <h3 className="text-xl mt-3">Upcoming event{upcoming.length == 1 ? "" : "s"}</h3>
       <div className="flex flex-row flex-wrap pt-2 gap-2">
         {upcoming
-          .map((event, i) => <EventCard key={i} e={event} now={now} serverTimezone={serverTimezone} className="dark:bg-slate-800 bg-slate-300" />)}
+          .map((event, i) => <EventCard key={"upcoming"+i} e={event} now={now} serverTimezone={serverTimezone} className="dark:bg-slate-800 bg-slate-300" />)}
       </div>
 
       <h3 className="text-xl mt-3">Past event{past.length == 1 ? "" : "s"}</h3>
       {showPast ? <div className="flex flex-row flex-wrap pt-2 gap-2">
         {past
-          .map((event, i) => <EventCard key={i} e={event} now={now} serverTimezone={serverTimezone} hoverClass="hover:text-blue-800" className="dark:bg-red-400 bg-red-300 text-black" />)}
+          .map((event, i) => <EventCard key={"past"+i} e={event} now={now} serverTimezone={serverTimezone} hoverClass="hover:text-blue-800" className="dark:bg-red-400 bg-red-300 text-black" />)}
       </div> : <span className="bg-blue-500 text-slate-50 text-center rounded-lg mr-2 mt-1 px-1 py-0.5 cursor-pointer" onClick={() => setShowPast(true)}>Show past events</span>}
     </Main>
   )
