@@ -263,22 +263,23 @@ export default function GachaCalc({ location }: { location: string }) {
         <thead>
           <tr className="divide-x divide-gray-200 dark:divide-gray-500">
             <th>{banner.constName}</th>
-            <th>Rate</th>
-            <th>Cumulative rate</th>
+            <th className="underline decoration-dotted" title={`Chance to get exactly a certain ${banner.constName.toLowerCase()} (and NOT higher) within ${pulls} pulls (sums up to to 100%)`}>Rate</th>
+            <th className="underline decoration-dotted" title={`Chance to get at least ${banner.constName.toLowerCase()} (or higher) within ${pulls} pulls`}>Cumulative rate</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
           {calculated[calculated.length - 1].filter(x => x)
             .map((c, i, a) => <tr className={`pr-1 divide-x divide-gray-200 dark:divide-gray-500 ${c.rate < 0.0005 ? "opacity-60" : ""}`} key={c.const}>
               <td>{getName(c.const, banner)}</td>
-              <td>{(c.rate * 100).toFixed(3)}%</td>
-              <td>{(a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100).toFixed(2)}%</td>
+              <td title={getName(c.const, banner) == "Not owned" ? `Chance to NOT get any of the wanted item within ${pulls} pulls` : `Chance to get exactly ${getName(c.const, banner)} (and NOT higher) within ${pulls} pulls`}>{(c.rate * 100).toFixed(3)}%</td>
+              <td title={getName(c.const, banner) == "Not owned" ? "Chance to get nothing or higher, so basically always 100%" : `Chance to get ${getName(c.const, banner)} or higher within ${pulls} pulls`}>{(a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100).toFixed(2)}%</td>
             </tr>)}
         </tbody>
       </table>
       <h3 className="text-lg font-bold pt-1" id="disclaimer">Disclaimer</h3>
       <p>The calculator uses the statistical model for drop-rates of Cgg/<FormattedLink href="https://genshin-wishes.com/" target="_blank">genshin-wishes.com</FormattedLink>.
         For more information about drop rates, please refer to <FormattedLink href="https://www.hoyolab.com/article/497840" target="_blank"> their HoYoLAB post</FormattedLink>.</p>
+      <p>Rates indicate the chance to get exactly Cx/Rx within Y pulls, cumulative rate chance to get Cx/Rx or higher within Y pulls. Big graph indicates cumulative rate at each pull.</p>
       <p><i><b>NOTE</b>: To reduce the amount of calculations, the 4-star character banner calculator will assume there are no 5-stars being dropped.
         These can prevent a 4 star from dropping, but they still increase the pity counter. It is possible (in-game) to not get a 4-star within 10 pity,
         but the next pull is guaranteed to be a 4-star if it&apos;s not a 5-star.</i></p>
