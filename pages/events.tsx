@@ -11,7 +11,7 @@ import styles from "./style.module.css"
 
 
 interface Props {
-  events: GenshinEvent[]
+  events: (GenshinEvent & {index: number})[]
 }
 
 type Server = "Asia" | "Europe" | "North America"
@@ -80,7 +80,7 @@ export default function Events(props: Props & { location: string }) {
       const endA = getEndTime(a, serverTimezone)
       const endB = getEndTime(b, serverTimezone)
 
-      if (!endA && !endB) return 0
+      if (!endA && !endB) return a.index - b.index
       if (!endA) return 1
       if (!endB) return -1
 
@@ -96,7 +96,7 @@ export default function Events(props: Props & { location: string }) {
       const startA = getStartTime(a, serverTimezone)
       const startB = getStartTime(b, serverTimezone)
 
-      if (!startA && !startB) return 0
+      if (!startA && !startB) return a.index - b.index
       if (!startA) return 1
       if (!startB) return -1
 
@@ -109,7 +109,7 @@ export default function Events(props: Props & { location: string }) {
       const startA = getStartTime(a, serverTimezone)
       const startB = getStartTime(b, serverTimezone)
 
-      if (!startA && !startB) return 0
+      if (!startA && !startB) return a.index - b.index
       if (!startA) return -1
       if (!startB) return 1
 
@@ -208,7 +208,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
 
   return {
     props: {
-      events
+      events: events.map((e, i) => Object.assign({ index: i }, e))
     },
     revalidate: 60 * 30
   }
