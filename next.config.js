@@ -35,17 +35,7 @@ module.exports = {
             value: "0",
           }
         ],
-      },
-      {
-        source: "/:all*",
-        locale: false,
-        headers: [
-          {
-            key: "Age",
-            value: "0",
-          }
-        ],
-      },
+      }
     ]
   },
 }
