@@ -279,7 +279,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <h3 className="text-lg font-bold pt-1" id="disclaimer">Disclaimer</h3>
       <p>The calculator uses the statistical model for drop-rates of Cgg/<FormattedLink href="https://genshin-wishes.com/" target="_blank">genshin-wishes.com</FormattedLink>.
         For more information about drop rates, please refer to <FormattedLink href="https://www.hoyolab.com/article/497840" target="_blank"> their HoYoLAB post</FormattedLink>.</p>
-      <p>Rates indicate the chance to get exactly Cx/Rx within Y pulls, cumulative rate chance to get Cx/Rx or higher within Y pulls. Big graph indicates cumulative rate at each pull.</p>
+      <p>Rates indicate the chance to get exactly {banner.constFormat}x within Y pulls, cumulative rate chance to get {banner.constFormat}x or higher within Y pulls. Big graph indicates cumulative rate at each pull (read: Z% to get {banner.constFormat}x <i>within</i> Y pulls).</p>
       <p><i><b>NOTE</b>: To reduce the amount of calculations, the 4-star character banner calculator will assume there are no 5-stars being dropped.
         These can prevent a 4 star from dropping, but they still increase the pity counter. It is possible (in-game) to not get a 4-star within 10 pity,
         but the next pull is guaranteed to be a 4-star if it&apos;s not a 5-star.</i></p>
