@@ -117,6 +117,7 @@ export function isInCosts(template: CostTemplate | Cost[], costTemplates: CostTe
 
 
 export function image(type: string, name: string, ext = "png"): string {
+    if (name == "Unknown") return "/img/unknown.png"
     return `/img/${type}/${name.replace(/[:\-,'"]/g, "").replace(/ +/g, "_")}.${ext}`
 }
 

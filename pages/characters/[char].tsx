@@ -456,14 +456,16 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     const curves = await getCharacterCurves()
     if (curves)
       characterCurves = Object.fromEntries(char.curves.map(c => c.curve).filter((v, i, arr) => arr.indexOf(v) == i).map(c => [c, curves[c]])) as CharacterCurves
+  }
 
+  if (char.skills)
     neededTemplates.push(...char.skills.flatMap(s => {
       const templates = s.talents?.flatMap(t => t.costs?.template ?? []) ?? []
       if (s.ult?.costs?.template)
         templates.push(s.ult.costs.template)
       return templates
     }))
-  }
+
 
   let costTemplates = {}
   if (char.ascensionCosts) {
