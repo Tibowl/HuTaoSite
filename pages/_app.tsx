@@ -32,6 +32,6 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
       </div>
 
     </div>
-    <Footer />
+    <Footer location={router.asPath} />
   </div>
 }
