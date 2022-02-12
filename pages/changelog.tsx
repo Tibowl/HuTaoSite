@@ -40,6 +40,7 @@ export default function Changelog({ location, commits }: { location: string } & 
       <h2 className="text-3xl font-bold pb-2">
         Commits
       </h2>
+
       {commits.map((commit, i, arr) => <Commit key={commit.hash} commit={commit} prev={arr[i - 1]} />)}
 
     </Main>
@@ -85,7 +86,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     return {
       hash: commit.sha,
       timestamp: new Date(commit.commit.committer.date).getTime(),
-      message: commit.commit.message,
+      message: commit.commit.message.split("\n")[0].trim(),
       type: "Bot/Data"
     }
   })
@@ -106,7 +107,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     return {
       hash,
       timestamp,
-      message: split.join("|"),
+      message: split.join("|").split("\n")[0].trim(),
       type: "Website"
     }
   })
