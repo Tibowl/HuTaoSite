@@ -69,12 +69,13 @@ function Commit({ commit, prev }: { commit: CommitData, prev?: CommitData }) {
       {(prev == undefined || prevDate != formattedDate) && formattedDate}
     </div>
 
-    <div className="pl-4">
+    <div className={`pl-4 ${commit.message.startsWith("Merge branch ") ? "opacity-50" : ""}`}>
       <span>
-        [{date.toLocaleString("en-UK", { hour: "2-digit", minute: "2-digit" })}] {commit.type}:{" "}
+        [{date.toLocaleString("en-UK", { hour: "2-digit", minute: "2-digit" })}] <span className={commit.type == "Website" ? "text-blue-700 dark:text-blue-300" : "text-amber-700 dark:text-amber-300"}>{commit.type}</span>:{" "}
       </span>
 
-      {commit.type == "Bot/Data" ? <FormattedLink href={`https://github.com/Tibowl/HuTao/commit/${commit.hash}`} target="_blank">{child}</FormattedLink> : child}
+      {commit.type == "Bot/Data" ? <FormattedLink href={`https://github.com/Tibowl/HuTao/commit/${commit.hash}`} target="_blank">{child}</FormattedLink> :
+      commit.type == "Website" ? <FormattedLink href={`https://github.com/Tibowl/HuTaoSite/commit/${commit.hash}`} target="_blank">{child}</FormattedLink> :  child}
     </div>
   </>
 }
