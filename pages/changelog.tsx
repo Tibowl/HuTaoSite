@@ -33,12 +33,11 @@ export default function Changelog({ location, commits }: { location: string } & 
       </h1>
 
       <div>
-        Check out the full <FormattedLink href="https://github.com/Tibowl/HuTao/commits/master" location={location}>commit history on GitHub</FormattedLink> for the Discord bot / game data.
-        This page shows 100 most recent bot / game data commits and fills in website commits since the oldest one.
+        Check us out on GitHub! The Discord bot / game data can be found at <FormattedLink href="https://github.com/Tibowl/HuTao" location={location} target="_blank">HuTao</FormattedLink>, while the site can be found at <FormattedLink href="https://github.com/Tibowl/HuTaoSite" location={location} target="_blank">HuTaoSite</FormattedLink>.
       </div>
 
       <h2 className="text-3xl font-bold pb-2">
-        Commits
+        Changes
       </h2>
 
       {commits.map((commit, i, arr) => <Commit key={commit.hash} commit={commit} prev={arr[i - 1]} />)}
@@ -75,7 +74,7 @@ function Commit({ commit, prev }: { commit: CommitData, prev?: CommitData }) {
       </span>
 
       {commit.type == "Bot/Data" ? <FormattedLink href={`https://github.com/Tibowl/HuTao/commit/${commit.hash}`} target="_blank">{child}</FormattedLink> :
-      commit.type == "Website" ? <FormattedLink href={`https://github.com/Tibowl/HuTaoSite/commit/${commit.hash}`} target="_blank">{child}</FormattedLink> :  child}
+        commit.type == "Website" ? <FormattedLink href={`https://github.com/Tibowl/HuTaoSite/commit/${commit.hash}`} target="_blank">{child}</FormattedLink> : child}
     </div>
   </>
 }
@@ -83,6 +82,15 @@ function Commit({ commit, prev }: { commit: CommitData, prev?: CommitData }) {
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
   const res = await fetch("https://api.github.com/repos/Tibowl/HuTao/commits?per_page=100")
   const data = await res.json()
+
+  for (let i = 2; i <= 5; i++) {
+    const res2 = await fetch(`https://api.github.com/repos/Tibowl/HuTao/commits?per_page=100&sha=${data[0].sha}&page=${i}`)
+    const data2 = await res2.json()
+    data.push(...data2)
+    if (data2.length < 100)
+      break
+  }
+
   const bot: CommitData[] = data.map((commit: any) => {
     return {
       hash: commit.sha,
