@@ -1,8 +1,8 @@
-import Head from "next/head"
-import Main from "../components/Main"
-import FormattedLink from "../components/FormattedLink"
-import { GetStaticPropsContext, GetStaticPropsResult } from "next"
 import gitRawCommits from "git-raw-commits"
+import { GetStaticPropsContext, GetStaticPropsResult } from "next"
+import Head from "next/head"
+import FormattedLink from "../components/FormattedLink"
+import Main from "../components/Main"
 
 interface CommitData {
   hash: string
@@ -47,9 +47,14 @@ export default function Changelog({ location, commits }: { location: string } & 
 }
 
 function Commit({ commit, prev }: { commit: CommitData, prev?: CommitData }) {
-  const child = <span>{commit.message}</span>
-  const date = new Date(commit.timestamp)
+  const child = <span>{commit.message.split("\n").map((v, i, a) =>
+    <span key={i} className={i == 0 ? "font-semibold" : "font-normal pl-4"}>
+      {v}
+      {i == a.length - 1 || <br />}
+    </span>
+  )}</span>
 
+  const date = new Date(commit.timestamp)
   const formattedDate = date.toLocaleString("en-UK", {
     month: "long",
     day: "numeric",
@@ -95,7 +100,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     return {
       hash: commit.sha,
       timestamp: new Date(commit.commit.committer.date).getTime(),
-      message: commit.commit.message.split("\n")[0].trim(),
+      message: commit.commit.message.replace(/\n\n/g, "\n").trim(),
       type: "Bot/Data"
     }
   })
@@ -116,7 +121,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     return {
       hash,
       timestamp,
-      message: split.join("|").split("\n")[0].trim(),
+      message: split.join("|").replace(/\n\n/g, "\n").trim(),
       type: "Website"
     }
   })
