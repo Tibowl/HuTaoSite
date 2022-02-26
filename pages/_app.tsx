@@ -46,30 +46,27 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
       />}
     </Head>
 
-    <div className="w-full flex-1">
-      <div className="absolute z-10">
-        <CookieConsent
-          buttonText="Accept all cookies"
-          declineButtonText="Refuse non-essential cookies"
-          enableDeclineButton
-          onAccept={() => {
-            setConsented(true)
-          }}
-          onDecline={() => {
-            setConsented(false)
-          }}
-        >
-          This website uses cookies to enhance the user experience.
-          <div style={{ fontSize: "12px" }}>Currently we only use these for analytic purposes, intended to figure out where to focus our efforts.</div>
-        </CookieConsent>
-      </div>
-
+    <div className="w-full">
       <NavBar location={router.asPath} />
       <div className="p-4 flex flex-col w-full flex-1 px-1 lg:px-20 items-center justify-center">
         <Component {...pageProps} location={router.asPath} />
       </div>
-
-      <Footer location={router.asPath} marginBottom={consented || consented === null ? 3 : 80} />
     </div>
+
+    <CookieConsent
+      buttonText="Accept all cookies"
+      declineButtonText="Refuse non-essential cookies"
+      enableDeclineButton
+      onAccept={() => {
+        setConsented(true)
+      }}
+      onDecline={() => {
+        setConsented(false)
+      }}
+    >
+      This website uses cookies to enhance the user experience.
+      <div style={{ fontSize: "12px" }}>Currently we only use these for analytic purposes, intended to figure out where to focus our efforts.</div>
+    </CookieConsent>
+    <Footer location={router.asPath} marginBottom={consented || consented === null ? 3 : 80} />
   </div>
 }
