@@ -69,7 +69,7 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
         <Component {...pageProps} location={router.asPath} />
       </div>
 
-      <Footer location={router.asPath} marginBottom={consented || consented == null ? 3 : 80} />
+      <Footer location={router.asPath} marginBottom={consented || consented === null ? 3 : 80} />
     </div>
   </div>
 }
