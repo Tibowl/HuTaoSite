@@ -1,7 +1,7 @@
 import FormattedLink from "./FormattedLink"
 
-export default function Footer({ location }: { location: string }) {
-    return <footer className="flex flex-col items-center justify-center w-full border-t text-center">
+export default function Footer({ location, marginBottom }: { location: string, marginBottom: number }) {
+    return <footer className="flex flex-col items-center justify-center w-full border-t text-center" style={({ marginBottom: `${marginBottom}px` })}>
         <div className="flex items-center justify-center">
             © All rights reserved by miHoYo. Other properties belong to their respective owners.
         </div>
