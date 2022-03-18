@@ -51,7 +51,11 @@ export default function ArtifactWebpage({ artifact, location, guides }: Props & 
             {artifact.name}
           </h1>
 
-          {artifact.levels && <div className="inline-block pr-2">
+          {artifact.note && <div className="block pr-2">
+            <ReactMarkdown>{(artifact.note.replace(/ ?\$\{.*?\}/g, "").replace(/\n/g, "\n\n") ?? "")}</ReactMarkdown>
+          </div>}
+
+          {artifact.levels && <div className="block pr-2">
             Available in {joinMulti(artifact.levels.map(l => `${l}★`))}
           </div>}
         </div>

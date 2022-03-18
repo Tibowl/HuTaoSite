@@ -180,8 +180,8 @@ export function getStarColor(star: number): string {
 export function createSmallChar(char: Character): SmallChar {
     const c: SmallChar = { name: char.name, urlpath: "characters" }
     if (char.star) c.stars = char.star
-    if (char.meta.element) c.element = [char.meta.element as ElementType]
     if (char.skills) c.element = char.skills.map(skill => skill.ult?.type).filter(x => x) as ElementType[]
+    if (char.meta.element && (c.element == undefined || c.element.length < 1)) c.element = [char.meta.element as ElementType]
     if (char.weaponType) c.weapon = char.weaponType
     if (char.icon) c.icon = char.icon
     return c

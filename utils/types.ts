@@ -54,7 +54,8 @@ export interface Reminder {
 
 // Artifacts
 export interface Artifact {
-    name:    string
+    name:     string
+    note?:    string
     levels?:  number[]
     bonuses?: Bonus[]
     artis?:   Arti[]
