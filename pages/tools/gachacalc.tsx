@@ -2,7 +2,7 @@ import {
   BarElement, CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip
 } from "chart.js"
 import Head from "next/head"
-import { EffectCallback, useEffect, useState } from "react"
+import { EffectCallback, useEffect, useState, useMemo } from "react"
 import { Bar, Line } from "react-chartjs-2"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
@@ -92,11 +92,14 @@ export default function GachaCalc({ location }: { location: string }) {
   const [guaranteed, setGuaranteed] = useState(false)
   const [guaranteedPity, setGuaranteedPity] = useState(0)
 
-  const [calculated, setCalculated] = useState([[]] as ReducedSim[][])
-
   const [gachaName, setGacha] = useState(Object.values(gachas).map(g => g.bannerName)[0])
 
   const banner = Object.values(gachas).find(x => x.bannerName == gachaName) ?? Object.values(gachas)[0]
+
+  const calculated = useMemo(
+    () => calcSimsRegular(current, pity, pulls, guaranteed, guaranteedPity, banner),
+    [current, pity, pulls, guaranteed, guaranteedPity, banner]
+  )
 
   function delayed(f: EffectCallback) {
     const timeout = setTimeout(() => {
@@ -111,10 +114,6 @@ export default function GachaCalc({ location }: { location: string }) {
   useEffect(() => delayed(() => { if (current > banner.maxConst) setCurrent(banner.maxConst) }), [banner, current])
   useEffect(() => delayed(() => { if (current < banner.minConst) setCurrent(banner.minConst) }), [current, banner])
 
-  useEffect(
-    () => setCalculated(calcSimsRegular(current, pity, pulls, guaranteed, guaranteedPity, banner)),
-    [current, pity, pulls, guaranteed, guaranteedPity, banner]
-  )
   const consts = []
   for (let i = current; i <= banner.maxConst; i++) consts.push(i)
 
