@@ -74,7 +74,7 @@ export default function Events(props: Props & { location: string }) {
       return start && start.getTime() <= now &&
         (
           (end && end.getTime() >= now) ||
-          (!end && e.reminder == "daily")
+          (!end && (e.type != "Unlock" && e.type != "Stream"))
         )
     }).sort((a, b) => {
       const endA = getEndTime(a, serverTimezone)
