@@ -2,12 +2,12 @@
 import { GetStaticPropsContext, GetStaticPropsResult } from "next"
 import Head from "next/head"
 import { useEffect, useState } from "react"
-import FormattedLink from "../components/FormattedLink"
-import Main from "../components/Main"
-import { getEvents } from "../utils/data-cache"
-import { Event as GenshinEvent, EventType } from "../utils/types"
-import { formatTime, getDate, timeLeft } from "../utils/utils"
-import styles from "./style.module.css"
+import FormattedLink from "../../components/FormattedLink"
+import Main from "../../components/Main"
+import { getEvents } from "../../utils/data-cache"
+import { Event as GenshinEvent, EventType } from "../../utils/types"
+import { formatTime, getDate, timeLeft } from "../../utils/utils"
+import styles from "../style.module.css"
 
 
 interface Props {
@@ -130,6 +130,11 @@ export default function Events(props: Props & { location: string }) {
       <h1 className="text-5xl font-bold pb-2">
         Events
       </h1>
+      <h2 className="font-semibold">
+        <FormattedLink href={"/events/banners"} location={props.location} className="font-semibold text-lg">
+          Detailed banners view
+        </FormattedLink>
+      </h2>
       <div>
         Select server:
         <div>

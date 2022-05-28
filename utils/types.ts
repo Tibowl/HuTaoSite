@@ -42,6 +42,14 @@ export enum EventReminderType {
     End = "end"
 }
 
+export type Wish = {
+    title: string
+    img: string
+    main: string[]
+    other: string[]
+    duration: string
+    roughDate: number
+}
 
 // Reminders
 export interface Reminder {
