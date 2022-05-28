@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function Banners(props: Props & { location: string }) {
-  const desc = "View ongoing and future events of Genshin Impact."
+  const desc = "An automatically updating list of past, current and announced Event Wishes of Genshin Impact."
   const [filter, setFilter] = useState(false)
 
   const [bannerType, setBannerType] = useState("both" as "both" | "char" | "weapons")
