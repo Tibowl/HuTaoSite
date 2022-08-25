@@ -1,4 +1,3 @@
-import { GetServerSidePropsContext } from "next"
 import { parse } from "cookie"
 import { verify } from "jsonwebtoken"
 import { config } from "./config"
