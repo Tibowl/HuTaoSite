@@ -64,8 +64,8 @@ const gachas: Record<string, Banner> = {
     guaranteed: 1 / 5,
     minConst: -1,
     maxConst: 6,
-    constFormat: "C",
-    constName: "Constellation",
+    constFormat: "R",
+    constName: "Refinement",
     maxPity: 10,
     rate: pityRate(6, 9)
   },
