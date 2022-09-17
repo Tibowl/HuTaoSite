@@ -57,7 +57,18 @@ const gachas: Record<string, Banner> = {
     constName: "Refinement",
     maxPity: 80,
     rate: pityRate(0.7, 63)
-  }
+  },
+  "4*weapon": {
+    bannerName: "Specific 4* banner weapon",
+    banner: 0.75,
+    guaranteed: 1 / 5,
+    minConst: -1,
+    maxConst: 6,
+    constFormat: "C",
+    constName: "Constellation",
+    maxPity: 10,
+    rate: pityRate(6, 9)
+  },
 }
 
 
