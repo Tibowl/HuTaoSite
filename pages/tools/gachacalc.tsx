@@ -33,7 +33,7 @@ const gachas: Record<string, Banner> = {
     constFormat: "C",
     constName: "Constellation",
     maxPity: 90,
-    rate: pityRate(0.6, 74)
+    rate: pityRate(0.6, Math.ceil(44 / 0.6))
   },
   "4*char": {
     bannerName: "Specific 4* banner character",
@@ -44,7 +44,7 @@ const gachas: Record<string, Banner> = {
     constFormat: "C",
     constName: "Constellation",
     maxPity: 10,
-    rate: pityRate(5.1, 9)
+    rate: pityRate(5.1, Math.ceil(44 / 5.1))
   },
   weapon: {
     bannerName: "Specific 5* banner weapon",
@@ -56,7 +56,7 @@ const gachas: Record<string, Banner> = {
     constFormat: "R",
     constName: "Refinement",
     maxPity: 80,
-    rate: pityRate(0.7, 63)
+    rate: pityRate(0.7, Math.ceil(44 / 0.7))
   },
   "4*weapon": {
     bannerName: "Specific 4* banner weapon",
@@ -67,7 +67,7 @@ const gachas: Record<string, Banner> = {
     constFormat: "R",
     constName: "Refinement",
     maxPity: 10,
-    rate: pityRate(6, 9)
+    rate: pityRate(6.0, Math.ceil(44 / 6.0))
   },
 }
 
