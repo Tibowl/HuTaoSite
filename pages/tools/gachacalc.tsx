@@ -25,7 +25,7 @@ function pityRate(baseRate: number, pityStart: number): (pity: number) => number
 
 const gachas: Record<string, Banner> = {
   char: {
-    bannerName: "5* Banner character",
+    bannerName: "5* Banner character [Genshin Impact/Honkai: Star Rail]",
     banner: 0.5,
     guaranteed: 1,
     minConst: -1,
@@ -36,7 +36,7 @@ const gachas: Record<string, Banner> = {
     rate: pityRate(0.6, Math.ceil(44 / 0.6))
   },
   "4*char": {
-    bannerName: "Specific 4* banner character",
+    bannerName: "Specific 4* banner character [Genshin Impact/Honkai: Star Rail]",
     banner: 0.5,
     guaranteed: 1 / 3,
     minConst: -1,
@@ -47,7 +47,7 @@ const gachas: Record<string, Banner> = {
     rate: pityRate(5.1, Math.ceil(44 / 5.1))
   },
   weapon: {
-    bannerName: "Specific 5* banner weapon",
+    bannerName: "Specific 5* banner weapon [Genshin Impact]",
     banner: 0.75,
     guaranteed: 1 / 2,
     guaranteedPity: 3,
@@ -59,7 +59,7 @@ const gachas: Record<string, Banner> = {
     rate: pityRate(0.7, Math.ceil(44 / 0.7))
   },
   "4*weapon": {
-    bannerName: "Specific 4* banner weapon",
+    bannerName: "Specific 4* banner weapon [Genshin Impact]",
     banner: 0.75,
     guaranteed: 1 / 5,
     minConst: 0,
@@ -68,6 +68,28 @@ const gachas: Record<string, Banner> = {
     constName: "Refinement",
     maxPity: 10,
     rate: pityRate(6.0, Math.ceil(44 / 6.0))
+  },
+  weaponHSR: {
+    bannerName: "5* banner weapon [Honkai: Star Rail]",
+    banner: 0.75,
+    guaranteed: 1,
+    minConst: 0,
+    maxConst: 5,
+    constFormat: "S",
+    constName: "Superimposition",
+    maxPity: 80,
+    rate: pityRate(0.8, Math.ceil(44 / 0.7))
+  },
+  "HSR4*weapon": {
+    bannerName: "Specific 4* banner weapon [Honkai: Star Rail]",
+    banner: 0.75,
+    guaranteed: 1 / 3,
+    minConst: 0,
+    maxConst: 5,
+    constFormat: "S",
+    constName: "Superimposition",
+    maxPity: 10,
+    rate: pityRate(6.6, Math.ceil(44 / 6.0))
   },
 }
 
