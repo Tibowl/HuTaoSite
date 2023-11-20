@@ -58,7 +58,7 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
       <div>
         <ReactMarkdown>{(page.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
         {page.img && <ExternalImg src={page.img} />}
-        <div className="float-right text-sm">By {page.credits}</div>
+        {page.credits && <div className="float-right text-sm">By {page.credits}</div>}
         {page.url && page.url.startsWith("https://youtu.be/") && <div>
           <h2 className="text-xl font-semibold py-1">Video:</h2>
           <YouTube vidID={page.url.replace("https://youtu.be/", "")} />
