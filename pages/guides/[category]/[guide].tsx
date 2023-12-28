@@ -19,7 +19,7 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
   const nextPage = guide.pages[pageNumber + 1]
   const prevPage = guide.pages[pageNumber - 1]
 
-  const desc = `View ${removeBrackets(page.name)} guide by ${page.credits}${page.url && page.url.startsWith("https://youtu.be/") ? " (video available!)" : ""}. \n${page.desc ? clean(page.desc) : ""}`.trim()
+  const desc = `View ${removeBrackets(page.name)} guide ${page.credits ? `by ${page.credits}` : ""}${page.url && page.url.startsWith("https://youtu.be/") ? " (video available!)" : ""}. \n${page.desc ? clean(page.desc) : ""}`.trim()
   return (
     <Main>
       <Head>
