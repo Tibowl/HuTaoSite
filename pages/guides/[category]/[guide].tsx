@@ -55,7 +55,7 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
         </div>
       </div>
 
-      <div>
+      <div className="flex flex-col gap-2">
         <ReactMarkdown>{(page.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
         {page.img && <ExternalImg src={page.img} />}
         {page.credits && <div className="float-right text-sm">By {page.credits}</div>}
@@ -70,7 +70,7 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
 }
 function ExternalImg({ src }: { src: string }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <FormattedLink href={src} target="_blank"><img className={`p-1 relative ${styles.autosize}`} decoding="async" alt="Guide Image" src={src} /></FormattedLink>
+  return <FormattedLink href={src} target="_blank"><img className={`relative ${styles.autosize}`} decoding="async" alt="Guide Image" src={src} /></FormattedLink>
   // return <div className="p-1 relative max-w-2xl">
   //   <Image alt="Guide Image" src={src} width={825} height={963}/>
   // </div>
