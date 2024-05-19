@@ -19,13 +19,13 @@ ChartJS.register(
   Tooltip
 )
 
-function pityRate(baseRate: number, pityStart: number): (pity: number) => number {
-  return (pity) => pity < pityStart ? baseRate : baseRate + baseRate * 10 * (pity - pityStart + 1)
+function pityRate(baseRate: number, pityStart: number, increaseRate?: number): (pity: number) => number {
+  return (pity) => pity < pityStart ? baseRate : baseRate + (increaseRate ?? baseRate * 10) * (pity - pityStart + 1)
 }
 
 const gachas: Record<string, Banner> = {
   char: {
-    bannerName: "5* Banner character [Genshin Impact/Honkai: Star Rail]",
+    bannerName: "5* banner character [Genshin Impact/Honkai: Star Rail]",
     banner: 0.5,
     guaranteed: 1,
     minConst: -1,
@@ -78,7 +78,7 @@ const gachas: Record<string, Banner> = {
     constFormat: "S",
     constName: "Superimposition",
     maxPity: 80,
-    rate: pityRate(0.8, Math.ceil(44 / 0.7))
+    rate: pityRate(0.8, 66, 7.0)
   },
   "HSR4*weapon": {
     bannerName: "Specific 4* banner weapon [Honkai: Star Rail]",
