@@ -55,7 +55,7 @@ export default function GuideWebpage({ guide, pageNumber, location }: Props & { 
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 markdown-lists">
         <ReactMarkdown>{(page.desc?.replace(/ ?\$\{.*?\}/g, "") ?? "")}</ReactMarkdown>
         {page.img && <ExternalImg src={page.img} />}
         {page.credits && <div className="float-right text-sm">By {page.credits}</div>}

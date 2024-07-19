@@ -26,6 +26,10 @@ th {
 thead {
     text-align: left;
 }
+.markdown-lists li {
+    list-style-type: disc;
+    margin-left: 1.25rem;
+}
 .bi-alarm {
     color: #d34f52;
 }
