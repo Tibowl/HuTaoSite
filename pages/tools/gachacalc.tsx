@@ -419,14 +419,10 @@ function calcSimsRegular(current: number, pity: number, pulls: number, guarantee
 
 function calcSimsInt(starterSim: Sim, pulls: number, banner: Banner): ReducedSim[][] {
   console.time("calc")
-  const sims: Sim[][] = calcSimsExact([starterSim], pulls, banner, 0)
-  console.timeEnd("calc")
-
-
-  return sims.map(sim => {
+  const sims = calcSimsExact([starterSim], pulls, banner, 0, sims => {
     // Reducing to simple sims with less information
     const reducedSims: ReducedSim[] = []
-    sim.forEach((sim: Sim) => {
+    sims.forEach((sim: Sim) => {
       if (sim.rate == 0) return
 
       const other = reducedSims[sim.const + 1]
@@ -441,10 +437,13 @@ function calcSimsInt(starterSim: Sim, pulls: number, banner: Banner): ReducedSim
     })
     return reducedSims
   })
+  console.timeEnd("calc")
+
+  return sims
 }
 
-function calcSimsExact(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8) {
-  const allSims: Sim[][] = [sims]
+function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8, mapper: (sims: Sim[]) => T = (sims => sims as T)): T[] {
+  const mappedSims: T[] = [mapper(sims)]
   for (let i = 0; i < pulls; i++) {
     const newSims: Record<number, Sim> = {}
 
@@ -534,7 +533,7 @@ function calcSimsExact(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8)
     }
 
     sims = Object.values(newSims)
-    allSims.push(sims)
+    mappedSims.push(mapper(sims))
   }
-  return allSims
+  return mappedSims
 }
