@@ -25,8 +25,8 @@ function pityRate(baseRate: number, pityStart: number, increaseRate?: number): (
 
 const gachas: Record<string, Banner> = {
   char: {
-    bannerName: "5* banner character [Genshin Impact/Honkai: Star Rail]",
-    banner: 0.5,
+    bannerName: "5* banner character [Genshin Impact (5.0+)]",
+    banner: 0.55,
     guaranteed: 1,
     minConst: -1,
     maxConst: 6,
@@ -34,6 +34,18 @@ const gachas: Record<string, Banner> = {
     constName: "Constellation",
     maxPity: 90,
     rate: pityRate(0.6, Math.ceil(44 / 0.6))
+  },
+  weapon: {
+    bannerName: "Specific 5* banner weapon [Genshin Impact (5.0+)]",
+    banner: 0.75,
+    guaranteed: 1 / 2,
+    guaranteedPity: 2,
+    minConst: 0,
+    maxConst: 5,
+    constFormat: "R",
+    constName: "Refinement",
+    maxPity: 80,
+    rate: pityRate(0.7, Math.ceil(44 / 0.7))
   },
   "4*char": {
     bannerName: "Specific 4* banner character [Genshin Impact/Honkai: Star Rail]",
@@ -46,18 +58,6 @@ const gachas: Record<string, Banner> = {
     maxPity: 10,
     rate: pityRate(5.1, Math.ceil(44 / 5.1))
   },
-  weapon: {
-    bannerName: "Specific 5* banner weapon [Genshin Impact]",
-    banner: 0.75,
-    guaranteed: 1 / 2,
-    guaranteedPity: 3,
-    minConst: 0,
-    maxConst: 5,
-    constFormat: "R",
-    constName: "Refinement",
-    maxPity: 80,
-    rate: pityRate(0.7, Math.ceil(44 / 0.7))
-  },
   "4*weapon": {
     bannerName: "Specific 4* banner weapon [Genshin Impact]",
     banner: 0.75,
@@ -68,6 +68,29 @@ const gachas: Record<string, Banner> = {
     constName: "Refinement",
     maxPity: 10,
     rate: pityRate(6.0, Math.ceil(44 / 6.0))
+  },
+  charOld: {
+    bannerName: "5* banner character [Genshin Impact (PRE 5.0)/Honkai: Star Rail]",
+    banner: 0.5,
+    guaranteed: 1,
+    minConst: -1,
+    maxConst: 6,
+    constFormat: "C",
+    constName: "Constellation",
+    maxPity: 90,
+    rate: pityRate(0.6, Math.ceil(44 / 0.6))
+  },
+  weaponOld: {
+    bannerName: "Specific 5* banner weapon [Genshin Impact (PRE 5.0)]",
+    banner: 0.75,
+    guaranteed: 1 / 2,
+    guaranteedPity: 3,
+    minConst: 0,
+    maxConst: 5,
+    constFormat: "R",
+    constName: "Refinement",
+    maxPity: 80,
+    rate: pityRate(0.7, Math.ceil(44 / 0.7))
   },
   weaponHSR: {
     bannerName: "5* banner weapon [Honkai: Star Rail]",
@@ -125,9 +148,9 @@ export default function GachaCalc({ location }: { location: string }) {
   const [guaranteed, setGuaranteed] = useState(false)
   const [guaranteedPity, setGuaranteedPity] = useState(0)
 
-  const [gachaName, setGacha] = useState(Object.values(gachas).map(g => g.bannerName)[0])
+  const [gachaName, setGacha] = useState(Object.values(gachas).map(g => g.bannerName)[1])
 
-  const banner = Object.values(gachas).find(x => x.bannerName == gachaName) ?? Object.values(gachas)[0]
+  const banner = Object.values(gachas).find(x => x.bannerName == gachaName) ?? Object.values(gachas)[1]
 
   const calculated = useMemo(
     () => calcSimsRegular(current, pity, pulls, guaranteed, guaranteedPity, banner),
@@ -312,6 +335,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <p>The calculator uses the statistical model for drop-rates of Cgg/<FormattedLink href="https://genshin-wishes.com/" target="_blank">genshin-wishes.com</FormattedLink>.
         For more information about drop rates, please refer to <FormattedLink href="https://www.hoyolab.com/article/497840" target="_blank"> their HoYoLAB post</FormattedLink>.</p>
       <p>Rates indicate the chance to get exactly {banner.constFormat}x within Y pulls, cumulative rate chance to get {banner.constFormat}x or higher within Y pulls. Big graph indicates cumulative rate at each pull (read: Z% to get {banner.constFormat}x <i>within</i> Y pulls).</p>
+      <p>Exact details of &apos;Capturing Radiance&apos; are not yet known. The calculator assumes the consolidated rate of 55% mentioned in the <a href="https://www.hoyolab.com/article/32168979">HoYoLAB article</a>.</p>
       <p><i><b>NOTE</b>: To reduce the amount of calculations, the 4-star character banner calculator will assume there are no 5-stars being dropped.
         These can prevent a 4 star from dropping, but they still increase the pity counter. It is possible (in-game) to not get a 4-star within 10 pity,
         but the next pull is guaranteed to be a 4-star if it&apos;s not a 5-star.</i></p>
