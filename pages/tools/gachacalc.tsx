@@ -442,7 +442,7 @@ function calcSimsInt(starterSim: Sim, pulls: number, banner: Banner): ReducedSim
   return sims
 }
 
-function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8, mapper: (sims: Sim[]) => T = (sims => sims as T)): T[] {
+function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e-8, mapper: (sims: Sim[]) => T = (sims => sims as unknown as T)): T[] {
   const mappedSims: T[] = [mapper(sims)]
   for (let i = 0; i < pulls; i++) {
     const newSims: Record<number, Sim> = {}
