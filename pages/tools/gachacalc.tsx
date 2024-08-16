@@ -148,9 +148,9 @@ export default function GachaCalc({ location }: { location: string }) {
   const [guaranteed, setGuaranteed] = useState(false)
   const [guaranteedPity, setGuaranteedPity] = useState(0)
 
-  const [gachaName, setGacha] = useState(Object.values(gachas).map(g => g.bannerName)[1])
+  const [gachaName, setGacha] = useState(Object.values(gachas).map(g => g.bannerName)[0])
 
-  const banner = Object.values(gachas).find(x => x.bannerName == gachaName) ?? Object.values(gachas)[1]
+  const banner = Object.values(gachas).find(x => x.bannerName == gachaName) ?? Object.values(gachas)[0]
 
   const calculated = useMemo(
     () => calcSimsRegular(current, pity, pulls, guaranteed, guaranteedPity, banner),
