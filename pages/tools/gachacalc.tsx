@@ -477,20 +477,41 @@ function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e
     const addOrMerge = (sim: Sim) => {
       if (sim.rate <= 0) return
 
-      const v = sim.pity + (banner.maxPity + 1) * ((sim.const + 1) + ((banner.maxConst + 2) * (+sim.guaranteed + (2 * sim.guaranteedPity))))
-      const other = newSims[v]
+      let key = sim.pity
+      let keySize = banner.maxPity + 1
 
-      if (other) {
-        // if (other.const != sim.const) console.error("const", v, sim, other)
-        // if (other.guaranteed != sim.guaranteed) console.error("guaranteed", v, sim, other)
-        // if (other.guaranteedPity != sim.guaranteedPity) console.error("guaranteedPity", v, sim, other)
-        // if (other.pity != sim.pity) console.error("pity", v, sim, other)
+      key += (sim.const + 1) * keySize
+      keySize *= banner.maxConst + 2
 
-        other.rate += sim.rate
-        return
+      key += (+sim.guaranteed + 1) * keySize
+      keySize *= 2
+
+      if (banner.guaranteedPity) {
+        key += (sim.guaranteedPity + 1) * keySize
+        keySize *= banner.guaranteedPity + 1
       }
 
-      newSims[v] = sim
+      if (Array.isArray(banner.banner)) {
+        key += (sim.lostPity + 1) * keySize
+        keySize *= banner.banner.length + 1
+      }
+
+      const other = newSims[key]
+
+      if (other) {
+        // if (other.const != sim.const) console.error("const", key, sim, other)
+        // else if (other.guaranteed != sim.guaranteed) console.error("guaranteed", key, sim, other)
+        // else if (other.guaranteedPity != sim.guaranteedPity) console.error("guaranteedPity", key, sim, other)
+        // else if (other.pity != sim.pity) console.error("pity", key, sim, other)
+        // else if (other.lostPity != sim.lostPity) console.error("lostPity", key, sim, other)
+        // else {
+        other.rate += sim.rate
+        return
+        // }
+        // throw new Error("Unexpected sim")
+      }
+
+      newSims[key] = sim
     }
 
     for (const sim of sims) {
