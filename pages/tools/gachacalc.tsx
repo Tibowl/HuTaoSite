@@ -25,7 +25,29 @@ function pityRate(baseRate: number, pityStart: number, increaseRate?: number): (
 
 const gachas: Record<string, Banner> = {
   char: {
-    bannerName: "5* banner character [Genshin Impact (5.0+)]",
+    bannerName: "5* banner character [Genshin Impact (5.0+, hypothese A)]",
+    banner: [0.5, 0.5, 0.75, 1],
+    guaranteed: 1,
+    minConst: -1,
+    maxConst: 6,
+    constFormat: "C",
+    constName: "Constellation",
+    maxPity: 90,
+    rate: pityRate(0.6, Math.ceil(44 / 0.6))
+  },
+  charHypoB: {
+    bannerName: "5* banner character [Genshin Impact (5.0+, hypothese B)]",
+    banner: [0.5, 0.57, 0.64, 0.71, 0.78, 0.85, 0.92, 0.99, 1],
+    guaranteed: 1,
+    minConst: -1,
+    maxConst: 6,
+    constFormat: "C",
+    constName: "Constellation",
+    maxPity: 90,
+    rate: pityRate(0.6, Math.ceil(44 / 0.6))
+  },
+  charFlatRate: {
+    bannerName: "5* banner character [Genshin Impact (5.0+, assumed flat 55/45)]",
     banner: 0.55,
     guaranteed: 1,
     minConst: -1,
@@ -119,7 +141,7 @@ const gachas: Record<string, Banner> = {
 
 type Banner = {
   bannerName: string
-  banner: number
+  banner: number | number[]
   guaranteed: number
   guaranteedPity?: number
   minConst: number
@@ -134,6 +156,7 @@ type Sim = ReducedSim & {
   pity: number
   guaranteed: boolean
   guaranteedPity: number
+  lostPity: number
 }
 type ReducedSim = {
   const: number
@@ -147,14 +170,15 @@ export default function GachaCalc({ location }: { location: string }) {
   const [pulls, setPulls] = useState(90)
   const [guaranteed, setGuaranteed] = useState(false)
   const [guaranteedPity, setGuaranteedPity] = useState(0)
+  const [lostPity, setLostPity] = useState(0)
 
   const [gachaName, setGacha] = useState(Object.values(gachas).map(g => g.bannerName)[0])
 
   const banner = Object.values(gachas).find(x => x.bannerName == gachaName) ?? Object.values(gachas)[0]
 
   const calculated = useMemo(
-    () => calcSimsRegular(current, pity, pulls, guaranteed, guaranteedPity, banner),
-    [current, pity, pulls, guaranteed, guaranteedPity, banner]
+    () => calcSimsRegular(current, pity, pulls, guaranteed, guaranteedPity, lostPity, banner),
+    [current, pity, pulls, guaranteed, guaranteedPity, lostPity, banner]
   )
 
   function delayed(f: EffectCallback) {
@@ -167,6 +191,7 @@ export default function GachaCalc({ location }: { location: string }) {
 
   useEffect(() => delayed(() => { if (pity >= banner.maxPity) setPity(banner.maxPity - 1) }), [banner, pity])
   useEffect(() => delayed(() => { if (banner.guaranteedPity && guaranteedPity >= banner.guaranteedPity) setGuaranteedPity(banner.guaranteedPity) }), [banner, guaranteedPity])
+  useEffect(() => delayed(() => { if (Array.isArray(banner.banner) && lostPity >= banner.banner.length) setLostPity(banner.banner.length - 1) }), [banner, lostPity])
   useEffect(() => delayed(() => { if (current > banner.maxConst) setCurrent(banner.maxConst) }), [banner, current])
   useEffect(() => delayed(() => { if (current < banner.minConst) setCurrent(banner.minConst) }), [current, banner])
 
@@ -204,6 +229,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <NumberInput label="Current pity" set={setPity} value={pity} min={0} max={banner.maxPity - 1} />
       <CheckboxInput label="Next is guaranteed" set={setGuaranteed} value={guaranteed} />
       {banner.guaranteedPity && <NumberInput label="Epitomized Path" set={setGuaranteedPity} value={guaranteedPity} min={0} max={banner.guaranteedPity - 1} />}
+      {Array.isArray(banner.banner) && <NumberInput label="Lost pity (Capturing Radiance)" set={setLostPity} value={lostPity} min={0} max={banner.banner.length - 1} />}
 
       <h3 className="text-lg font-bold pt-1" id="results">Results</h3>
       <div className="columns-1 md:columns-2 mr-2 mb-2">
@@ -335,7 +361,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <p>The calculator uses the statistical model for drop-rates of Cgg/<FormattedLink href="https://genshin-wishes.com/" target="_blank">genshin-wishes.com</FormattedLink>.
         For more information about drop rates, please refer to <FormattedLink href="https://www.hoyolab.com/article/497840" target="_blank"> their HoYoLAB post</FormattedLink>.</p>
       <p>Rates indicate the chance to get exactly {banner.constFormat}x within Y pulls, cumulative rate chance to get {banner.constFormat}x or higher within Y pulls. Big graph indicates cumulative rate at each pull (read: Z% to get {banner.constFormat}x <i>within</i> Y pulls).</p>
-      <p>Exact details of &apos;Capturing Radiance&apos; are not yet known. The calculator assumes the consolidated rate of 55% mentioned in the <a href="https://www.hoyolab.com/article/32168979">HoYoLAB article</a>.</p>
+      <p>Exact details of &apos;Capturing Radiance&apos; are not yet known. Hypothese A assumes a lost pity model where rate goes from 50%/50%, to 50%/50% to 75%/25% to 100%/0% and resets when you win the 50/50. Hypothese B assumes a 7% increase for each lost pity. The other version assumes a flat consolidated rate of 55% mentioned in the <a href="https://www.hoyolab.com/article/32168979">HoYoLAB article</a>.</p>
       <p><i><b>NOTE</b>: To reduce the amount of calculations, the 4-star character banner calculator will assume there are no 5-stars being dropped.
         These can prevent a 4 star from dropping, but they still increase the pity counter. It is possible (in-game) to not get a 4-star within 10 pity,
         but the next pull is guaranteed to be a 4-star if it&apos;s not a 5-star.</i></p>
@@ -407,12 +433,13 @@ function SelectInput({ value, set, label, options }: { value: string, set: (newV
   </label></div>
 }
 
-function calcSimsRegular(current: number, pity: number, pulls: number, guaranteed: boolean, guaranteedPity: number, banner: Banner): ReducedSim[][] {
+function calcSimsRegular(current: number, pity: number, pulls: number, guaranteed: boolean, guaranteedPity: number, lostPity: number, banner: Banner): ReducedSim[][] {
   return calcSimsInt({
     pity,
     guaranteed,
     guaranteedPity,
     const: current,
+    lostPity,
     rate: 1
   }, pulls, banner)
 }
@@ -480,7 +507,7 @@ function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e
       const bannerRate = (
         sim.guaranteed ||
         (banner.guaranteedPity && sim.guaranteedPity >= banner.guaranteedPity - 1)
-      ) ? 1 : banner.banner
+      ) ? 1 : (Array.isArray(banner.banner) ? banner.banner[sim.lostPity] : banner.banner)
 
       // Failed
       if (rate < 1)
@@ -488,6 +515,7 @@ function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e
           pity: currentPity,
           guaranteed: sim.guaranteed,
           guaranteedPity: sim.guaranteedPity,
+          lostPity: sim.lostPity,
           const: sim.const,
           rate: sim.rate * (1 - rate)
         })
@@ -497,6 +525,7 @@ function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e
         pity: 0,
         guaranteed: false,
         guaranteedPity: 0,
+        lostPity: sim.guaranteed ? sim.lostPity : 0, // Keep lost pity if it was guaranteed, otherwise we won 50/50
         const: sim.const + 1,
         rate: sim.rate * rate * bannerRate * banner.guaranteed
       })
@@ -509,6 +538,7 @@ function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e
             pity: 0,
             guaranteed: false,
             guaranteedPity: 0,
+            lostPity: 0, // No idea what to do here as it isn't relevant (combination doesn't exist ingame)
             const: sim.const + 1,
             rate: sim.rate * rate * bannerRate * (1 - banner.guaranteed)
           })
@@ -517,6 +547,7 @@ function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e
             pity: 0,
             guaranteed: false,
             guaranteedPity: banner.guaranteedPity ? sim.guaranteedPity + 1 : 0,
+            lostPity: 0, // No idea what to do here as it isn't relevant (combination doesn't exist ingame)
             const: sim.const,
             rate: sim.rate * rate * bannerRate * (1 - banner.guaranteed)
           })
@@ -527,6 +558,7 @@ function calcSimsExact<T>(sims: Sim[], pulls: number, banner: Banner, prune = 1e
           pity: 0,
           guaranteed: true,
           guaranteedPity: banner.guaranteedPity ? sim.guaranteedPity + 1 : 0,
+          lostPity: Array.isArray(banner.banner) ? sim.lostPity + 1 : 0, // increase lost pity if it was a lost 50/50
           const: sim.const,
           rate: sim.rate * rate * (1 - bannerRate)
         })
