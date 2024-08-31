@@ -129,6 +129,12 @@ function Resistances({ resistance }: { resistance: string[][] }) {
               <div>Geo</div>
             </div>
           </th>
+          <th>
+            <div className="flex flex-row items-center content-center">
+              <div className="absolute invisible inline-block w-5 h-5 sm:relative sm:pr-1 sm:visible"><Image src={elements.Dendro} alt={"Dendro Element"} /></div>
+              <div>Dendro</div>
+            </div>
+          </th>
           <th>Physical</th>
           {resistance[0].length > 7 && <th>Note</th>}
         </tr>
