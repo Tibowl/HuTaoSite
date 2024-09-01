@@ -180,6 +180,7 @@ type ReducedSim = {
 }
 
 type GachaTarget = {
+  id: string
   banner: Banner
   current: number
   target: number
@@ -189,8 +190,10 @@ type GachaTarget = {
   lostPity: number
 }
 
+let gtCounter = 0
 function createDefaultTarget(banner: Banner): GachaTarget {
   return {
+    id: gtCounter++ + Math.random().toString(36).substring(2, 15),
     banner,
     current: banner.minConst,
     target: banner.maxConst,
@@ -241,7 +244,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <h1 className="text-5xl font-bold pb-2">Gacha rate calculator</h1>
 
       <NumberInput label="Pulls" set={setPulls} value={pulls} min={0} max={1260 * gachaTargets.length}/>
-      {gachaTargets.map((gachaTarget, index) => <div key={index * 100 + gachaTargets.length} className="bg-blend-multiply bg-slate-600 rounded-xl p-1 my-2">
+      {gachaTargets.map((gachaTarget, index) => <div key={gachaTarget.id} className="bg-blend-multiply bg-slate-600 rounded-xl p-1 my-2">
         {gachaTargets.length > 1 &&
           <button className="bg-red-700 text-slate-50 cursor-pointer text-center rounded-lg px-2 py-1 my-2 float-right"
             onClick={() =>
@@ -483,7 +486,7 @@ function GachaTargetInput({
 
   const [gachaName, setGacha] = useState(value.banner.bannerName)
 
-  const banner = value.banner
+  const banner = Object.values(gachas).find((x) => x.bannerName == gachaName) ?? Object.values(gachas)[0]
   useEffect(() => delayed(() => { if (pity >= banner.maxPity) setPity(banner.maxPity - 1) }), [banner, pity])
   useEffect(() => delayed(() => { if (banner.guaranteedPity && guaranteedPity >= banner.guaranteedPity) setGuaranteedPity(banner.guaranteedPity) }), [banner, guaranteedPity])
   useEffect(() => delayed(() => { if (Array.isArray(banner.banner) && lostPity >= banner.banner.length) setLostPity(banner.banner.length - 1) }), [banner, lostPity])
@@ -494,7 +497,7 @@ function GachaTargetInput({
   useEffect(() => delayed(() => { if (current >= target) setCurrent(target - 1) }), [target, current])
 
   useEffect(() => {
-    if (gachaName != value.banner.bannerName) {}
+    if (banner.bannerName != value.banner.bannerName) {}
     else if (current != value.current) {}
     else if (target != value.target) {}
     else if (pity != value.pity) {}
@@ -504,7 +507,8 @@ function GachaTargetInput({
     else return
 
     set({
-      banner: Object.values(gachas).find((x) => x.bannerName == gachaName) ?? Object.values(gachas)[0],
+      id: value.id,
+      banner,
       current,
       target,
       pity,
@@ -512,7 +516,7 @@ function GachaTargetInput({
       guaranteedPity,
       lostPity,
     })
-  }, [set, value, gachaName, current, target, pity, guaranteed, guaranteedPity, lostPity])
+  }, [set, value, banner, current, target, pity, guaranteed, guaranteedPity, lostPity])
   return (
     <>
       <SelectInput label="Banner type" set={(g) => {
