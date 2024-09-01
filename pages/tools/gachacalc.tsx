@@ -241,7 +241,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <h1 className="text-5xl font-bold pb-2">Gacha rate calculator</h1>
 
       <NumberInput label="Pulls" set={setPulls} value={pulls} min={0} max={1260 * gachaTargets.length}/>
-      {gachaTargets.map((gachaTarget, index) => <div key={index} className="bg-blend-multiply bg-slate-600 rounded-xl p-1 my-2">
+      {gachaTargets.map((gachaTarget, index) => <div key={index * 100 + gachaTargets.length} className="bg-blend-multiply bg-slate-600 rounded-xl p-1 my-2">
         {gachaTargets.length > 1 &&
           <button className="bg-red-700 text-slate-50 cursor-pointer text-center rounded-lg px-2 py-1 my-2 float-right"
             onClick={() =>
