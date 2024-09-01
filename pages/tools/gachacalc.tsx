@@ -181,6 +181,7 @@ type ReducedSim = {
 
 type GachaTarget = {
   id: string
+  enabled: boolean
   banner: Banner
   current: number
   target: number
@@ -194,6 +195,7 @@ let gtCounter = 0
 function createDefaultTarget(banner: Banner): GachaTarget {
   return {
     id: gtCounter++ + Math.random().toString(36).substring(2, 15),
+    enabled: true,
     banner,
     current: banner.minConst,
     target: banner.maxConst,
@@ -208,11 +210,33 @@ export default function GachaCalc({ location }: { location: string }) {
   const [gachaTargets, setGachaTargets] = useState<GachaTarget[]>([createDefaultTarget(gachas.char)])
   const [pulls, setPulls] = useState(gachaTargets[0].banner.maxPity)
 
-  const calculated = useMemo(() => calcSimsRegular(pulls, gachaTargets), [gachaTargets, pulls])
+  useEffect(() => {
+    const items = JSON.parse(localStorage.getItem("gachaTargets") ?? "[]")
+    if (items.length > 0) {
+      // Force low amount as calculations could have exploded
+      if (items.filter((x: any) => x.enabled).length > 5) setPulls(1)
+      else if (items.filter((x: any) => x.enabled).length > 2) setPulls(10)
+
+      setGachaTargets(items.map((gt: any) => ({
+        ...gt,
+        banner: gachas[gt.banner] ?? Object.values(gachas)[0],
+      })))
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("gachaTargets", JSON.stringify(gachaTargets.map(gt => ({
+      ...gt,
+      banner: Object.entries(gachas).find(([_, v]) => v.bannerName == gt.banner.bannerName)?.[0],
+    }))))
+  }, [gachaTargets])
+
+  const enabledTargets = useMemo(() => gachaTargets.filter(gt => gt.enabled), [gachaTargets])
+  const calculated = useMemo(() => calcSimsRegular(pulls, enabledTargets), [enabledTargets, pulls])
 
   const consts = []
-  for (let index = 0; index < gachaTargets.length; index++) {
-    const gachaTarget = gachaTargets[index]
+  for (let index = 0; index < enabledTargets.length; index++) {
+    const gachaTarget = enabledTargets[index]
     for (let i = gachaTarget.current + 1; i <= gachaTarget.target; i++)
       consts.push({
         gachaTargetIndex: index,
@@ -221,8 +245,8 @@ export default function GachaCalc({ location }: { location: string }) {
       })
   }
 
-  const constName = gachaTargets.map(gt => gt.banner.constName).filter((x, i, a) => a.indexOf(x) == i).join("/")
-  const constFormat = gachaTargets.map(gt => gt.banner.constFormat).filter((x, i, a) => a.indexOf(x) == i).join("/")
+  const constName = enabledTargets.map(gt => gt.banner.constName).filter((x, i, a) => a.indexOf(x) == i).join("/")
+  const constFormat = enabledTargets.map(gt => gt.banner.constFormat).filter((x, i, a) => a.indexOf(x) == i).join("/")
 
   const desc = "Gacha rate calculator for Genshin Impact."
   return (
@@ -244,15 +268,42 @@ export default function GachaCalc({ location }: { location: string }) {
       <h1 className="text-5xl font-bold pb-2">Gacha rate calculator</h1>
 
       <NumberInput label="Pulls" set={setPulls} value={pulls} min={0} max={1260 * gachaTargets.length}/>
-      {gachaTargets.map((gachaTarget, index) => <div key={gachaTarget.id} className="bg-blend-multiply bg-slate-600 rounded-xl p-1 my-2">
-        {gachaTargets.length > 1 &&
-          <button className="bg-red-700 text-slate-50 cursor-pointer text-center rounded-lg px-2 py-1 my-2 float-right"
-            onClick={() =>
-              setGachaTargets(gachaTargets.filter((_, i) => i != index))
-            }>
-            Remove gacha target
-          </button>
-        }
+      {gachaTargets.map((gachaTarget, index) => <div key={gachaTarget.id} className={`bg-slate-600 ${gachaTarget.enabled ? "" : "bg-opacity-25 bg-red-800"} rounded-xl p-1 my-2 flex flex-row gap-2`}>
+        <div className="flex flex-col items-center justify-center gap-2">
+          <div>
+            <button className="bg-slate-900 text-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-center rounded-lg px-2 py-1"
+              disabled={!(gachaTargets.length > 1 && index > 0)}
+              onClick={() => {
+                // Move index up
+                const newGachaTargets = [...gachaTargets]
+                newGachaTargets[index] = gachaTargets[index - 1]
+                newGachaTargets[index - 1] = gachaTargets[index]
+                setGachaTargets(newGachaTargets)
+              }}>
+              &uarr;
+            </button>
+          </div>
+          <div>
+            <button className="bg-red-700 text-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-center rounded-lg px-2 py-1"
+              disabled={!(gachaTargets.length > 1)}
+              onClick={() => setGachaTargets(gachaTargets.filter((_, i) => i != index))}>
+              &times;
+            </button>
+          </div>
+          <div>
+            <button className="bg-slate-900 text-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-center rounded-lg px-2 py-1"
+              disabled={!(gachaTargets.length > 1 && index < gachaTargets.length - 1)}
+              onClick={() => {
+                // Move index down
+                const newGachaTargets = [...gachaTargets]
+                newGachaTargets[index] = gachaTargets[index + 1]
+                newGachaTargets[index + 1] = gachaTargets[index]
+                setGachaTargets(newGachaTargets)
+              }}>
+              &darr;
+            </button>
+          </div>
+        </div>
         <GachaTargetInput value={gachaTarget} set={newGachaTarget => setGachaTargets(gachaTargets.map((gt, i) => i == index ? newGachaTarget : gt))} />
       </div>)}
 
@@ -341,11 +392,11 @@ export default function GachaCalc({ location }: { location: string }) {
             datasets: consts
               .map((gtc, x, arr) => ({
                 label: getName(gtc),
-                backgroundColor: getColor(gtc, gachaTargets, 1),
-                borderColor: getColor(gtc, gachaTargets, 1),
+                backgroundColor: getColor(gtc, enabledTargets, 1),
+                borderColor: getColor(gtc, enabledTargets, 1),
                 fill: {
-                  above: getColor(gtc, gachaTargets, 0.15),
-                  below: getColor(gtc, gachaTargets, 0.1),
+                  above: getColor(gtc, enabledTargets, 0.15),
+                  below: getColor(gtc, enabledTargets, 0.1),
                   target: arr.indexOf(gtc) == arr.length - 1 ? "start" : x + 1,
                 },
                 data: calculated.map(c => c
@@ -477,6 +528,7 @@ function GachaTargetInput({
   value: GachaTarget;
   set: (newValue: GachaTarget) => unknown;
 }) {
+  const [enabled, setEnabled] = useState(value.enabled)
   const [current, setCurrent] = useState(value.current)
   const [target, setTarget] = useState(value.target)
   const [pity, setPity] = useState(value.pity)
@@ -498,6 +550,7 @@ function GachaTargetInput({
 
   useEffect(() => {
     if (banner.bannerName != value.banner.bannerName) {}
+    else if (enabled != value.enabled) {}
     else if (current != value.current) {}
     else if (target != value.target) {}
     else if (pity != value.pity) {}
@@ -508,6 +561,7 @@ function GachaTargetInput({
 
     set({
       id: value.id,
+      enabled,
       banner,
       current,
       target,
@@ -516,31 +570,30 @@ function GachaTargetInput({
       guaranteedPity,
       lostPity,
     })
-  }, [set, value, banner, current, target, pity, guaranteed, guaranteedPity, lostPity])
-  return (
-    <>
-      <SelectInput label="Banner type" set={(g) => {
-          if (current == banner.minConst)
-            setCurrent((Object.values(gachas).find((x) => x.bannerName == g) ?? Object.values(gachas)[0]).minConst)
-          if (target == banner.maxConst)
-            setTarget((Object.values(gachas).find((x) => x.bannerName == g) ?? Object.values(gachas)[0]).maxConst)
-          setGacha(g)
-        }}
-        value={gachaName}
-        options={Object.values(gachas).map((g) => g.bannerName)}
-      />
-      <NumberInput label={`Current ${banner.constName.toLowerCase()}`} set={setCurrent} value={current} min={banner.minConst} max={target - 1}/>
-      <NumberInput label={`Target ${banner.constName.toLowerCase()}`} set={setTarget} value={target} min={current + 1} max={banner.maxConst}/>
-      <NumberInput label="Current pity" set={setPity} value={pity} min={0} max={banner.maxPity - 1}/>
-      <CheckboxInput label="Next is guaranteed" set={setGuaranteed} value={guaranteed}/>
-      {banner.guaranteedPity && (
-        <NumberInput label="Epitomized Path" set={setGuaranteedPity} value={guaranteedPity} min={0} max={banner.guaranteedPity - 1}/>
-      )}
-      {Array.isArray(banner.banner) && (
-        <NumberInput label="Lost pity (Capturing Radiance)" set={setLostPity} value={lostPity} min={0} max={banner.banner.length - 1}/>
-      )}
-    </>
-  )
+  }, [set, value, enabled, banner, current, target, pity, guaranteed, guaranteedPity, lostPity])
+  return <div>
+    <CheckboxInput label="Enabled" set={setEnabled} value={enabled} />
+    <SelectInput label="Banner type" set={(g) => {
+        if (current == banner.minConst)
+          setCurrent((Object.values(gachas).find((x) => x.bannerName == g) ?? Object.values(gachas)[0]).minConst)
+        if (target == banner.maxConst)
+          setTarget((Object.values(gachas).find((x) => x.bannerName == g) ?? Object.values(gachas)[0]).maxConst)
+        setGacha(g)
+      }}
+      value={gachaName}
+      options={Object.values(gachas).map((g) => g.bannerName)}
+    />
+    <NumberInput label={`Current ${banner.constName.toLowerCase()}`} set={setCurrent} value={current} min={banner.minConst} max={target - 1}/>
+    <NumberInput label={`Target ${banner.constName.toLowerCase()}`} set={setTarget} value={target} min={current + 1} max={banner.maxConst}/>
+    <NumberInput label="Current pity" set={setPity} value={pity} min={0} max={banner.maxPity - 1}/>
+    <CheckboxInput label="Next is guaranteed" set={setGuaranteed} value={guaranteed}/>
+    {banner.guaranteedPity && (
+      <NumberInput label="Epitomized Path" set={setGuaranteedPity} value={guaranteedPity} min={0} max={banner.guaranteedPity - 1}/>
+    )}
+    {Array.isArray(banner.banner) && (
+      <NumberInput label="Lost pity (Capturing Radiance)" set={setLostPity} value={lostPity} min={0} max={banner.banner.length - 1}/>
+    )}
+  </div>
 }
 
 function NumberInput({ value, set, label, min, max }: {
