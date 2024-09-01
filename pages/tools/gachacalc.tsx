@@ -732,17 +732,17 @@ function calcSimsExact<T>(
       const other = newSims[key]
 
       if (other) {
-        if (other.const != sim.const) console.error("const", key, sim, other)
-        else if (other.guaranteed != sim.guaranteed) console.error("guaranteed", key, sim, other)
-        else if (other.guaranteedPity != sim.guaranteedPity) console.error("guaranteedPity", key, sim, other)
-        else if (other.pity != sim.pity) console.error("pity", key, sim, other)
-        else if (other.lostPity != sim.lostPity) console.error("lostPity", key, sim, other)
-        else if (other.gachaTargetIndex != sim.gachaTargetIndex) console.error("gachaTargetIndex", key, sim, other)
-        else {
+        // if (other.const != sim.const) console.error("const", key, sim, other)
+        // else if (other.guaranteed != sim.guaranteed) console.error("guaranteed", key, sim, other)
+        // else if (other.guaranteedPity != sim.guaranteedPity) console.error("guaranteedPity", key, sim, other)
+        // else if (other.pity != sim.pity) console.error("pity", key, sim, other)
+        // else if (other.lostPity != sim.lostPity) console.error("lostPity", key, sim, other)
+        // else if (other.gachaTargetIndex != sim.gachaTargetIndex) console.error("gachaTargetIndex", key, sim, other)
+        // else {
         other.rate += sim.rate
         return
-        }
-        throw new Error("Unexpected sim")
+        // }
+        // throw new Error("Unexpected sim")
       }
 
       newSims[key] = sim
@@ -754,10 +754,10 @@ function calcSimsExact<T>(
       const gachaTarget = gachaTargets[sim.gachaTargetIndex]
       if (sim.const >= gachaTarget.target) {
         // Limited to target
-        if (sim.gachaTargetIndex != gachaTargets.length - 1) {
-          console.error("sim.gachaTargetIndex != gachaTargets.length - 1", sim, gachaTargets)
-          throw new Error("Unexpected sim")
-        }
+        // if (sim.gachaTargetIndex != gachaTargets.length - 1) {
+        //   console.error("sim.gachaTargetIndex != gachaTargets.length - 1", sim, gachaTargets)
+        //   throw new Error("Unexpected sim")
+        // }
         addOrMerge({ ...sim })
         continue
       }
