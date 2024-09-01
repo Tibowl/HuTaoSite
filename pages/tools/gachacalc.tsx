@@ -245,7 +245,7 @@ export default function GachaCalc({ location }: { location: string }) {
         {gachaTargets.length > 1 &&
           <button className="bg-red-700 text-slate-50 cursor-pointer text-center rounded-lg px-2 py-1 my-2 float-right"
             onClick={() =>
-              setGachaTargets([...gachaTargets, createDefaultTarget(gachas.weapon)])
+              setGachaTargets(gachaTargets.filter((_, i) => i != index))
             }>
             Remove gacha target
           </button>
