@@ -233,6 +233,7 @@ export default function GachaCalc({ location }: { location: string }) {
 
   const enabledTargets = useMemo(() => gachaTargets.filter(gt => gt.enabled), [gachaTargets])
   const calculated = useMemo(() => calcSimsRegular(pulls, enabledTargets), [enabledTargets, pulls])
+  const lastEntry = calculated[calculated.length - 1] ?? []
 
   const consts = []
   for (let index = 0; index < enabledTargets.length; index++) {
@@ -319,11 +320,11 @@ export default function GachaCalc({ location }: { location: string }) {
         <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-1">
           <Bar
             data={{
-              labels: calculated[calculated.length - 1].filter((x) => x).map((c) => getName(c)),
+              labels: lastEntry.filter((x) => x).map((c) => getName(c)),
               datasets: [{
                 label: "Rate",
                 backgroundColor: "rgb(75, 192, 192)",
-                data: calculated[calculated.length - 1].filter(x => x).map(c => c.rate * 100),
+                data: lastEntry.filter(x => x).map(c => c.rate * 100),
                 borderColor: "white",
                 borderWidth: 2,
                 xAxisID: "xAxes",
@@ -351,13 +352,13 @@ export default function GachaCalc({ location }: { location: string }) {
         </div>
         <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-2">
           <Line data={{
-              labels: calculated[calculated.length - 1].filter(x => x).map(c => getName(c)),
+              labels: lastEntry.filter(x => x).map(c => getName(c)),
               datasets: [{
                 label: "Cumulative rate",
                 borderColor: "rgb(255, 99, 132)",
                 borderWidth: 2,
                 fill: false,
-                data: calculated[calculated.length - 1]
+                data: lastEntry
                   .filter((x) => x)
                   .map((c, i, a) => a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100),
               }],
@@ -446,7 +447,7 @@ export default function GachaCalc({ location }: { location: string }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
-          {calculated[calculated.length - 1]
+          {lastEntry
             .filter((x) => x)
             .map((c, i, a) => (
               <tr className={`pr-1 divide-x divide-gray-200 dark:divide-gray-500 ${c.rate < 0.0005 ? "opacity-60" : ""}`} key={i}>
@@ -704,7 +705,7 @@ function createStarterSim(gachaTargets: GachaTarget[], gachaTargetIndex: number 
     guaranteed: init.guaranteed,
     guaranteedPity: init.guaranteedPity,
     lostPity: init.lostPity,
-    rate: rate,
+    rate,
   }
 }
 
@@ -713,6 +714,8 @@ function calcSimsRegular(
   gachaTargets: GachaTarget[],
 ): ReducedSim[][] {
   console.log("calcSimsRegular", pulls, gachaTargets)
+  if (gachaTargets.length == 0) return []
+
   console.time("calc")
   const sims = calcSimsExact([createStarterSim(gachaTargets)], pulls, gachaTargets, 0, (sims) => {
     // Reducing to simple sims with less information
