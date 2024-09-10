@@ -269,7 +269,7 @@ export default function GachaCalc({ location }: { location: string }) {
       <h1 className="text-5xl font-bold pb-2">Gacha rate calculator</h1>
 
       <NumberInput label="Pulls" set={setPulls} value={pulls} min={0} max={1260 * gachaTargets.length}/>
-      {gachaTargets.map((gachaTarget, index) => <div key={gachaTarget.id} className={`bg-slate-600 ${gachaTarget.enabled ? "" : "bg-opacity-25 bg-red-800"} rounded-xl p-1 my-2 flex flex-row gap-2`}>
+      {gachaTargets.map((gachaTarget, index) => <div key={gachaTarget.id} className={`${gachaTarget.enabled ? " bg-slate-300 dark:bg-slate-600" : "bg-opacity-25 bg-red-600  "} rounded-xl p-1 my-2 flex flex-row gap-2`}>
         <div className="flex flex-col items-center justify-center gap-2">
           <div>
             <button className="bg-slate-900 text-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-center rounded-lg px-2 py-1"
@@ -320,7 +320,7 @@ export default function GachaCalc({ location }: { location: string }) {
         <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-1">
           <Bar
             data={{
-              labels: lastEntry.filter((x) => x).map((c) => getName(c)),
+              labels: lastEntry.filter((x) => x).map((c) => getName(c, gachaTargets)),
               datasets: [{
                 label: "Rate",
                 backgroundColor: "rgb(75, 192, 192)",
@@ -352,7 +352,7 @@ export default function GachaCalc({ location }: { location: string }) {
         </div>
         <div className="w-full bg-slate-800 rounded-xl p-1 my-2 md:my-0 text-white col-start-2">
           <Line data={{
-              labels: lastEntry.filter(x => x).map(c => getName(c)),
+              labels: lastEntry.filter(x => x).map(c => getName(c, gachaTargets)),
               datasets: [{
                 label: "Cumulative rate",
                 borderColor: "rgb(255, 99, 132)",
@@ -392,7 +392,7 @@ export default function GachaCalc({ location }: { location: string }) {
             labels: calculated.map((_, i) => i),
             datasets: consts
               .map((gtc, x, arr) => ({
-                label: getName(gtc),
+                label: getName(gtc, gachaTargets),
                 backgroundColor: getColor(gtc, enabledTargets, 1),
                 borderColor: getColor(gtc, enabledTargets, 1),
                 fill: {
@@ -434,7 +434,7 @@ export default function GachaCalc({ location }: { location: string }) {
         />
       </div>
       <h3 className="text-lg font-bold pt-1" id="table">Rate Table</h3>
-      <table className={`table-auto w-80 ${styles.table} ${styles.stattable} my-2 sm:text-base text-sm`}>
+      <table className={`table-auto w-96 ${styles.table} ${styles.stattable} my-2 sm:text-base text-sm`}>
         <thead>
           <tr className="divide-x divide-gray-200 dark:divide-gray-500">
             <th>{constName}</th>
@@ -451,14 +451,14 @@ export default function GachaCalc({ location }: { location: string }) {
             .filter((x) => x)
             .map((c, i, a) => (
               <tr className={`pr-1 divide-x divide-gray-200 dark:divide-gray-500 ${c.rate < 0.0005 ? "opacity-60" : ""}`} key={i}>
-                <td>{getName(c)}</td>
-                <td title={getName(c) == "Not owned" ?
+                <td>{getName(c, gachaTargets)}</td>
+                <td title={getName(c, gachaTargets) == "Not owned" ?
                   `Chance to NOT get any of the wanted item within ${pulls} pulls` :
-                  `Chance to get exactly ${getName(c)} (and NOT higher) within ${pulls} pulls`
+                  `Chance to get exactly ${getName(c, gachaTargets)} (and NOT higher) within ${pulls} pulls`
                 }>{(c.rate * 100).toFixed(3)}%</td>
-                <td title={getName(c) == "Not owned" ?
+                <td title={getName(c, gachaTargets) == "Not owned" ?
                   "Chance to get nothing or higher, so basically always 100%" :
-                  `Chance to get ${getName(c)} or higher within ${pulls} pulls`
+                  `Chance to get ${getName(c, gachaTargets)} or higher within ${pulls} pulls`
                 }>{(a.slice(i, a.length).reduce((p, c) => p + c.rate, 0) * 100).toFixed(2)}%</td>
               </tr>
             ))}
@@ -519,9 +519,31 @@ function getColor({ const: c, gachaTargetIndex }: { const: number, gachaTargetIn
   return colors[totalIndex % colors.length]
 }
 
-function getName({ const: c, gachaTarget }: { const: number, gachaTarget: GachaTarget }) {
-  return c == gachaTarget.banner.minConst ? "Not owned" : `${gachaTarget.banner.constFormat}${c}`
+function getName(gt: { const: number, gachaTarget: GachaTarget }, gachaTargets: GachaTarget[]) {
+  const gachaTarget = gt.gachaTarget
+  if (gt.const == gachaTarget.target) {
+    const nextTarget = gachaTargets.slice(gachaTargets.findIndex(gt => gt.id == gachaTarget.id) + 1).find(gt => gt.enabled)
+    if (!nextTarget) return getRawName(gt, gachaTargets)
+    return `${getRawName(gt, gachaTargets)} / ${getRawName({ const: nextTarget.current, gachaTarget: nextTarget }, gachaTargets)}`
+  }
+
+  if (gt.const == gachaTarget.current) {
+    const prevTarget = gachaTargets.slice(0, gachaTargets.findIndex(gt => gt.id == gachaTarget.id)).reverse().find(gt => gt.enabled)
+    if (!prevTarget) return getRawName(gt, gachaTargets)
+    return `${getRawName({ const: prevTarget.target, gachaTarget: prevTarget }, gachaTargets)} / ${getRawName(gt, gachaTargets)}`
+  }
+
+  return getRawName(gt, gachaTargets)
 }
+
+function getRawName({ const: c, gachaTarget }: { const: number, gachaTarget: GachaTarget }, gachaTargets: GachaTarget[]) {
+  const name = c == gachaTarget.banner.minConst ? "Not owned" : `${gachaTarget.banner.constFormat}${c}`
+  if (gachaTargets.length == 1) return name
+  const index = gachaTargets.findIndex(gt => gt.id == gachaTarget.id)
+  const banner = `${index + 1}. `
+  return `${banner}${name}`
+}
+
 function GachaTargetInput({
   value,
   set,
