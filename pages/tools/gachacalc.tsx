@@ -604,7 +604,7 @@ function getRawName({ const: c, gachaTarget }: { const: number, gachaTarget: Gac
   const name = c == gachaTarget.banner.minConst ? "Not owned" : `${gachaTarget.banner.constFormat}${c}`
   if (gachaTargets.length == 1) return name
   const index = gachaTargets.findIndex(gt => gt.id == gachaTarget.id)
-  const banner = `${gachaTarget.name ?? (index + 1)}. `
+  const banner = `${gachaTarget.name || (index + 1)}. `
   return `${banner}${name}`
 }
 
