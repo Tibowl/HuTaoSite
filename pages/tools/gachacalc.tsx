@@ -9,11 +9,13 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js"
+import { GetStaticPropsContext, GetStaticPropsResult } from "next"
 import Head from "next/head"
 import { EffectCallback, useEffect, useMemo, useState } from "react"
 import { Bar, Line } from "react-chartjs-2"
 import FormattedLink from "../../components/FormattedLink"
 import Main from "../../components/Main"
+import { getCharacters } from "../../utils/data-cache"
 import styles from "../style.module.css"
 
 ChartJS.register(
@@ -95,8 +97,19 @@ const gachas: Record<string, Banner> = {
     maxPity: 10,
     rate: pityRate(6.0, Math.ceil(44 / 6.0)),
   },
+  "4*charOffBanner": {
+    bannerName: "Specific 4* off-banner character [Genshin Impact] [INACCURATE: see note!]",
+    banner: 0.5,
+    guaranteed: 1 / 0, // This needs to be filled in by user!
+    minConst: -1,
+    maxConst: 6,
+    constFormat: "C",
+    constName: "Constellation",
+    maxPity: 10,
+    rate: pityRate(5.1, Math.ceil(44 / 5.1)),
+  },
   charOld: {
-    bannerName: "5* banner character [Genshin Impact (PRE 5.0)]",
+    bannerName: "5* banner [Genshin Impact (Chronicled Wish / Character before 5.0)]",
     banner: 0.5,
     guaranteed: 1,
     minConst: -1,
@@ -181,6 +194,7 @@ type ReducedSim = {
 
 type GachaTarget = {
   id: string
+  name: string | null
   enabled: boolean
   banner: Banner
   current: number
@@ -189,12 +203,14 @@ type GachaTarget = {
   guaranteed: boolean
   guaranteedPity: number
   lostPity: number
+  guaranteedRate: number
 }
 
 let gtCounter = 0
-function createDefaultTarget(banner: Banner): GachaTarget {
+function createDefaultTarget(banner: Banner, fourStarCount: number): GachaTarget {
   return {
     id: gtCounter++ + Math.random().toString(36).substring(2, 15),
+    name: null,
     enabled: true,
     banner,
     current: banner.minConst,
@@ -203,11 +219,30 @@ function createDefaultTarget(banner: Banner): GachaTarget {
     guaranteed: false,
     guaranteedPity: 0,
     lostPity: 0,
+    guaranteedRate: fourStarCount
   }
 }
 
-export default function GachaCalc({ location }: { location: string }) {
-  const [gachaTargets, setGachaTargets] = useState<GachaTarget[]>([createDefaultTarget(gachas.char)])
+interface Props {
+  fourStarCount: number
+}
+export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
+  const data = await getCharacters()
+  if (!data)
+    return {
+      props: {
+        fourStarCount: 10
+      }
+    }
+  return {
+    props: {
+      fourStarCount: Object.values(data).filter(c => c.star == 4).length
+    },
+  }
+}
+
+export default function GachaCalc({ location, fourStarCount }: Props & { location: string }) {
+  const [gachaTargets, setGachaTargets] = useState<GachaTarget[]>([createDefaultTarget(gachas.char, fourStarCount)])
   const [pulls, setPulls] = useState(gachaTargets[0].banner.maxPity)
 
   useEffect(() => {
@@ -305,12 +340,12 @@ export default function GachaCalc({ location }: { location: string }) {
             </button>
           </div>
         </div>
-        <GachaTargetInput value={gachaTarget} set={newGachaTarget => setGachaTargets(gachaTargets.map((gt, i) => i == index ? newGachaTarget : gt))} />
+        <GachaTargetInput value={gachaTarget} set={newGachaTarget => setGachaTargets(gachaTargets.map((gt, i) => i == index ? newGachaTarget : gt))} fallbackName={`${index + 1}`} />
       </div>)}
 
       <button className="bg-green-700 text-slate-50 cursor-pointer text-center rounded-lg px-2 py-1 my-2"
           onClick={() =>
-            setGachaTargets([...gachaTargets, createDefaultTarget(gachas.weapon)])
+            setGachaTargets([...gachaTargets, createDefaultTarget(gachas.weapon, fourStarCount)])
           }>
           Add next gacha target
       </button>
@@ -486,6 +521,12 @@ export default function GachaCalc({ location }: { location: string }) {
           It is possible (in-game) to not get a 4-star within 10 pity, but the next pull is guaranteed to be a 4-star if it&apos;s not a 5-star.
         </i>
       </p>
+      <p className="pt-2">
+        <i>
+          <b>NOTE</b>: The 4* off-banner character banner calculator is <b>not</b> accurate for the standard banner. In-game there&apos;s a different pity system for keeping amount of 4* weapons and characters balanced.
+          Here we assume that you&apos;re guaranteed to get a character if you failed to get a character in the previous 4* (like with the regular Weapon/Character banner). However, for the standard this is done if you didn&apos;t get a 4* character in the last X pulls.
+        </i>
+      </p>
     </Main>
   )
 }
@@ -540,24 +581,28 @@ function getRawName({ const: c, gachaTarget }: { const: number, gachaTarget: Gac
   const name = c == gachaTarget.banner.minConst ? "Not owned" : `${gachaTarget.banner.constFormat}${c}`
   if (gachaTargets.length == 1) return name
   const index = gachaTargets.findIndex(gt => gt.id == gachaTarget.id)
-  const banner = `${index + 1}. `
+  const banner = `${gachaTarget.name ?? (index + 1)}. `
   return `${banner}${name}`
 }
 
 function GachaTargetInput({
   value,
+  fallbackName,
   set,
 }: {
   value: GachaTarget;
+  fallbackName: string;
   set: (newValue: GachaTarget) => unknown;
 }) {
   const [enabled, setEnabled] = useState(value.enabled)
+  const [name, setName] = useState(value.name)
   const [current, setCurrent] = useState(value.current)
   const [target, setTarget] = useState(value.target)
   const [pity, setPity] = useState(value.pity)
   const [guaranteed, setGuaranteed] = useState(value.guaranteed)
   const [guaranteedPity, setGuaranteedPity] = useState(value.guaranteedPity)
   const [lostPity, setLostPity] = useState(value.lostPity)
+  const [guaranteedRate, setGuaranteedRate] = useState(value.guaranteedRate)
 
   const [gachaName, setGacha] = useState(value.banner.bannerName)
 
@@ -574,16 +619,19 @@ function GachaTargetInput({
   useEffect(() => {
     if (banner.bannerName != value.banner.bannerName) {}
     else if (enabled != value.enabled) {}
+    else if (name != value.name) {}
     else if (current != value.current) {}
     else if (target != value.target) {}
     else if (pity != value.pity) {}
     else if (guaranteed != value.guaranteed) {}
     else if (guaranteedPity != value.guaranteedPity) {}
     else if (lostPity != value.lostPity) {}
+    else if (guaranteedRate != value.guaranteedRate) {}
     else return
 
     set({
       id: value.id,
+      name,
       enabled,
       banner,
       current,
@@ -592,10 +640,12 @@ function GachaTargetInput({
       guaranteed,
       guaranteedPity,
       lostPity,
+      guaranteedRate
     })
-  }, [set, value, enabled, banner, current, target, pity, guaranteed, guaranteedPity, lostPity])
+  }, [set, value, enabled, name, banner, current, target, pity, guaranteed, guaranteedPity, lostPity, guaranteedRate])
   return <div>
     <CheckboxInput label="Enabled" set={setEnabled} value={enabled} />
+    <TextInput label="Name" set={setName} value={name ?? ""} placeholder={fallbackName} />
     <SelectInput label="Banner type" set={(g) => {
         if (current == banner.minConst)
           setCurrent((Object.values(gachas).find((x) => x.bannerName == g) ?? Object.values(gachas)[0]).minConst)
@@ -615,6 +665,9 @@ function GachaTargetInput({
     )}
     {Array.isArray(banner.banner) && (
       <NumberInput label="Lost pity (Capturing Radiance)" set={setLostPity} value={lostPity} min={0} max={banner.banner.length - 1}/>
+    )}
+    {!Number.isFinite(banner.guaranteed) && (
+      <NumberInput label="Available 4* star count in banner" set={setGuaranteedRate} value={guaranteedRate} min={0} max={banner.guaranteed}/>
     )}
   </div>
 }
@@ -686,6 +739,28 @@ function CheckboxInput({ value, set, label }: {
           checked={value}
           onChange={(e) => set(e.target.checked)}
           type="checkbox"
+        />
+      </label>
+    </div>
+  )
+}
+
+function TextInput({ value, set, label, placeholder }: {
+  value: string;
+  set: (newValue: string) => unknown;
+  label: string;
+  placeholder?: string;
+}) {
+  return (
+    <div>
+      <label>
+        {label}
+        <input
+          className="bg-slate-200 dark:bg-slate-800 rounded-lg px-2 ml-2 mt-1 focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => set(e.target.value)}
+          type="text"
         />
       </label>
     </div>
@@ -867,6 +942,7 @@ function calcSimsExact<T>(
           rate: sim.rate * (1 - rate),
         })
 
+      const bannerGuaranteedRate = Number.isFinite(banner.guaranteed) ? banner.guaranteed : (1 / gachaTarget.guaranteedRate)
       // Got wanted banner item
       addOrMerge({
         gachaTargetIndex: sim.gachaTargetIndex,
@@ -876,11 +952,11 @@ function calcSimsExact<T>(
         guaranteedPity: 0,
         lostPity: sim.guaranteed ? sim.lostPity : 0, // Keep lost pity if it was guaranteed, otherwise we won 50/50
         const: sim.const + 1,
-        rate: sim.rate * rate * bannerRate * banner.guaranteed,
+        rate: sim.rate * rate * bannerRate * bannerGuaranteedRate,
       })
 
       // Got banner item but not wanted (eg. wrong rate up 4* char/5* char)
-      if (banner.guaranteed < 1)
+      if (bannerGuaranteedRate < 1)
         if (
           banner.guaranteedPity &&
           sim.guaranteedPity >= banner.guaranteedPity - 1
@@ -894,7 +970,7 @@ function calcSimsExact<T>(
             guaranteedPity: 0,
             lostPity: 0, // No idea what to do here as it isn't relevant (combination doesn't exist ingame)
             const: sim.const + 1,
-            rate: sim.rate * rate * bannerRate * (1 - banner.guaranteed),
+            rate: sim.rate * rate * bannerRate * (1 - bannerGuaranteedRate),
           })
         else
           addOrMerge({
@@ -905,7 +981,7 @@ function calcSimsExact<T>(
             guaranteedPity: banner.guaranteedPity ? sim.guaranteedPity + 1 : 0,
             lostPity: 0, // No idea what to do here as it isn't relevant (combination doesn't exist ingame)
             const: sim.const,
-            rate: sim.rate * rate * bannerRate * (1 - banner.guaranteed),
+            rate: sim.rate * rate * bannerRate * (1 - bannerGuaranteedRate),
           })
 
       // Failed banner items (eg. 4* char rate ups vs regular 4*)
