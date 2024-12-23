@@ -45,6 +45,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "5* banner character [Genshin Impact (5.0+, hypothese A)]",
     banner: [0.5, 0.5, 0.75, 1],
     guaranteed: 1,
+    canGuarantee: true,
     minConst: -1,
     maxConst: 6,
     constFormat: "C",
@@ -56,6 +57,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "5* banner character [Genshin Impact (5.0+, assumed flat 55/45)]",
     banner: 0.55,
     guaranteed: 1,
+    canGuarantee: true,
     minConst: -1,
     maxConst: 6,
     constFormat: "C",
@@ -67,6 +69,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "Specific 5* banner weapon [Genshin Impact (5.0+)]",
     banner: 0.75,
     guaranteed: 1 / 2,
+    canGuarantee: true,
     guaranteedPity: 2,
     minConst: 0,
     maxConst: 5,
@@ -79,6 +82,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "Specific 4* banner character [Genshin Impact/Honkai: Star Rail]",
     banner: 0.5,
     guaranteed: 1 / 3,
+    canGuarantee: true,
     minConst: -1,
     maxConst: 6,
     constFormat: "C",
@@ -90,6 +94,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "Specific 4* banner weapon [Genshin Impact]",
     banner: 0.75,
     guaranteed: 1 / 5,
+    canGuarantee: true,
     minConst: 0,
     maxConst: 5,
     constFormat: "R",
@@ -98,9 +103,22 @@ const gachas: Record<string, Banner> = {
     rate: pityRate(6.0, Math.ceil(44 / 6.0)),
   },
   "4*charOffBanner": {
-    bannerName: "Specific 4* off-banner character [Genshin Impact] [INACCURATE: see note!]",
+    bannerName: "Specific 4* off-banner character on Character Banner [Genshin Impact]",
     banner: 0.5,
     guaranteed: 1 / 0, // This needs to be filled in by user!
+    canGuarantee: true,
+    minConst: -1,
+    maxConst: 6,
+    constFormat: "C",
+    constName: "Constellation",
+    maxPity: 10,
+    rate: pityRate(5.1, Math.ceil(44 / 5.1)),
+  },
+  "4*charOffBannerStandard": {
+    bannerName: "Specific 4* character/weapon on Standard Banner [Genshin Impact] [INACCURATE: see note!]",
+    banner: 0.5,
+    guaranteed: 1 / 0, // This needs to be filled in by user!
+    canGuarantee: false, // STANDARD BANNER HAS DIFFERENT PITY SYSTEM FOR KEEPING 50/50
     minConst: -1,
     maxConst: 6,
     constFormat: "C",
@@ -112,6 +130,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "5* banner [Genshin Impact (Chronicled Wish / Character before 5.0)]",
     banner: 0.5,
     guaranteed: 1,
+    canGuarantee: true,
     minConst: -1,
     maxConst: 6,
     constFormat: "C",
@@ -123,6 +142,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "Specific 5* banner weapon [Genshin Impact (PRE 5.0)]",
     banner: 0.75,
     guaranteed: 1 / 2,
+    canGuarantee: true,
     guaranteedPity: 3,
     minConst: 0,
     maxConst: 5,
@@ -135,6 +155,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "5* banner character [Honkai: Star Rail]",
     banner: 0.5 + (0.5 * 1) / 8,
     guaranteed: 1,
+    canGuarantee: true,
     minConst: -1,
     maxConst: 6,
     constFormat: "E",
@@ -146,6 +167,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "5* banner weapon [Honkai: Star Rail]",
     banner: 0.75,
     guaranteed: 1,
+    canGuarantee: true,
     minConst: 0,
     maxConst: 5,
     constFormat: "S",
@@ -157,6 +179,7 @@ const gachas: Record<string, Banner> = {
     bannerName: "Specific 4* banner weapon [Honkai: Star Rail]",
     banner: 0.75,
     guaranteed: 1 / 3,
+    canGuarantee: true,
     minConst: 0,
     maxConst: 5,
     constFormat: "S",
@@ -171,6 +194,7 @@ type Banner = {
   banner: number | number[]
   guaranteed: number
   guaranteedPity?: number
+  canGuarantee: boolean
   minConst: number
   maxConst: number
   maxPity: number
@@ -523,8 +547,7 @@ export default function GachaCalc({ location, fourStarCount }: Props & { locatio
       </p>
       <p className="pt-2">
         <i>
-          <b>NOTE</b>: The 4* off-banner character banner calculator is <b>not</b> accurate for the standard banner. In-game there&apos;s a different pity system for keeping amount of 4* weapons and characters balanced.
-          Here we assume that you&apos;re guaranteed to get a character if you failed to get a character in the previous 4* (like with the regular Weapon/Character banner). However, for the standard this is done if you didn&apos;t get a 4* character in the last X pulls.
+          <b>NOTE</b>: The 4* off-banner calculator is <b>not</b> accurate for the standard banner. In-game there&apos;s a pity system for keeping amount of 4* weapons and characters balanced. Here we assume a flat 50/50 rate between characters and weapons.
         </i>
       </p>
     </Main>
@@ -925,8 +948,8 @@ function calcSimsExact<T>(
       if (rate > 1) rate = 1
       else if (rate < 0) rate = 0
       const bannerRate = (
-        sim.guaranteed ||
-        (banner.guaranteedPity && sim.guaranteedPity >= banner.guaranteedPity - 1)
+        (sim.guaranteed ||
+        (banner.guaranteedPity && sim.guaranteedPity >= banner.guaranteedPity - 1)) && banner.canGuarantee
       ) ? 1 : (Array.isArray(banner.banner) ? banner.banner[sim.lostPity] : banner.banner)
 
       // Failed
