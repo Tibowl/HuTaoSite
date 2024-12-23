@@ -679,6 +679,9 @@ function GachaTargetInput({
       value={gachaName}
       options={Object.values(gachas).map((g) => g.bannerName)}
     />
+    {!Number.isFinite(banner.guaranteed) && (
+      <NumberInput label="Available 4* star count in banner" set={setGuaranteedRate} value={guaranteedRate} min={0} max={banner.guaranteed}/>
+    )}
     <NumberInput label={`Current ${banner.constName.toLowerCase()}`} set={setCurrent} value={current} min={banner.minConst} max={target - 1}/>
     <NumberInput label={`Target ${banner.constName.toLowerCase()}`} set={setTarget} value={target} min={current + 1} max={banner.maxConst}/>
     <NumberInput label="Current pity" set={setPity} value={pity} min={0} max={banner.maxPity - 1}/>
@@ -688,9 +691,6 @@ function GachaTargetInput({
     )}
     {Array.isArray(banner.banner) && (
       <NumberInput label="Lost pity (Capturing Radiance)" set={setLostPity} value={lostPity} min={0} max={banner.banner.length - 1}/>
-    )}
-    {!Number.isFinite(banner.guaranteed) && (
-      <NumberInput label="Available 4* star count in banner" set={setGuaranteedRate} value={guaranteedRate} min={0} max={banner.guaranteed}/>
     )}
   </div>
 }
