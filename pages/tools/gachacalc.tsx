@@ -43,7 +43,7 @@ function pityRate(
 const gachas: Record<string, Banner> = {
   char: {
     bannerName: "5* banner character [Genshin Impact (5.0+, hypothese A)]",
-    banner: [0.5, 0.5, 0.75, 1],
+    banner: [0.5, 0.5, 0.55, 1],
     guaranteed: 1,
     canGuarantee: true,
     minConst: -1,
@@ -125,6 +125,18 @@ const gachas: Record<string, Banner> = {
     constName: "Constellation",
     maxPity: 10,
     rate: pityRate(5.1, Math.ceil(44 / 5.1)),
+  },
+  "5*charOffBannerStandard": {
+    bannerName: "Specific 5* character/weapon on Standard Banner [Genshin Impact] [INACCURATE: see note!]",
+    banner: 0.5,
+    guaranteed: 1 / 0, // This needs to be filled in by user!
+    canGuarantee: false, // STANDARD BANNER HAS DIFFERENT PITY SYSTEM FOR KEEPING 50/50
+    minConst: -1,
+    maxConst: 6,
+    constFormat: "C",
+    constName: "Constellation",
+    maxPity: 90,
+    rate: pityRate(0.6, Math.ceil(44 / 0.6)),
   },
   charOld: {
     bannerName: "5* banner [Genshin Impact (Chronicled Wish / Character before 5.0)]",
@@ -534,7 +546,7 @@ export default function GachaCalc({ location, fourStarCount }: Props & { locatio
       </p>
       <p className="pt-2">
         Exact details of &apos;Capturing Radiance&apos; are not yet known.
-        Hypothese A assumes a lost pity model where rate goes from 50%/50%, to 50%/50% to 75%/25% to 100%/0% and resets when you win the 50/50.
+        Hypothese A assumes a lost pity model where a counter increases when you lose the 50/50 and decreases when you win the 50/50. If this counter reaches 2, there&apos;s an (unknown, assumed to be a 55/45) rate to win. When the counter reaches 3, triggering capturing radiance is guaranteed. When capturing radiance is triggered, the counter is reset to 1.
         The other version assumes a flat consolidated rate of 55% mentioned in the <a href="https://www.hoyolab.com/article/32168979">HoYoLAB article</a> which is what you can expect in the long term.
       </p>
 
@@ -547,7 +559,7 @@ export default function GachaCalc({ location, fourStarCount }: Props & { locatio
       </p>
       <p className="pt-2">
         <i>
-          <b>NOTE</b>: The 4* off-banner calculator is <b>not</b> accurate for the standard banner. In-game there&apos;s a pity system for keeping amount of 4* weapons and characters balanced. Here we assume a flat 50/50 rate between characters and weapons.
+          <b>NOTE</b>: The off-banner calculator is <b>not</b> accurate for the standard banner. In-game there&apos;s a pity system for keeping amount of weapons and characters balanced. Here we assume a flat 50/50 rate between characters and weapons.
         </i>
       </p>
     </Main>
@@ -680,7 +692,7 @@ function GachaTargetInput({
       options={Object.values(gachas).map((g) => g.bannerName)}
     />
     {!Number.isFinite(banner.guaranteed) && (
-      <NumberInput label="Available 4* star count in banner" set={setGuaranteedRate} value={guaranteedRate} min={0} max={banner.guaranteed}/>
+      <NumberInput label="Available targets in banner (eg. amount of possible 4* or 5* characters/weapons)" set={setGuaranteedRate} value={guaranteedRate} min={0} max={banner.guaranteed}/>
     )}
     <NumberInput label={`Current ${banner.constName.toLowerCase()}`} set={setCurrent} value={current} min={banner.minConst} max={target - 1}/>
     <NumberInput label={`Target ${banner.constName.toLowerCase()}`} set={setTarget} value={target} min={current + 1} max={banner.maxConst}/>
@@ -947,6 +959,7 @@ function calcSimsExact<T>(
       let rate = banner.rate(currentPity) / 100
       if (rate > 1) rate = 1
       else if (rate < 0) rate = 0
+      const hasLostPity = Array.isArray(banner.banner)
       const bannerRate = (
         (sim.guaranteed ||
         (banner.guaranteedPity && sim.guaranteedPity >= banner.guaranteedPity - 1)) && banner.canGuarantee
@@ -967,16 +980,45 @@ function calcSimsExact<T>(
 
       const bannerGuaranteedRate = Number.isFinite(banner.guaranteed) ? banner.guaranteed : (1 / gachaTarget.guaranteedRate)
       // Got wanted banner item
-      addOrMerge({
-        gachaTargetIndex: sim.gachaTargetIndex,
-        gachaTarget: sim.gachaTarget,
-        pity: 0,
-        guaranteed: false,
-        guaranteedPity: 0,
-        lostPity: sim.guaranteed ? sim.lostPity : 0, // Keep lost pity if it was guaranteed, otherwise we won 50/50
-        const: sim.const + 1,
-        rate: sim.rate * rate * bannerRate * bannerGuaranteedRate,
-      })
+      if (sim.guaranteed)
+        addOrMerge({
+          gachaTargetIndex: sim.gachaTargetIndex,
+          gachaTarget: sim.gachaTarget,
+          pity: 0,
+          guaranteed: false,
+          guaranteedPity: 0,
+          lostPity: sim.lostPity, // Keep lost pity if it was guaranteed
+          const: sim.const + 1,
+          rate: sim.rate * rate * bannerRate * bannerGuaranteedRate,
+        })
+      else {
+        const bannerBaseRate = Array.isArray(banner.banner) ? banner.banner[0] : banner.banner
+        const subtractRate = bannerRate == 1 ? 0  // Guaranteed to trigger at max counter
+                           : bannerBaseRate // tbf, at counter = 2, the subtract and reset to 1 result in the same entry
+
+        addOrMerge({
+          gachaTargetIndex: sim.gachaTargetIndex,
+          gachaTarget: sim.gachaTarget,
+          pity: 0,
+          guaranteed: false,
+          guaranteedPity: 0,
+          lostPity: Math.max(0, sim.lostPity - 1), // Otherwise we won 50/50 and decrease with -1
+          const: sim.const + 1,
+          rate: sim.rate * rate * subtractRate * bannerGuaranteedRate, // Just regular base rate
+        })
+
+        if (bannerRate - subtractRate > 0)
+          addOrMerge({
+            gachaTargetIndex: sim.gachaTargetIndex,
+            gachaTarget: sim.gachaTarget,
+            pity: 0,
+            guaranteed: false,
+            guaranteedPity: 0,
+            lostPity: 1, // Resets to 1
+            const: sim.const + 1,
+            rate: sim.rate * rate * (bannerRate - subtractRate) * bannerGuaranteedRate, // We triggered lost pity
+          })
+      }
 
       // Got banner item but not wanted (eg. wrong rate up 4* char/5* char)
       if (bannerGuaranteedRate < 1)
